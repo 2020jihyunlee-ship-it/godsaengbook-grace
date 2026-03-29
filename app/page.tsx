@@ -88,8 +88,8 @@ export default function LandingPage() {
           className="text-[0.95rem] sm:text-lg text-[#8C6E55] max-w-sm mx-auto leading-loose mb-8"
           style={{ wordBreak: 'keep-all' }}
         >
-          흘러가기 전에 사진 한 장, 짧은 묵상 한 줄—<br className="hidden sm:block" />
-          공동체만의 플립북이 완성돼요.
+          사진 한 장, 짧은 묵상 한 줄—<br />
+          수련회와 선교의 기억이 우리만의 플립북이 됩니다.
         </p>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-xs mx-auto sm:max-w-none">
