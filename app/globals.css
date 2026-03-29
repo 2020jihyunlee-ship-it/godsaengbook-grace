@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
+/* ── 브랜드 CSS 변수 ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --background: #FDF8F2;
+  --foreground: #2D1F14;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --brand-primary: #ed5f1e;
+  --brand-accent:  #f07a3a;
+  --brand-cta:     #c94e16;
+  --brand-surface: #FDF8F2;
+  --brand-dark:    #2D1F14;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1A1A2E;
+    --foreground: #F8F9FF;
   }
 }
 
+/* ── Tailwind v4 @theme ── */
+@theme inline {
+  --color-background:     var(--background);
+  --color-foreground:     var(--foreground);
+
+  --color-brand-primary:  var(--brand-primary);
+  --color-brand-accent:   var(--brand-accent);
+  --color-brand-cta:      var(--brand-cta);
+  --color-brand-surface:  var(--brand-surface);
+  --color-brand-dark:     var(--brand-dark);
+
+  --font-sans:   'Noto Sans KR', sans-serif;
+  --font-serif:  'Noto Serif KR', serif;
+  --font-display: 'Inter', sans-serif;
+
+  --radius-card:  16px;
+  --radius-modal: 24px;
+}
+
+/* ── CTA Pulse 애니메이션 ── */
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 0 0 0px rgba(237, 95, 30, 0); }
+  50%       { box-shadow: 0 0 0 7px rgba(237, 95, 30, 0.15); }
+}
+.cta-pulse:not(:disabled) {
+  animation: cta-pulse 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-pulse { animation: none; }
+}
+
+/* ── 포토 그리드 모바일 1컬럼 ── */
+@media (max-width: 640px) {
+  .photo-grid-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── 포토 에세이 모바일: 2컬럼 → 1컬럼 스택 ── */
+@media (max-width: 768px) {
+  .essay-article {
+    flex-direction: column !important;
+  }
+  .essay-photo-panel {
+    width: 100% !important;
+    height: 60vw !important;
+    min-height: 240px !important;
+    max-height: 420px !important;
+    position: relative !important;
+    top: auto !important;
+    align-self: auto !important;
+  }
+  .essay-text-panel {
+    width: 100% !important;
+    min-height: auto !important;
+  }
+}
+
+/* ── 기본 ── */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Noto Sans KR', sans-serif;
 }
