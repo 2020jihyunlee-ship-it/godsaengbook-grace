@@ -1,8 +1,8 @@
 import React from 'react'
-import type { Section } from '@/types'
+import type { GraceSection } from '@/types'
 
 interface PageTableOfContentsProps {
-  sections: Section[]
+  sections: GraceSection[]
   category?: string
   compact?: boolean
 }
@@ -67,7 +67,7 @@ const PageTableOfContents = React.forwardRef<HTMLDivElement, PageTableOfContents
                   flex: '0 1 auto',
                   maxWidth: '55%',
                 }}>
-                  {s.book_title}
+                  {s.title}
                 </span>
                 <span style={{
                   flex: 1,

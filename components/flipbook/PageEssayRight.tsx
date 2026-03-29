@@ -1,13 +1,10 @@
 import React from 'react'
-import type { BibleQuote, GeneralQuote } from '@/types'
 
 interface PageEssayRightProps {
-  bookTitle: string
-  originalTitle: string
-  aiEssay: string | null
-  memo: string | null
-  quotes: (BibleQuote | GeneralQuote)[]
-  quoteType: 'bible' | 'general'
+  title: string
+  bodyText: string | null
+  bibleVerse: string | null
+  quoteText: string | null
   pageNum: number
   category?: string
   compact?: boolean
@@ -15,20 +12,18 @@ interface PageEssayRightProps {
 
 function getRuleColor(category?: string) {
   if (category && ['선교', '해외탐방'].some(k => category.includes(k))) return '#C07838'
-  return '#C8A84B'
+  return '#C9A84C'
 }
 
 function getQuoteColors(category?: string) {
   if (category && ['선교', '해외탐방'].some(k => category.includes(k))) {
     return { bg: '#FBF4EC', text: '#884010', ref: '#A05820' }
   }
-  return { bg: '#FBF8EE', text: '#8A6820', ref: '#B09040' }
+  return { bg: '#F5EFE4', text: '#8A6820', ref: '#B09040' }
 }
 
 const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
-  ({ bookTitle, originalTitle, aiEssay, memo, quotes, quoteType, pageNum, category, compact }, ref) => {
-    const firstQuote = quotes[0]
-    const text = aiEssay || memo
+  ({ title, bodyText, bibleVerse, quoteText, pageNum, category, compact }, ref) => {
     const ruleClr = getRuleColor(category)
     const qClr = getQuoteColors(category)
 
@@ -40,8 +35,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
     const quoteRefSz = compact ? '8px' : '9.5px'
     const pageNumSz = compact ? '8px' : '9px'
 
-    // 본문을 단락으로 나누기
-    const paragraphs = text ? text.split(/\n\n+/).filter(Boolean) : []
+    const paragraphs = bodyText ? bodyText.split(/\n\n+/).filter(Boolean) : []
 
     return (
       <div
@@ -61,7 +55,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           letterSpacing: '0.14em',
           marginBottom: compact ? '10px' : '14px',
         }}>
-          {originalTitle || bookTitle}
+          {category ?? '은혜'}
         </div>
 
         {/* 제목 */}
@@ -74,7 +68,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           marginBottom: compact ? '10px' : '16px',
           wordBreak: 'keep-all',
         }}>
-          {bookTitle}
+          {title}
         </div>
 
         {/* 골드 구분선 */}
@@ -93,9 +87,8 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
               <p key={i} style={{
                 fontFamily: "'Noto Serif KR', serif",
                 fontSize: bodySz,
-                color: aiEssay ? '#555' : '#8c7b6e',
+                color: '#3D2B1F',
                 lineHeight: 1.95,
-                fontStyle: aiEssay ? 'normal' : 'italic',
                 marginBottom: '10px',
                 wordBreak: 'keep-all',
               }}>
@@ -114,8 +107,8 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           )}
         </div>
 
-        {/* 구절 / 명언 */}
-        {firstQuote && (
+        {/* 성경 구절 */}
+        {bibleVerse && (
           <div style={{
             marginTop: compact ? '12px' : '18px',
             padding: compact ? '10px 12px' : '14px 16px',
@@ -130,17 +123,28 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
               lineHeight: 1.75,
               color: qClr.text,
             }}>
-              &ldquo;{'text' in firstQuote ? firstQuote.text : ''}&rdquo;
+              &ldquo;{bibleVerse}&rdquo;
             </p>
+          </div>
+        )}
+
+        {/* 인용문 (성경 구절 없을 때) */}
+        {!bibleVerse && quoteText && (
+          <div style={{
+            marginTop: compact ? '12px' : '18px',
+            padding: compact ? '10px 12px' : '14px 16px',
+            borderRadius: '2px',
+            backgroundColor: qClr.bg,
+            flexShrink: 0,
+          }}>
             <p style={{
-              fontSize: quoteRefSz,
-              color: qClr.ref,
-              marginTop: '6px',
-              letterSpacing: '0.04em',
+              fontFamily: "'Noto Serif KR', serif",
+              fontSize: quoteSz,
+              fontStyle: 'italic',
+              lineHeight: 1.75,
+              color: qClr.text,
             }}>
-              {'reference' in firstQuote
-                ? (firstQuote as BibleQuote).reference
-                : `— ${(firstQuote as GeneralQuote).author}`}
+              &ldquo;{quoteText}&rdquo;
             </p>
           </div>
         )}

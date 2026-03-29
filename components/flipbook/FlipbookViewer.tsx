@@ -7,20 +7,20 @@ import PageTableOfContents from './PageTableOfContents'
 import PagePhotoLeft from './PagePhotoLeft'
 import PageEssayRight from './PageEssayRight'
 import PageSummary from './PageSummary'
-import type { Section, Entry, BibleQuote, GeneralQuote } from '@/types'
+import type { GraceSection, GraceEntry } from '@/types'
 
 interface EventData {
   name: string
   category: string
   dates_start: string | null
   dates_end: string | null
-  author_name: string | null
+  author_name?: string | null
 }
 
 interface FlipbookViewerProps {
   event: EventData
-  sections: Section[]
-  entries: Record<string, Entry>
+  sections: GraceSection[]
+  entries: Record<string, GraceEntry>
   participantName: string
   summaryText?: string | null
   onTap?: () => void
@@ -108,7 +108,7 @@ export default function FlipbookViewer({
         <PageCover
           eventName={event.name}
           category={event.category}
-          authorName={event.author_name}
+          authorName={event.author_name ?? null}
           datesStart={event.dates_start}
           datesEnd={event.dates_end}
           participantName={participantName}
@@ -119,30 +119,23 @@ export default function FlipbookViewer({
 
         {sections.map((section, i) => {
           const entry = entries[section.id]
-          const quotesData = entry?.quotes as { type: 'bible' | 'general'; quotes: (BibleQuote | GeneralQuote)[] } | null
-          const quotes = quotesData?.quotes ?? []
-          const quoteType = quotesData?.type ?? 'general'
           const pageNum = 3 + i * 2
 
           return [
             <PagePhotoLeft
               key={`photo-${section.id}`}
               photoUrl={entry?.photo_url ?? null}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              photoUrls={(entry as any)?.photo_urls ?? undefined}
-              caption={section.book_title}
+              caption={section.title}
               pageNum={pageNum}
               category={event.category}
               date={event.dates_start}
             />,
             <PageEssayRight
               key={`essay-${section.id}`}
-              bookTitle={section.book_title}
-              originalTitle={section.original_title}
-              aiEssay={entry?.ai_essay ?? null}
-              memo={entry?.memo ?? null}
-              quotes={quotes}
-              quoteType={quoteType}
+              title={section.title}
+              bodyText={entry?.body_text ?? null}
+              bibleVerse={entry?.bible_verse ?? null}
+              quoteText={entry?.quote_text ?? null}
               pageNum={pageNum + 1}
               category={event.category}
               compact={isMobile}
@@ -153,7 +146,7 @@ export default function FlipbookViewer({
         <PageSummary
           summaryText={summaryText ?? null}
           eventName={event.name}
-          authorName={event.author_name}
+          authorName={event.author_name ?? null}
           pageNum={3 + sections.length * 2}
           compact={isMobile}
         />

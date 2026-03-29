@@ -1,133 +1,92 @@
-export type Plan = 'free' | 'pro'
+// 갓생북 은혜 타입 정의
+// 갓생북 Supabase 공유 — 테이블명 grace_ 접두어
+
 export type AccountType = 'personal' | 'team'
 export type EventType = 'group' | 'personal'
-export type InsightType = 'bible' | 'general' | 'user_choice'
-export type EventStatus = 'draft' | 'active' | 'completed'
-export type UserRole = 'student' | 'teacher'
+export type GraceCategory = '수련회' | '선교여행' | '캠프' | '예배' | '모임' | '개인'
+export type EventStatus = 'active' | 'completed'
 export type ContentType = 'photo' | 'notice' | 'summary'
-export type ProductType = 'individual_pdf' | 'group_pdf' | 'pro_plan'
-export type PaymentStatus = 'pending' | 'success' | 'failed'
 
-export interface User {
+export interface GraceUser {
   id: string
-  email: string
   name: string | null
-  plan: Plan
-  account_type: AccountType
-  credits: number
+  church_name: string | null
+  marketing_consent: boolean
   created_at: string
 }
 
-export interface Event {
+export interface GraceEvent {
   id: string
   creator_id: string
   name: string
   event_type: EventType
-  category: string
-  insight_type: InsightType
-  raw_schedule: string | null
+  category: GraceCategory
   dates_start: string | null
   dates_end: string | null
   participant_count: number | null
-  author_name: string | null
   qr_code_url: string | null
-  theme: string | null
-  publisher_name: string | null
-  publisher_org: string | null
-  publish_date: string | null
-  copyright_text: string | null
   status: EventStatus
   created_at: string
 }
 
-export interface Section {
+export interface GraceSection {
   id: string
   event_id: string
   order: number
-  date: string | null
-  time: string | null
-  original_title: string
-  book_title: string
-  description: string | null
+  title: string
+  section_date: string | null
+  section_time: string | null
   created_at: string
 }
 
-export interface Participant {
+export interface GraceParticipant {
   id: string
   event_id: string
   name: string
   sub_info: string | null
-  session_token: string | null
+  session_token: string
   record_count: number
   created_at: string
 }
 
-export interface BibleQuote {
-  theme: string
-  book: string
-  chapter: number
-  verse: number
-  text: string
-  reference: string
-  why: string
-}
-
-export interface GeneralQuote {
-  theme: string
-  text: string
-  author: string
-  origin: string
-  why: string
-}
-
-export interface QuotesJSON {
-  type: 'bible' | 'general'
-  quotes: BibleQuote[] | GeneralQuote[]
-}
-
-export interface Entry {
+export interface GraceEntry {
   id: string
-  section_id: string
+  event_id: string
+  section_id: string | null
   participant_id: string | null
   user_id: string | null
-  user_role: UserRole
-  memo: string | null
-  ai_essay: string | null
-  quotes: QuotesJSON | null
+  body_text: string | null
+  bible_verse: string | null
+  quote_text: string | null
   photo_url: string | null
-  ai_image_url: string | null
+  template_image: string | null
   is_draft: boolean
   created_at: string
   updated_at: string
 }
 
-export interface GroupContent {
+export interface GraceGroupContent {
   id: string
   event_id: string
   content_type: ContentType
   content_text: string | null
   file_url: string | null
+  page_order: number
   created_at: string
 }
 
-export interface Book {
-  id: string
-  event_id: string
-  summary: string | null
-  pdf_url: string | null
-  rendered_at: string | null
-  created_at: string
+// 플립북 렌더링용 — 참여자 정보와 기록 합본
+export interface GraceEntryWithParticipant extends GraceEntry {
+  participant?: Pick<GraceParticipant, 'name' | 'sub_info'>
+  section?: Pick<GraceSection, 'title'>
 }
 
-export interface Payment {
-  id: string
-  user_id: string
-  event_id: string
-  product_type: ProductType
-  amount: number
-  currency: string
-  status: PaymentStatus
-  payment_key: string | null
-  paid_at: string | null
-  created_at: string
-}
+// 하위 호환 alias (갓생북에서 가져온 페이지들이 사용)
+export type Event = GraceEvent
+export type Section = GraceSection
+export type Participant = GraceParticipant
+export type Entry = GraceEntry
+export type GroupContent = GraceGroupContent
+export type InsightType = 'bible'
+export type BibleQuote = { theme: string; reference: string; text: string; why: string }
+export type GeneralQuote = { theme: string; text: string; author: string; why: string }
