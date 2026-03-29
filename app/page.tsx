@@ -80,8 +80,8 @@ export default function LandingPage() {
           className="text-[2.15rem] sm:text-5xl font-serif font-semibold leading-snug text-[#3D2B1F] mb-4"
           style={{ wordBreak: 'keep-all' }}
         >
-          수련회·선교의 기억을<br />
-          <span className="text-[#C9A84C]">은혜의 기록</span>으로 남겨요
+          순간의 은혜가<br />
+          <span className="text-[#C9A84C]">신앙의 성장</span>으로
         </h1>
 
         <p
