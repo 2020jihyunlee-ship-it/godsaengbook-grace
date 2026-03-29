@@ -1,8 +1,7 @@
 'use client'
 
 import { Suspense, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { PageTransition, MBtn } from '@/components/ui/motion'
@@ -16,6 +15,8 @@ function SignupForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const [churchName, setChurchName] = useState('')
+  const [marketingConsent, setMarketingConsent] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -29,13 +30,22 @@ function SignupForm() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name, account_type: accountType } },
+      options: {
+        data: {
+          name,
+          church_name: churchName,
+          account_type: accountType,
+          marketing_consent: marketingConsent,
+        },
+      },
     })
 
     if (error) {
-      setError(error.message === 'User already registered'
-        ? '이미 가입된 이메일입니다.'
-        : '회원가입 중 오류가 발생했습니다.')
+      setError(
+        error.message === 'User already registered'
+          ? '이미 가입된 이메일입니다.'
+          : '회원가입 중 오류가 발생했습니다.'
+      )
       setLoading(false)
       return
     }
@@ -53,15 +63,15 @@ function SignupForm() {
   if (done) {
     return (
       <PageTransition>
-        <div className="min-h-screen flex items-center justify-center bg-brand-surface px-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#FDFAF5] px-4">
           <div className="w-full max-w-sm text-center">
-            <p className="text-4xl mb-4">📬</p>
-            <h2 className="text-xl font-bold text-stone-900 mb-2">이메일을 확인해주세요</h2>
-            <p className="text-stone-500 text-sm mb-6">
+            <p className="text-5xl mb-4">📬</p>
+            <h2 className="text-xl font-semibold text-[#3D2B1F] mb-2">이메일을 확인해주세요</h2>
+            <p className="text-[#8C6E55] text-sm mb-6 leading-relaxed">
               <strong>{email}</strong>로 인증 링크를 보냈어요.<br />
               메일함을 확인하고 링크를 클릭하면 바로 시작할 수 있어요.
             </p>
-            <Link href="/login" className="text-brand-primary text-sm font-medium hover:underline">
+            <Link href="/login" className="text-[#C9A84C] text-sm font-medium hover:underline">
               로그인 페이지로 →
             </Link>
           </div>
@@ -72,98 +82,132 @@ function SignupForm() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex items-center justify-center bg-brand-surface px-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFAF5] px-4 py-10">
         <div className="w-full max-w-sm">
+          {/* 헤더 */}
           <div className="text-center mb-8">
-            <img src="/logo.svg" alt="갓생북" className="w-12 h-12 mx-auto mb-3" />
-            <h1 className="text-2xl font-bold text-brand-primary">갓생북</h1>
-            <p className="text-stone-500 mt-1 text-sm">휘발되는 기억을, 기록되는 성장으로</p>
+            <h1 className="text-2xl font-serif font-semibold text-[#3D2B1F]">
+              갓생북 <span className="text-[#C9A84C]">은혜</span>
+            </h1>
+            <p className="text-[#8C6E55] mt-1 text-sm">교회 공동체를 위한 무료 기록 플립북</p>
           </div>
 
           {/* 계정 타입 선택 */}
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <button
-              type="button"
-              onClick={() => setAccountType('personal')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                accountType === 'personal'
-                  ? 'border-brand-primary bg-orange-50'
-                  : 'border-stone-200 bg-white'
-              }`}
-            >
-              <p className="text-xl mb-1">👤</p>
-              <p className={`text-sm font-semibold ${accountType === 'personal' ? 'text-brand-primary' : 'text-stone-700'}`}>
-                개인으로
-              </p>
-              <p className="text-xs text-stone-400 mt-0.5">여행기·포토북·에세이</p>
-            </button>
-            <button
-              type="button"
-              onClick={() => setAccountType('team')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                accountType === 'team'
-                  ? 'border-brand-primary bg-orange-50'
-                  : 'border-stone-200 bg-white'
-              }`}
-            >
-              <p className="text-xl mb-1">👥</p>
-              <p className={`text-sm font-semibold ${accountType === 'team' ? 'text-brand-primary' : 'text-stone-700'}`}>
-                팀/단체로
-              </p>
-              <p className="text-xs text-stone-400 mt-0.5">수련회·행사·소감집</p>
-            </button>
+            {[
+              { value: 'personal', icon: '👤', label: '개인으로', desc: '혼자 묵상·기록' },
+              { value: 'team', icon: '👥', label: '팀/단체로', desc: '수련회·선교·모임' },
+            ].map((t) => (
+              <button
+                key={t.value}
+                type="button"
+                onClick={() => setAccountType(t.value as 'personal' | 'team')}
+                className={`p-4 rounded-2xl border-2 text-left transition-all ${
+                  accountType === t.value
+                    ? 'border-[#C9A84C] bg-[#F5EFE4]'
+                    : 'border-[#E8D5A3] bg-white'
+                }`}
+              >
+                <p className="text-xl mb-1">{t.icon}</p>
+                <p className={`text-sm font-semibold ${accountType === t.value ? 'text-[#A8853A]' : 'text-[#3D2B1F]'}`}>
+                  {t.label}
+                </p>
+                <p className="text-xs text-[#8C6E55] mt-0.5">{t.desc}</p>
+              </button>
+            ))}
           </div>
 
-          <form onSubmit={handleSignup} className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 space-y-4">
+          {/* 폼 */}
+          <form
+            onSubmit={handleSignup}
+            className="bg-white rounded-2xl shadow-sm border border-[#E8D5A3] p-6 space-y-4"
+          >
+            {/* 이름 */}
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">이름</label>
+              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">이름</label>
               <input
                 type="text"
                 value={name}
-                onChange={e => setName(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/40"
+                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
                 placeholder="홍길동"
               />
             </div>
+
+            {/* 소속 교회 */}
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">이메일</label>
+              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">
+                소속 교회 <span className="text-[#8C6E55] font-normal">(선택)</span>
+              </label>
+              <input
+                type="text"
+                value={churchName}
+                onChange={(e) => setChurchName(e.target.value)}
+                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
+                placeholder="예) 한국중앙교회"
+              />
+            </div>
+
+            {/* 이메일 */}
+            <div>
+              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">이메일</label>
               <input
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/40"
+                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
                 placeholder="hello@example.com"
               />
             </div>
+
+            {/* 비밀번호 */}
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">비밀번호</label>
+              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">비밀번호</label>
               <input
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/40"
+                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
                 placeholder="6자 이상"
               />
             </div>
+
+            {/* 마케팅 수신 동의 */}
+            <label className="flex items-start gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={marketingConsent}
+                onChange={(e) => setMarketingConsent(e.target.checked)}
+                className="mt-0.5 accent-[#C9A84C]"
+              />
+              <span className="text-xs text-[#8C6E55] leading-relaxed">
+                갓생북 은혜의 새 기능 및 업데이트 소식을 이메일로 받겠습니다.{' '}
+                <span className="text-[#A8853A]">(선택)</span>
+              </span>
+            </label>
+
+            <p className="text-xs text-[#8C6E55]">
+              서비스 공지를 위해 이메일 주소는 수집됩니다.
+            </p>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <MBtn
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-brand-primary text-white text-sm font-medium rounded-lg hover:bg-brand-primary/90 disabled:opacity-50 transition-colors"
+              className="w-full py-2.5 bg-[#C9A84C] text-white text-sm font-medium rounded-lg hover:bg-[#A8853A] disabled:opacity-50 transition-colors"
             >
-              {loading ? '가입 중...' : '회원가입'}
+              {loading ? '가입 중...' : '무료로 시작하기'}
             </MBtn>
           </form>
 
-          <p className="text-center text-sm text-stone-500 mt-4">
+          <p className="text-center text-sm text-[#8C6E55] mt-4">
             이미 계정이 있으신가요?{' '}
-            <Link href="/login" className="text-brand-primary font-medium hover:underline">
+            <Link href="/login" className="text-[#C9A84C] font-medium hover:underline">
               로그인
             </Link>
           </p>
