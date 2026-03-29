@@ -88,7 +88,7 @@ export default function LandingPage() {
           className="text-[0.95rem] sm:text-lg text-[#8C6E55] max-w-sm mx-auto leading-loose mb-8"
           style={{ wordBreak: 'keep-all' }}
         >
-          사진 한 장, 묵상 한 줄.<br />
+          사진 한 장, 기록 한 줄.<br />
           우리가 함께한 시간이 책이 됩니다.
         </p>
 
