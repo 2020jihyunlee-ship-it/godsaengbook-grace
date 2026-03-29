@@ -6,7 +6,7 @@ import { PageTransition, MBtn } from '@/components/ui/motion'
 
 const CATEGORY_ICON: Record<string, string> = {
   '수련회': '⛺',
-  '선교여행': '✈️',
+  '선교': '✈️',
   '캠프': '🌿',
   '예배': '🕊️',
   '모임': '🤝',

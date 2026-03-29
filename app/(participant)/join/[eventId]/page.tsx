@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { PageTransition } from '@/components/ui/motion'
 
 const CATEGORY_ICON: Record<string, string> = {
-  '수련회': '⛺', '선교여행': '✈️', '캠프': '🌿',
+  '수련회': '⛺', '선교': '✈️', '캠프': '🌿',
   '예배': '🕊️', '모임': '🤝', '개인': '📖',
 }
 

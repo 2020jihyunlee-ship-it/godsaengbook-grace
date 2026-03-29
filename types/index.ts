@@ -3,7 +3,7 @@
 
 export type AccountType = 'personal' | 'team'
 export type EventType = 'group' | 'personal'
-export type GraceCategory = '수련회' | '선교여행' | '캠프' | '예배' | '모임' | '개인'
+export type GraceCategory = '수련회' | '선교' | '캠프' | '예배' | '모임' | '개인'
 export type EventStatus = 'active' | 'completed'
 export type ContentType = 'photo' | 'notice' | 'summary'
 

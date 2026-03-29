@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 const EVENT_TYPES = [
   { icon: '⛺', label: '수련회',   desc: '교회 수련회' },
-  { icon: '✈️', label: '선교여행', desc: '단기선교' },
+  { icon: '✈️', label: '선교', desc: '단기선교' },
   { icon: '🌿', label: '캠프',     desc: '청소년·성경학교' },
   { icon: '🕊️', label: '예배',     desc: '특별예배·부흥회' },
   { icon: '🤝', label: '모임',     desc: '셀·소그룹' },
@@ -80,8 +80,8 @@ export default function LandingPage() {
           className="text-[2.15rem] sm:text-5xl font-serif font-semibold leading-snug text-[#3D2B1F] mb-4"
           style={{ wordBreak: 'keep-all' }}
         >
-          수련회·선교여행의 기억을<br />
-          <span className="text-[#C9A84C]">신앙 서사</span>로 남겨요
+          수련회·선교의 기억을<br />
+          <span className="text-[#C9A84C]">은혜의 기록</span>으로 남겨요
         </h1>
 
         <p
@@ -131,7 +131,7 @@ export default function LandingPage() {
               body="강의를 들으며 얼마나 하나님을 의지하지 않고 살았는지 깨달았다. 오늘이 다시 시작의 계기가 될 것 같다."
             />
             <SampleCard
-              tag="선교여행 · 아프리카"
+              tag="선교 · 아프리카"
               verse="가서 모든 민족을 제자로 삼아 — 마태복음 28:19"
               body="붉은 흙 위에서 아이들과 예배드렸다. 언어도 문화도 달랐지만 같은 하나님을 향해 손을 들었다."
             />

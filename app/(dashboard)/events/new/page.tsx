@@ -8,7 +8,7 @@ import { PageTransition, MBtn, MCard } from '@/components/ui/motion'
 
 const CATEGORIES: { value: GraceCategory; icon: string; label: string; desc: string }[] = [
   { value: '수련회',   icon: '⛺', label: '수련회',   desc: '교회 여름/겨울 수련회' },
-  { value: '선교여행', icon: '✈️', label: '선교여행', desc: '단기선교 · 해외/국내' },
+  { value: '선교', icon: '✈️', label: '선교', desc: '단기선교 · 해외/국내' },
   { value: '캠프',     icon: '🌿', label: '캠프',     desc: '청소년 캠프 · 성경학교' },
   { value: '예배',     icon: '🕊️', label: '예배',     desc: '특별예배 · 부흥회 · 사경회' },
   { value: '모임',     icon: '🤝', label: '모임',     desc: '셀 · 소그룹 · 기도회' },
