@@ -81,15 +81,15 @@ export default function LandingPage() {
           style={{ wordBreak: 'keep-all' }}
         >
           순간의 은혜가<br />
-          <span className="text-[#C9A84C]">신앙의 성장</span>으로
+          <span className="text-[#C9A84C]">평생의 기억</span>으로
         </h1>
 
         <p
           className="text-[0.95rem] sm:text-lg text-[#8C6E55] max-w-sm mx-auto leading-loose mb-8"
           style={{ wordBreak: 'keep-all' }}
         >
-          사진 한 장, 짧은 묵상 한 줄—<br />
-          수련회와 선교의 기억이 우리만의 플립북이 됩니다.
+          사진 한 장, 묵상 한 줄.<br />
+          우리가 함께한 시간이 책이 됩니다.
         </p>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-xs mx-auto sm:max-w-none">
