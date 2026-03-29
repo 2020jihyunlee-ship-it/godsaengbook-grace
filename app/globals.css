@@ -1,80 +1,59 @@
 @import "tailwindcss";
 
-/* ── 브랜드 CSS 변수 ── */
+/* ── 갓생북 은혜 브랜드 CSS 변수 ── */
 :root {
-  --background: #FDF8F2;
-  --foreground: #2D1F14;
+  --background:    #FDFAF5;
+  --foreground:    #3D2B1F;
 
-  --brand-primary: #ed5f1e;
-  --brand-accent:  #f07a3a;
-  --brand-cta:     #c94e16;
-  --brand-surface: #FDF8F2;
-  --brand-dark:    #2D1F14;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1A1A2E;
-    --foreground: #F8F9FF;
-  }
+  --brand-gold:    #C9A84C;
+  --brand-gold-dk: #A8853A;
+  --brand-gold-lt: #E8D5A3;
+  --brand-cream:   #F5EFE4;
+  --brand-text:    #3D2B1F;
+  --brand-muted:   #8C6E55;
+  --brand-divider: rgba(201,168,76,0.2);
+  --brand-surface: #FDFAF5;
 }
 
 /* ── Tailwind v4 @theme ── */
 @theme inline {
-  --color-background:     var(--background);
-  --color-foreground:     var(--foreground);
+  --color-background:   var(--background);
+  --color-foreground:   var(--foreground);
+  --color-gold:         var(--brand-gold);
+  --color-gold-dk:      var(--brand-gold-dk);
+  --color-gold-lt:      var(--brand-gold-lt);
+  --color-cream:        var(--brand-cream);
+  --color-brand-muted:  var(--brand-muted);
+  --color-brand-surface: var(--brand-surface);
 
-  --color-brand-primary:  var(--brand-primary);
-  --color-brand-accent:   var(--brand-accent);
-  --color-brand-cta:      var(--brand-cta);
-  --color-brand-surface:  var(--brand-surface);
-  --color-brand-dark:     var(--brand-dark);
-
-  --font-sans:   'Noto Sans KR', sans-serif;
-  --font-serif:  'Noto Serif KR', serif;
-  --font-display: 'Inter', sans-serif;
+  --font-sans:    'Noto Sans KR', sans-serif;
+  --font-serif:   'Noto Serif KR', serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
 
   --radius-card:  16px;
   --radius-modal: 24px;
 }
 
-/* ── CTA Pulse 애니메이션 ── */
+/* ── CTA Pulse ── */
 @keyframes cta-pulse {
-  0%, 100% { box-shadow: 0 0 0 0px rgba(237, 95, 30, 0); }
-  50%       { box-shadow: 0 0 0 7px rgba(237, 95, 30, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0px rgba(201,168,76,0); }
+  50%       { box-shadow: 0 0 0 8px rgba(201,168,76,0.18); }
 }
 .cta-pulse:not(:disabled) {
-  animation: cta-pulse 2.2s ease-in-out infinite;
+  animation: cta-pulse 2.4s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .cta-pulse { animation: none; }
 }
 
-/* ── 포토 그리드 모바일 1컬럼 ── */
-@media (max-width: 640px) {
-  .photo-grid-row {
-    grid-template-columns: 1fr !important;
-  }
+/* ── 플립북 페이지 넘김 그림자 ── */
+@keyframes page-shimmer {
+  0%   { opacity: 0.6; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.6; }
 }
-
-/* ── 포토 에세이 모바일: 2컬럼 → 1컬럼 스택 ── */
-@media (max-width: 768px) {
-  .essay-article {
-    flex-direction: column !important;
-  }
-  .essay-photo-panel {
-    width: 100% !important;
-    height: 60vw !important;
-    min-height: 240px !important;
-    max-height: 420px !important;
-    position: relative !important;
-    top: auto !important;
-    align-self: auto !important;
-  }
-  .essay-text-panel {
-    width: 100% !important;
-    min-height: auto !important;
-  }
+.page-shimmer {
+  animation: page-shimmer 3s ease-in-out infinite;
 }
 
 /* ── 기본 ── */
