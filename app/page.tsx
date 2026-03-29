@@ -29,12 +29,15 @@ const STEPS = [
   },
 ]
 
-function SampleCard({ tag, verse, body }: { tag: string; verse: string; body: string }) {
+function SampleCard({ tag, verse, body, photo }: { tag: string; verse: string; body: string; photo?: string }) {
   return (
     <div className="flex-shrink-0 w-72 bg-[#FDFAF5] rounded-2xl overflow-hidden border border-[#E8D5A3] shadow-sm">
       <div className="h-1 w-full bg-gradient-to-r from-[#C9A84C] to-[#E8D5A3]" />
-      <div className="h-32 bg-gradient-to-br from-[#F5EFE4] to-[#EDE3D0] flex items-center justify-center">
-        <span className="text-4xl opacity-30">📸</span>
+      <div className="h-32 bg-gradient-to-br from-[#F5EFE4] to-[#EDE3D0] flex items-center justify-center overflow-hidden">
+        {photo
+          ? <img src={photo} alt={tag} className="w-full h-full object-cover" />
+          : <span className="text-4xl opacity-30">📸</span>
+        }
       </div>
       <div className="p-4 space-y-2">
         <span className="inline-block text-xs font-medium text-[#C9A84C] border border-[#E8D5A3] rounded-full px-2.5 py-0.5">
@@ -139,6 +142,7 @@ export default function LandingPage() {
               tag="성경학교 · 언더우드기념관"
               verse="믿음의 선진들이 증거하는 것은 — 히브리서 12:1"
               body="100년 전 이 땅에 복음을 심은 헌신이 오늘 내 신앙의 뿌리임을 기념관 앞에서 실감했다."
+              photo="/sample-bible-school.png"
             />
             <SampleCard
               tag="셀 모임 · 목요일"
