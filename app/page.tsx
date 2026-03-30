@@ -138,6 +138,7 @@ export default function LandingPage() {
               tag="선교 · 아프리카"
               verse="가서 모든 민족을 제자로 삼아 — 마태복음 28:19"
               body="붉은 흙 위에서 아이들과 예배드렸다. 언어도 문화도 달랐지만 같은 하나님을 향해 손을 들었다."
+              photo="/sample-mission.png"
             />
             <SampleCard
               tag="성경학교 · 언더우드기념관"
