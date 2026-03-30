@@ -132,6 +132,7 @@ export default function LandingPage() {
               tag="수련회 · 첫째 날"
               verse="내가 산을 향하여 눈을 들리라 — 시편 121:1"
               body="강의를 들으며 얼마나 하나님을 의지하지 않고 살았는지 깨달았다. 오늘이 다시 시작의 계기가 될 것 같다."
+              photo="/sample-retreat.png"
             />
             <SampleCard
               tag="선교 · 아프리카"
@@ -148,6 +149,7 @@ export default function LandingPage() {
               tag="셀 모임 · 목요일"
               verse="두세 사람이 내 이름으로 모인 곳에 — 마태복음 18:20"
               body="서로의 이야기를 들으며 내가 혼자가 아니라는 걸 다시 확인했다. 이 공동체가 감사하다."
+              photo="/sample-cell.png"
             />
             {/* 오른쪽 여백 */}
             <div className="flex-shrink-0 w-1" />
