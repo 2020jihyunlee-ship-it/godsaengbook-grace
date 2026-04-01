@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import ShareFlipbook from './ShareFlipbook'
+import type { GraceEntry } from '@/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,8 +27,8 @@ export default async function SharePage({ params }: { params: { participantId: s
 
   if (!event || !sections) notFound()
 
-  const entriesMap: Record<string, typeof entries[0]> = {}
-  entries?.forEach(e => { if (e.section_id) entriesMap[e.section_id] = e })
+  const entriesMap: Record<string, GraceEntry> = {}
+  entries?.forEach((e: GraceEntry) => { if (e.section_id) entriesMap[e.section_id] = e })
 
   return (
     <ShareFlipbook
