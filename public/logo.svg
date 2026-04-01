@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <!-- 왼쪽 페이지 -->
+  <path d="M40 18 C30 16 16 20 6 30 L6 62 C16 52 30 48 40 50 Z" fill="#6B1FAD"/>
+  <!-- 오른쪽 페이지 -->
+  <path d="M40 18 C50 16 64 20 74 30 L74 62 C64 52 50 48 40 50 Z" fill="#5A1590"/>
+  <!-- 중앙 척추 -->
+  <line x1="40" y1="18" x2="40" y2="50" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- 하단 곡선 -->
+  <path d="M6 62 Q40 70 74 62" stroke="#C9A84C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- 왼쪽 페이지 줄 -->
+  <line x1="16" y1="38" x2="36" y2="35" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="16" y1="45" x2="36" y2="43" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- 오른쪽 페이지 줄 -->
+  <line x1="64" y1="38" x2="44" y2="35" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="64" y1="45" x2="44" y2="43" stroke="rgba(255,255,255,0.3)" stroke-width="1.2" stroke-linecap="round"/>
+</svg>
