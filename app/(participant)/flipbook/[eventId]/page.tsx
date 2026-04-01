@@ -190,13 +190,22 @@ export default function FlipbookPage() {
         >
           ✏️ 기록 수정
         </button>
+        <button
+          onClick={() => {
+            const url = `${window.location.origin}/share/${participantId}`
+            navigator.clipboard.writeText(url).then(() => alert('링크가 복사됐어요! 카카오톡으로 공유해보세요 🎉'))
+          }}
+          className="flex-1 py-2.5 text-sm font-medium text-white rounded-2xl"
+          style={{ backgroundColor: '#C9A84C' }}
+        >
+          🔗 링크 공유
+        </button>
         {currentSection && (
           <button
             onClick={openEdit}
-            className="flex-1 py-2.5 text-sm font-medium text-white rounded-2xl"
-            style={{ backgroundColor: '#C9A84C' }}
+            className="flex-1 py-2.5 text-sm font-medium text-[#8C6E55] rounded-2xl border border-[#E8D5A3] bg-white active:bg-[#F5EFE4]"
           >
-            현재 페이지 수정
+            페이지 수정
           </button>
         )}
       </div>
