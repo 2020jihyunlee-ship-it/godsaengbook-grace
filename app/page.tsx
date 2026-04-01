@@ -1,8 +1,9 @@
 import Link from 'next/link'
+import LandingFlipbook from '@/components/LandingFlipbook'
 
 const EVENT_TYPES = [
   { icon: '⛺', label: '수련회',   desc: '교회 수련회' },
-  { icon: '✈️', label: '선교', desc: '단기선교' },
+  { icon: '✈️', label: '선교',     desc: '단기선교' },
   { icon: '🌿', label: '캠프',     desc: '청소년·성경학교' },
   { icon: '🕊️', label: '예배',     desc: '특별예배·부흥회' },
   { icon: '🤝', label: '모임',     desc: '셀·소그룹' },
@@ -18,54 +19,40 @@ const STEPS = [
   {
     step: '02',
     icon: '📱',
-    title: 'QR 코드 공유',
-    desc: '참여자에게 QR을 보여주세요. 앱 설치 없이 바로 참여해요.',
+    title: '참여자 초대',
+    desc: 'QR 코드를 보여주면 참여자가 스캔 후 바로 기록을 시작해요. 앱 설치 불필요.',
   },
   {
     step: '03',
     icon: '📖',
-    title: '플립북 완성',
-    desc: '사진과 묵상을 기록하면 아름다운 플립북이 만들어져요.',
+    title: '나만의 플립북 완성',
+    desc: '사진과 묵상을 기록하면 참여자 각자의 플립북이 만들어져요.',
+  },
+  {
+    step: '04',
+    icon: '🔗',
+    title: '가족·친구에게 공유',
+    desc: '완성된 플립북을 링크로 공유해보세요. 함께하지 못한 분들도 볼 수 있어요.',
   },
 ]
 
-function SampleCard({ tag, verse, body, photo }: { tag: string; verse: string; body: string; photo?: string }) {
-  return (
-    <div className="flex-shrink-0 w-72 bg-[#FDFAF5] rounded-2xl overflow-hidden border border-[#E8D5A3] shadow-sm">
-      <div className="h-1 w-full bg-gradient-to-r from-[#C9A84C] to-[#E8D5A3]" />
-      <div className="h-32 bg-gradient-to-br from-[#F5EFE4] to-[#EDE3D0] flex items-center justify-center overflow-hidden">
-        {photo
-          ? <img src={photo} alt={tag} className="w-full h-full object-cover" />
-          : <span className="text-4xl opacity-30">📸</span>
-        }
-      </div>
-      <div className="p-4 space-y-2">
-        <span className="inline-block text-xs font-medium text-[#C9A84C] border border-[#E8D5A3] rounded-full px-2.5 py-0.5">
-          {tag}
-        </span>
-        <p className="text-xs text-[#8C6E55] italic leading-relaxed line-clamp-2">"{verse}"</p>
-        <p className="text-sm text-[#3D2B1F] leading-relaxed line-clamp-3">{body}</p>
-      </div>
-    </div>
-  )
-}
-
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#FDFAF5] text-[#3D2B1F]">
+    <div className="min-h-screen bg-[#FAF7FE] text-[#1A0533]">
 
       {/* 네비게이션 */}
-      <nav className="sticky top-0 z-50 bg-[#FDFAF5]/95 backdrop-blur border-b border-[#E8D5A3]">
+      <nav className="sticky top-0 z-50 bg-[#FAF7FE]/95 backdrop-blur border-b border-[#D8C2EF]">
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-          <span className="font-serif text-lg font-semibold text-[#3D2B1F]">
-            갓생북 <span className="text-[#C9A84C]">은혜</span>
+          <span className="inline-flex items-center gap-1.5 text-lg font-extrabold tracking-tight">
+            <img src="/logo.svg" alt="" width={24} height={24} />
+            <span className="text-[#6B1FAD]">갓생북</span> <span className="text-[#C9A84C]">은혜</span>
           </span>
           <div className="flex items-center gap-2">
-            <Link href="/login" className="text-sm text-[#8C6E55] px-3 py-1.5 hover:text-[#3D2B1F] transition-colors">
+            <Link href="/login" className="text-sm text-[#6B4E8A] px-3 py-1.5 hover:text-[#1A0533] transition-colors">
               로그인
             </Link>
-            <Link href="/signup" className="text-sm bg-[#C9A84C] text-white px-4 py-2 rounded-full hover:bg-[#A8853A] transition-colors font-medium">
-              무료 시작
+            <Link href="/signup" className="text-sm bg-[#6B1FAD] text-white px-4 py-2 rounded-full hover:bg-[#5A1590] transition-colors font-medium">
+              시작하기
             </Link>
           </div>
         </div>
@@ -73,22 +60,22 @@ export default function LandingPage() {
 
       {/* 히어로 */}
       <section className="max-w-2xl mx-auto px-5 pt-14 pb-12 text-center">
-        <div className="inline-flex items-center gap-1.5 bg-[#F5EFE4] border border-[#E8D5A3] text-[#A8853A] text-xs font-medium px-3 py-1.5 rounded-full mb-6">
+        <div className="inline-flex items-center gap-1.5 bg-[#F0E8FA] border border-[#9B6FD0] text-[#6B1FAD] text-xs font-medium px-3 py-1.5 rounded-full mb-6">
           <span>✦</span>
-          <span>교회 전용 · 완전 무료</span>
+          <span>교회 전용 플립북 서비스</span>
           <span>✦</span>
         </div>
 
         <h1
-          className="text-[2.15rem] sm:text-5xl font-serif font-semibold leading-snug text-[#3D2B1F] mb-4"
+          className="text-[2.15rem] sm:text-5xl font-extrabold leading-snug text-[#1A0533] mb-4"
           style={{ wordBreak: 'keep-all' }}
         >
           순간의 은혜가<br />
-          <span className="text-[#C9A84C]">평생의 기억</span>으로
+          <span className="text-[#6B1FAD]">평생의 기억</span>으로
         </h1>
 
         <p
-          className="text-[0.95rem] sm:text-lg text-[#8C6E55] max-w-sm mx-auto leading-loose mb-8"
+          className="text-[0.95rem] sm:text-lg text-[#6B4E8A] max-w-sm mx-auto leading-loose mb-8"
           style={{ wordBreak: 'keep-all' }}
         >
           사진 한 장, 기록 한 줄.<br />
@@ -98,104 +85,74 @@ export default function LandingPage() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-xs mx-auto sm:max-w-none">
           <Link
             href="/signup"
-            className="cta-pulse inline-flex items-center justify-center gap-2 bg-[#C9A84C] hover:bg-[#A8853A] text-white font-semibold text-base px-8 py-4 rounded-full transition-colors"
+            className="cta-pulse inline-flex items-center justify-center gap-2 bg-[#6B1FAD] hover:bg-[#5A1590] text-white font-semibold text-base px-8 py-4 rounded-full transition-colors"
           >
-            무료로 시작하기 →
+            기록 시작하기 →
           </Link>
           <a
             href="#sample"
-            className="inline-flex items-center justify-center border border-[#E8D5A3] text-[#8C6E55] hover:bg-[#F5EFE4] text-base px-8 py-4 rounded-full transition-colors"
+            className="inline-flex items-center justify-center border border-[#D8C2EF] text-[#6B4E8A] hover:bg-[#F0E8FA] text-base px-8 py-4 rounded-full transition-colors"
           >
             예시 보기
           </a>
         </div>
 
-        <div className="flex items-center justify-center gap-6 mt-8 text-xs text-[#A8853A]">
+        <div className="flex items-center justify-center gap-6 mt-8 text-xs text-[#6B1FAD]">
           <span>✓ 회원가입 1분</span>
           <span>✓ 기록 무제한</span>
-          <span>✓ PDF 다운로드</span>
+          <span>✓ 링크 공유</span>
         </div>
       </section>
 
       {/* 예시 보기 */}
-      <section id="sample" className="bg-[#F5EFE4] py-12">
+      <section id="sample" className="bg-[#F0E8FA] pt-10 pb-12">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center px-5 mb-8">
-            <p className="text-xs font-medium text-[#C9A84C] tracking-widest uppercase mb-2">Sample</p>
-            <h2 className="text-2xl sm:text-3xl font-serif font-semibold text-[#3D2B1F]">이렇게 만들어져요</h2>
-            <p className="text-sm text-[#8C6E55] mt-2">참여자 한 명 한 명의 기록이 한 권의 책이 됩니다</p>
+          <div className="text-center px-5 mb-4">
+            <p className="text-xs font-medium text-[#6B1FAD] tracking-widest uppercase mb-2">Sample</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#1A0533]">이렇게 만들어져요</h2>
+            <p className="text-sm text-[#6B4E8A] mt-1.5">참여자 한 명 한 명의 기록이 한 권의 책이 됩니다</p>
           </div>
-
-          {/* 가로 스크롤 */}
-          <div className="flex gap-4 overflow-x-auto px-5 pb-4 scrollbar-hide" style={{ scrollSnapType: 'x mandatory' }}>
-            <SampleCard
-              tag="수련회 · 첫째 날"
-              verse="내가 산을 향하여 눈을 들리라 — 시편 121:1"
-              body="강의를 들으며 얼마나 하나님을 의지하지 않고 살았는지 깨달았다. 오늘이 다시 시작의 계기가 될 것 같다."
-              photo="/sample-retreat.png"
-            />
-            <SampleCard
-              tag="선교 · 아프리카"
-              verse="가서 모든 민족을 제자로 삼아 — 마태복음 28:19"
-              body="붉은 흙 위에서 아이들과 예배드렸다. 언어도 문화도 달랐지만 같은 하나님을 향해 손을 들었다."
-              photo="/sample-mission.png"
-            />
-            <SampleCard
-              tag="성경학교 · 언더우드기념관"
-              verse="믿음의 선진들이 증거하는 것은 — 히브리서 12:1"
-              body="100년 전 이 땅에 복음을 심은 헌신이 오늘 내 신앙의 뿌리임을 기념관 앞에서 실감했다."
-              photo="/sample-bible-school.png"
-            />
-            <SampleCard
-              tag="셀 모임 · 목요일"
-              verse="두세 사람이 내 이름으로 모인 곳에 — 마태복음 18:20"
-              body="서로의 이야기를 들으며 내가 혼자가 아니라는 걸 다시 확인했다. 이 공동체가 감사하다."
-              photo="/sample-cell.png"
-            />
-            {/* 오른쪽 여백 */}
-            <div className="flex-shrink-0 w-1" />
-          </div>
-          <p className="text-center text-xs text-[#A8853A] mt-4">← 옆으로 밀어 더 보기</p>
+          <LandingFlipbook />
         </div>
       </section>
 
       {/* 이벤트 유형 */}
       <section className="max-w-5xl mx-auto px-5 py-12">
         <div className="text-center mb-8">
-          <p className="text-xs font-medium text-[#C9A84C] tracking-widest uppercase mb-2">Event Types</p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-semibold text-[#3D2B1F]" style={{ wordBreak: 'keep-all' }}>
+          <p className="text-xs font-medium text-[#6B1FAD] tracking-widest uppercase mb-2">Event Types</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#1A0533]" style={{ wordBreak: 'keep-all' }}>
             어떤 모임이든 기록할 수 있어요
           </h2>
         </div>
-        <div className="grid grid-cols-5 gap-2 sm:gap-4">
+        <div className="flex gap-3 sm:grid sm:grid-cols-5 sm:gap-4 overflow-x-auto pb-2 sm:overflow-visible sm:pb-0 -mx-1 px-1">
           {EVENT_TYPES.map((t) => (
             <div
               key={t.label}
-              className="bg-[#F5EFE4] border border-[#E8D5A3] rounded-2xl py-4 px-2 text-center hover:border-[#C9A84C] transition-all"
+              className="bg-[#F0E8FA] border border-[#D8C2EF] rounded-2xl py-5 px-3 text-center hover:border-[#6B1FAD] transition-all flex-shrink-0 w-[110px] sm:w-auto"
             >
-              <div className="text-2xl sm:text-3xl mb-2">{t.icon}</div>
-              <div className="font-semibold text-xs sm:text-sm text-[#3D2B1F]">{t.label}</div>
-              <div className="hidden sm:block text-xs text-[#8C6E55] mt-1 leading-snug">{t.desc}</div>
+              <div className="text-3xl mb-2">{t.icon}</div>
+              <div className="font-semibold text-sm text-[#1A0533]">{t.label}</div>
+              <div className="text-xs text-[#6B4E8A] mt-1 leading-snug">{t.desc}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* How it works */}
-      <section className="bg-[#F5EFE4] py-12">
+      <section className="bg-[#F0E8FA] py-12">
         <div className="max-w-5xl mx-auto px-5">
           <div className="text-center mb-8">
-            <p className="text-xs font-medium text-[#C9A84C] tracking-widest uppercase mb-2">How it works</p>
-            <h2 className="text-2xl sm:text-3xl font-serif font-semibold text-[#3D2B1F]">3단계로 끝나요</h2>
+            <p className="text-xs font-medium text-[#6B1FAD] tracking-widest uppercase mb-2">How it works</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#1A0533]">이렇게 사용해요</h2>
           </div>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {STEPS.map((s) => (
-              <div key={s.step} className="bg-[#FDFAF5] rounded-2xl p-5 border border-[#E8D5A3] flex items-start gap-4 sm:block">
+              <div key={s.step} className="bg-white rounded-2xl p-5 border border-[#D8C2EF] flex items-start gap-4 sm:block">
                 <div className="text-2xl sm:text-3xl sm:mb-3 shrink-0">{s.icon}</div>
                 <div>
-                  <div className="text-xs font-semibold text-[#C9A84C] mb-1 sm:mb-2">{s.step}</div>
-                  <h3 className="font-semibold text-[#3D2B1F] mb-1">{s.title}</h3>
-                  <p className="text-sm text-[#8C6E55] leading-relaxed" style={{ wordBreak: 'keep-all' }}>{s.desc}</p>
+                  <div className="text-xs font-semibold text-[#6B1FAD] mb-1 sm:mb-2">{s.step}</div>
+                  <h3 className="font-semibold text-[#1A0533] mb-1">{s.title}</h3>
+                  <p className="text-sm text-[#6B4E8A] leading-relaxed" style={{ wordBreak: 'keep-all' }}>{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -205,12 +162,12 @@ export default function LandingPage() {
 
       {/* 교회에 드리는 선물 */}
       <section className="max-w-2xl mx-auto px-5 py-12 text-center">
-        <div className="bg-gradient-to-br from-[#F5EFE4] to-[#EDE3D0] border border-[#E8D5A3] rounded-3xl px-6 py-10">
-          <div className="text-3xl mb-3">✦</div>
-          <h2 className="text-xl sm:text-2xl font-serif font-semibold text-[#3D2B1F] mb-3">
+        <div className="bg-gradient-to-br from-[#6B1FAD] to-[#4A1080] rounded-3xl px-6 py-10">
+          <div className="text-3xl mb-3 text-[#C9A84C]">✦</div>
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
             교회에 드리는 선물
           </h2>
-          <p className="text-sm text-[#8C6E55] max-w-xs mx-auto leading-loose mb-6" style={{ wordBreak: 'keep-all' }}>
+          <p className="text-sm text-purple-200 max-w-xs mx-auto leading-loose mb-6" style={{ wordBreak: 'keep-all' }}>
             교회 공동체를 위해 무료로 제공됩니다.
           </p>
           <div className="grid grid-cols-2 gap-3 max-w-xs mx-auto mb-6">
@@ -220,9 +177,9 @@ export default function LandingPage() {
               ['✓', 'PDF 다운로드'],
               ['✓', '플립북 뷰어'],
             ].map(([val, label]) => (
-              <div key={label} className="bg-[#FDFAF5] rounded-xl py-3 border border-[#E8D5A3]">
+              <div key={label} className="bg-white/10 rounded-xl py-3 border border-white/20">
                 <div className="text-lg font-bold text-[#C9A84C]">{val}</div>
-                <div className="text-xs text-[#8C6E55] mt-0.5">{label}</div>
+                <div className="text-xs text-purple-200 mt-0.5">{label}</div>
               </div>
             ))}
           </div>
@@ -236,12 +193,16 @@ export default function LandingPage() {
       </section>
 
       {/* 푸터 */}
-      <footer className="border-t border-[#E8D5A3] py-6">
-        <div className="max-w-5xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#8C6E55]">
-          <span className="font-serif text-sm text-[#3D2B1F]">
-            갓생북 <span className="text-[#C9A84C]">은혜</span>
+      <footer className="border-t border-[#D8C2EF] py-6">
+        <div className="max-w-5xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#6B4E8A]">
+          <span className="inline-flex items-center gap-1.5 font-bold text-sm">
+            <img src="/logo.svg" alt="" width={20} height={20} />
+            <span className="text-[#6B1FAD]">갓생북</span> <span className="text-[#C9A84C]">은혜</span>
           </span>
           <span>교회 공동체를 위한 무료 기록 플립북 서비스</span>
+          <a href="mailto:gatsaengbook@gmail.com" className="hover:text-[#6B1FAD] transition-colors">
+            gatsaengbook@gmail.com
+          </a>
         </div>
       </footer>
     </div>
