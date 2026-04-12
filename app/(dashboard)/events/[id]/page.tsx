@@ -22,7 +22,7 @@ export default function EventDetailPage() {
   const [sectionForm, setSectionForm] = useState({ title: '', section_date: '', section_time: '' })
   const [sectionSaving, setSectionSaving] = useState(false)
   const [addMode, setAddMode] = useState<'auto' | 'manual' | null>(null)
-  const [autoPerDay, setAutoPerDay] = useState<1 | 2 | 3>(2)
+  const [autoPerDay, setAutoPerDay] = useState<number>(2)
 
   // 리더 기록
   const [creatorJoining, setCreatorJoining] = useState(false)
@@ -98,8 +98,8 @@ export default function EventDetailPage() {
     const prefix = `${dayNum}일차`
     if (perDay === 1) return `${prefix} 예배`
     if (perDay === 2) return slotIdx === 0 ? `${prefix} 오전 예배` : `${prefix} 저녁 집회`
-    const names = ['오전 예배', '오후 집회', '저녁 집회']
-    return `${prefix} ${names[slotIdx]}`
+    const names = ['오전 예배', '오후 집회', '저녁 집회', '저녁 기도회', '새벽 기도', '특별 집회', '분임 토의', '마무리 예배', '수료 예배', '기념 촬영']
+    return `${prefix} ${names[slotIdx] ?? `${slotIdx + 1}번째 순서`}`
   }
 
   async function handleBulkAddSections() {
@@ -440,16 +440,26 @@ export default function EventDetailPage() {
                 </p>
                 <div>
                   <p className="text-xs text-[#8C6E55] mb-2">하루에 섹션 몇 개?</p>
-                  <div className="flex gap-2">
-                    {([1, 2, 3] as const).map(n => (
+                  <div className="flex gap-2 items-center">
+                    {[1, 2].map(n => (
                       <button key={n} onClick={() => setAutoPerDay(n)}
-                        className="flex-1 py-2 rounded-xl text-sm font-medium border transition-colors"
+                        className="px-5 py-2 rounded-xl text-sm font-medium border transition-colors"
                         style={autoPerDay === n
                           ? { backgroundColor: '#C9A84C', color: 'white', borderColor: '#C9A84C' }
                           : { backgroundColor: 'white', color: '#8C6E55', borderColor: '#E8D5A3' }}>
                         {n}개
                       </button>
                     ))}
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={autoPerDay}
+                      onChange={e => setAutoPerDay(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
+                      className="w-20 py-2 px-3 rounded-xl text-sm text-center border border-[#E8D5A3] focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40"
+                      placeholder="직접"
+                    />
+                    <span className="text-xs text-[#8C6E55]">개</span>
                   </div>
                 </div>
                 <div className="bg-[#FDFAF5] rounded-xl p-3 max-h-40 overflow-y-auto space-y-1">
