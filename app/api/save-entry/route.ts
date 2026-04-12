@@ -14,17 +14,17 @@ export async function POST(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // 기존 엔트리 조회
-  const query = supabase
+  // 기존 엔트리 조회 (Supabase 체이닝은 새 객체 반환 → 반드시 재할당)
+  let query = supabase
     .from('grace_entries')
     .select('id')
     .eq('participant_id', participantId)
     .eq('event_id', eventId)
 
   if (sectionId) {
-    query.eq('section_id', sectionId)
+    query = query.eq('section_id', sectionId)
   } else {
-    query.is('section_id', null)
+    query = query.is('section_id', null)
   }
 
   const { data: existing } = await query.maybeSingle()
