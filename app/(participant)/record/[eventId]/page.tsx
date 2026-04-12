@@ -197,6 +197,11 @@ export default function RecordPage() {
   const currentEntry = selectedSection ? existingEntries[selectedSection.id] : null
   const isSaved = currentEntry && !currentEntry.is_draft
   const guideQuestions = GUIDE_QUESTIONS[event.category] ?? GUIDE_QUESTIONS['개인']
+  const sectionIndex = sections.findIndex(s => s.id === selectedSection?.id)
+  const isFirstSection = sectionIndex === 0
+  const hasPhoto = !!photoPreview
+  const hasText = !!bodyText.trim()
+  const hasBible = !!bibleVerse.trim()
 
   const inputCls = "w-full px-4 py-3 border border-[#E8D5A3] rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-white text-[#3D2B1F] placeholder-[#C9B990]"
 
@@ -290,9 +295,73 @@ export default function RecordPage() {
 
           {selectedSection && (<>
 
-            {/* 가이드 질문 */}
+            {/* 플립북 연동 안내 배너 */}
+            <div className="rounded-2xl border px-4 py-3 flex items-start gap-3"
+              style={{ backgroundColor: isFirstSection ? '#FBF8EE' : '#F5EFE4', borderColor: '#E8D5A3' }}>
+              <span className="text-lg shrink-0">{isFirstSection ? '🏅' : '📄'}</span>
+              <div>
+                <p className="text-xs font-semibold text-[#A8853A]">
+                  {isFirstSection ? '첫 번째 섹션 — 표지 페이지' : `${sectionIndex + 1}번째 섹션 — 플립북 P.${String(sectionIndex * 2 + 3).padStart(2, '0')}~${String(sectionIndex * 2 + 4).padStart(2, '0')}`}
+                </p>
+                <p className="text-xs text-[#8C6E55] mt-0.5 leading-relaxed">
+                  {isFirstSection
+                    ? '이 섹션의 사진이 플립북 표지 배경이 됩니다. 가장 인상적인 사진을 올려주세요.'
+                    : '사진(왼쪽)과 묵상 기록(오른쪽)이 한 세트로 완성됩니다.'}
+                </p>
+              </div>
+            </div>
+
+            {/* 완성도 체크 */}
+            <div className="flex gap-2">
+              {[
+                { label: '사진', done: hasPhoto },
+                { label: '기록', done: hasText },
+                { label: '말씀', done: hasBible },
+              ].map(item => (
+                <div key={item.label} className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl border text-xs font-medium transition-colors"
+                  style={item.done
+                    ? { backgroundColor: '#F0FDF4', borderColor: '#86EFAC', color: '#16A34A' }
+                    : { backgroundColor: 'white', borderColor: '#E8D5A3', color: '#C9B990' }}>
+                  {item.done ? '✓' : '○'} {item.label}
+                </div>
+              ))}
+            </div>
+
+            {/* ① 사진 (맨 먼저) */}
+            <div className="bg-white border border-[#E8D5A3] rounded-2xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-xs font-medium text-[#8C6E55]">
+                  📷 사진 <span className="text-[#C9B990] font-normal">(플립북 왼쪽 페이지 전체)</span>
+                </label>
+                {isFirstSection && !hasPhoto && (
+                  <span className="text-[10px] bg-[#FBF8EE] text-[#C9A84C] border border-[#E8D5A3] rounded-full px-2 py-0.5">표지 배경</span>
+                )}
+              </div>
+              {photoPreview ? (
+                <div className="relative">
+                  <img src={photoPreview} alt="첨부 사진" className="w-full rounded-xl object-cover max-h-64" />
+                  {isFirstSection && (
+                    <div className="absolute top-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">표지 배경</div>
+                  )}
+                  <button onClick={() => { setPhotoPreview(null); setPhotoFile(null) }}
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center text-sm">×</button>
+                </div>
+              ) : (
+                <button onClick={() => photoRef.current?.click()}
+                  className="w-full py-8 rounded-2xl border-2 border-dashed flex flex-col items-center gap-2 active:bg-[#F5EFE4] transition-colors"
+                  style={{ borderColor: isFirstSection ? '#C9A84C' : '#E8D5A3' }}>
+                  <span className="text-2xl">📷</span>
+                  <span className="text-xs text-[#8C6E55]">
+                    {isFirstSection ? '표지 배경이 될 사진을 올려주세요' : '카메라 또는 앨범에서 선택'}
+                  </span>
+                </button>
+              )}
+              <input ref={photoRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoChange} />
+            </div>
+
+            {/* ② 가이드 질문 */}
             <div className="bg-[#F5EFE4] border border-[#E8D5A3] rounded-2xl p-4">
-              <p className="text-xs font-medium text-[#A8853A] mb-2">✦ 기록 가이드</p>
+              <p className="text-xs font-medium text-[#A8853A] mb-2">✦ 기록 가이드 — 아래 질문을 참고해 작성해보세요</p>
               <ul className="space-y-1">
                 {guideQuestions.map((q, i) => (
                   <li key={i} className="text-xs text-[#8C6E55]">· {q}</li>
@@ -300,9 +369,10 @@ export default function RecordPage() {
               </ul>
             </div>
 
-            {/* 본문 작성 */}
+            {/* ③ 본문 작성 */}
             <div className="bg-white border border-[#E8D5A3] rounded-2xl p-4">
-              <label className="block text-xs font-medium text-[#8C6E55] mb-2">묵상 기록</label>
+              <label className="block text-xs font-medium text-[#8C6E55] mb-1">✍️ 묵상 기록</label>
+              <p className="text-[11px] text-[#C9B990] mb-2">플립북 오른쪽 페이지 본문이 됩니다.</p>
               <textarea
                 ref={textareaRef}
                 value={bodyText}
@@ -314,63 +384,31 @@ export default function RecordPage() {
               <p className="text-right text-xs text-[#C9B990] mt-2">{bodyText.length}자</p>
             </div>
 
-            {/* 성경 구절 */}
+            {/* ④ 성경 구절 */}
             <div className="bg-white border border-[#E8D5A3] rounded-2xl p-4">
-              <label className="block text-xs font-medium text-[#8C6E55] mb-2">
-                성경 구절 <span className="text-[#C9B990] font-normal">(선택)</span>
+              <label className="block text-xs font-medium text-[#8C6E55] mb-1">
+                📖 성경 구절 <span className="text-[#C9B990] font-normal">(선택 · 플립북 말씀 박스)</span>
               </label>
+              <p className="text-[11px] text-[#C9B990] mb-2">형식: <span className="font-medium">구절 내용 — 성경 장절</span> (예: 하나님이 세상을 이처럼 사랑하사 — 요한복음 3:16)</p>
               <input
                 value={bibleVerse}
                 onChange={e => setBibleVerse(e.target.value)}
-                placeholder="요한복음 3:16 — 하나님이 세상을 이처럼 사랑하사..."
+                placeholder="하나님이 세상을 이처럼 사랑하사 — 요한복음 3:16"
                 className={inputCls}
               />
             </div>
 
-            {/* 인용문 */}
+            {/* ⑤ 인용문 */}
             <div className="bg-white border border-[#E8D5A3] rounded-2xl p-4">
-              <label className="block text-xs font-medium text-[#8C6E55] mb-2">
-                인상 깊은 말 / 인용구 <span className="text-[#C9B990] font-normal">(선택)</span>
+              <label className="block text-xs font-medium text-[#8C6E55] mb-1">
+                💬 인상 깊은 말 <span className="text-[#C9B990] font-normal">(선택)</span>
               </label>
+              <p className="text-[11px] text-[#C9B990] mb-2">설교나 나눔 중 기억에 남는 말씀이나 문장을 적어주세요.</p>
               <input
                 value={quoteText}
                 onChange={e => setQuoteText(e.target.value)}
                 placeholder="설교나 나눔 중 기억에 남는 말을 적어주세요."
                 className={inputCls}
-              />
-            </div>
-
-            {/* 사진 */}
-            <div className="bg-white border border-[#E8D5A3] rounded-2xl p-4">
-              <label className="block text-xs font-medium text-[#8C6E55] mb-3">
-                사진 <span className="text-[#C9B990] font-normal">(선택)</span>
-              </label>
-              {photoPreview ? (
-                <div className="relative">
-                  <img src={photoPreview} alt="첨부 사진" className="w-full rounded-xl object-cover max-h-64" />
-                  <button
-                    onClick={() => { setPhotoPreview(null); setPhotoFile(null) }}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center text-sm"
-                  >
-                    ×
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => photoRef.current?.click()}
-                  className="w-full py-8 rounded-2xl border-2 border-dashed border-[#E8D5A3] flex flex-col items-center gap-2 active:bg-[#F5EFE4] transition-colors"
-                >
-                  <span className="text-2xl">📷</span>
-                  <span className="text-xs text-[#8C6E55]">카메라 또는 앨범에서 선택</span>
-                </button>
-              )}
-              <input
-                ref={photoRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={handlePhotoChange}
               />
             </div>
 

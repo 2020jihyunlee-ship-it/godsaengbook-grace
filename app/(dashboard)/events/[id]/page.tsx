@@ -21,6 +21,8 @@ export default function EventDetailPage() {
   // 섹션 추가 폼
   const [sectionForm, setSectionForm] = useState({ title: '', section_date: '', section_time: '' })
   const [sectionSaving, setSectionSaving] = useState(false)
+  const [addMode, setAddMode] = useState<'auto' | 'manual' | null>(null)
+  const [autoPerDay, setAutoPerDay] = useState<1 | 2 | 3>(2)
 
   // 리더 기록
   const [creatorJoining, setCreatorJoining] = useState(false)
@@ -88,6 +90,39 @@ export default function EventDetailPage() {
     const supabase = createClient()
     await supabase.from('grace_sections').delete().eq('id', sectionId)
     setSections(prev => prev.filter(s => s.id !== sectionId))
+  }
+
+  const QUICK_NAMES = ['오전 예배', '저녁 집회', '오후 집회', '기도회', '강의', '소그룹', '교제', '수료 예배']
+
+  function getAutoSectionName(dayNum: number, slotIdx: number, perDay: number) {
+    const prefix = `${dayNum}일차`
+    if (perDay === 1) return `${prefix} 예배`
+    if (perDay === 2) return slotIdx === 0 ? `${prefix} 오전 예배` : `${prefix} 저녁 집회`
+    const names = ['오전 예배', '오후 집회', '저녁 집회']
+    return `${prefix} ${names[slotIdx]}`
+  }
+
+  async function handleBulkAddSections() {
+    if (!event?.dates_start) return
+    setSectionSaving(true)
+    const start = new Date(event.dates_start)
+    const end = event.dates_end ? new Date(event.dates_end) : start
+    const days = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
+    const supabase = createClient()
+    let order = (sections[sections.length - 1]?.order ?? 0) + 1
+    const rows = []
+    for (let d = 0; d < days; d++) {
+      const date = new Date(start)
+      date.setDate(start.getDate() + d)
+      const dateStr = date.toISOString().split('T')[0]
+      for (let s = 0; s < autoPerDay; s++) {
+        rows.push({ event_id: id, order: order++, title: getAutoSectionName(d + 1, s, autoPerDay), section_date: dateStr, section_time: null })
+      }
+    }
+    const { data } = await supabase.from('grace_sections').insert(rows).select()
+    if (data) setSections(prev => [...prev, ...data])
+    setAddMode(null)
+    setSectionSaving(false)
   }
 
   async function handleDeleteParticipant(participantId: string, name: string) {
@@ -351,57 +386,144 @@ export default function EventDetailPage() {
 
         {/* ── 섹션 탭 ── */}
         {tab === 'sections' && (<>
-          {/* 섹션 추가 폼 */}
-          <form onSubmit={handleAddSection} className="bg-white border border-[#E8D5A3] rounded-2xl p-4 space-y-3">
-            <p className="text-xs font-medium text-[#8C6E55]">새 섹션 추가</p>
-            <input
-              value={sectionForm.title}
-              onChange={e => setSectionForm(f => ({ ...f, title: e.target.value }))}
-              placeholder="섹션 제목 (예: 1일차 저녁예배)"
-              className={inputCls}
-              required
-            />
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-xs text-[#8C6E55] mb-1">날짜 (선택)</label>
-                <input
-                  type="date"
-                  value={sectionForm.section_date}
-                  onChange={e => setSectionForm(f => ({ ...f, section_date: e.target.value }))}
-                  className={inputCls}
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-[#8C6E55] mb-1">시간 (선택)</label>
-                <input
-                  type="time"
-                  value={sectionForm.section_time}
-                  onChange={e => setSectionForm(f => ({ ...f, section_time: e.target.value }))}
-                  className={inputCls}
-                />
+
+          {/* 플립북 연동 안내 */}
+          <div className="bg-[#F5EFE4] border border-[#E8D5A3] rounded-2xl p-4">
+            <p className="text-xs font-semibold text-[#A8853A] mb-1">📖 섹션 = 플립북의 챕터</p>
+            <p className="text-xs text-[#8C6E55] leading-relaxed">
+              섹션 하나가 플립북 두 페이지(사진 + 기록)로 완성됩니다.<br/>
+              <span className="text-[#A8853A] font-medium">첫 번째 섹션의 사진이 표지 배경</span>이 되므로, 가장 인상적인 순서로 배치하세요.
+            </p>
+          </div>
+
+          {/* 빈 상태 — 시작 선택지 */}
+          {!sections.length && addMode === null && (
+            <div className="bg-white border border-[#E8D5A3] rounded-2xl p-6 text-center space-y-4">
+              <p className="text-sm font-medium text-[#3D2B1F]">섹션을 추가해서 일정을 구성하세요</p>
+              <p className="text-xs text-[#8C6E55]">섹션이 있어야 참여자들이 사진과 기록을 남길 수 있어요.</p>
+              <div className="flex gap-3">
+                {event?.dates_start && (
+                  <button
+                    onClick={() => setAddMode('auto')}
+                    className="flex-1 py-3 rounded-2xl border-2 border-[#C9A84C] bg-[#FDFAF5] text-sm font-medium text-[#A8853A]"
+                  >
+                    📅 날짜별 자동 생성
+                  </button>
+                )}
+                <button
+                  onClick={() => setAddMode('manual')}
+                  className="flex-1 py-3 rounded-2xl border border-[#E8D5A3] bg-white text-sm font-medium text-[#8C6E55]"
+                >
+                  ✏️ 직접 추가
+                </button>
               </div>
             </div>
-            <MBtn
-              type="submit"
-              disabled={sectionSaving || !sectionForm.title.trim()}
-              className="w-full py-2.5 bg-[#C9A84C] text-white text-sm font-medium rounded-xl hover:bg-[#A8853A] transition-colors disabled:opacity-50"
-            >
-              {sectionSaving ? '추가 중...' : '+ 섹션 추가'}
-            </MBtn>
-          </form>
+          )}
+
+          {/* 자동 생성 패널 */}
+          {addMode === 'auto' && event?.dates_start && (() => {
+            const start = new Date(event.dates_start!)
+            const end = event.dates_end ? new Date(event.dates_end) : start
+            const days = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
+            const preview: string[] = []
+            for (let d = 0; d < days; d++) {
+              const date = new Date(start); date.setDate(start.getDate() + d)
+              const dateStr = `${date.getMonth() + 1}/${date.getDate()}`
+              for (let s = 0; s < autoPerDay; s++) {
+                preview.push(`${getAutoSectionName(d + 1, s, autoPerDay)} · ${dateStr}`)
+              }
+            }
+            return (
+              <div className="bg-white border border-[#E8D5A3] rounded-2xl p-4 space-y-4">
+                <p className="text-xs font-medium text-[#8C6E55]">
+                  이벤트 기간: <span className="text-[#3D2B1F]">{event.dates_start}{event.dates_end && event.dates_end !== event.dates_start ? ` ~ ${event.dates_end}` : ''}</span> · {days}일
+                </p>
+                <div>
+                  <p className="text-xs text-[#8C6E55] mb-2">하루에 섹션 몇 개?</p>
+                  <div className="flex gap-2">
+                    {([1, 2, 3] as const).map(n => (
+                      <button key={n} onClick={() => setAutoPerDay(n)}
+                        className="flex-1 py-2 rounded-xl text-sm font-medium border transition-colors"
+                        style={autoPerDay === n
+                          ? { backgroundColor: '#C9A84C', color: 'white', borderColor: '#C9A84C' }
+                          : { backgroundColor: 'white', color: '#8C6E55', borderColor: '#E8D5A3' }}>
+                        {n}개
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-[#FDFAF5] rounded-xl p-3 max-h-40 overflow-y-auto space-y-1">
+                  {preview.map((p, i) => (
+                    <p key={i} className="text-xs text-[#8C6E55]">
+                      <span className="inline-block w-5 text-[#C9A84C] font-medium">{i + 1}</span> {p}
+                    </p>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => setAddMode(null)} className="px-4 py-2.5 text-sm text-[#8C6E55] border border-[#E8D5A3] rounded-xl">취소</button>
+                  <MBtn onClick={handleBulkAddSections} disabled={sectionSaving}
+                    className="flex-1 py-2.5 bg-[#C9A84C] text-white text-sm font-medium rounded-xl disabled:opacity-50">
+                    {sectionSaving ? '생성 중...' : `${preview.length}개 섹션 생성하기`}
+                  </MBtn>
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* 수동 추가 폼 */}
+          {(addMode === 'manual' || sections.length > 0) && (
+            <form onSubmit={handleAddSection} className="bg-white border border-[#E8D5A3] rounded-2xl p-4 space-y-3">
+              <p className="text-xs font-medium text-[#8C6E55]">섹션 추가</p>
+              {/* 빠른 이름 칩 */}
+              <div className="flex flex-wrap gap-1.5">
+                {QUICK_NAMES.map(name => (
+                  <button key={name} type="button"
+                    onClick={() => setSectionForm(f => ({ ...f, title: name }))}
+                    className="px-2.5 py-1 text-xs rounded-full border border-[#E8D5A3] text-[#8C6E55] hover:border-[#C9A84C] hover:text-[#A8853A] transition-colors"
+                    style={sectionForm.title === name ? { borderColor: '#C9A84C', color: '#A8853A', backgroundColor: '#F5EFE4' } : {}}>
+                    {name}
+                  </button>
+                ))}
+              </div>
+              <input
+                value={sectionForm.title}
+                onChange={e => setSectionForm(f => ({ ...f, title: e.target.value }))}
+                placeholder="직접 입력 (예: 1일차 저녁예배)"
+                className={inputCls}
+                required
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-[#8C6E55] mb-1">날짜 (선택)</label>
+                  <input type="date" value={sectionForm.section_date}
+                    onChange={e => setSectionForm(f => ({ ...f, section_date: e.target.value }))}
+                    className={inputCls} />
+                </div>
+                <div>
+                  <label className="block text-xs text-[#8C6E55] mb-1">시간 (선택)</label>
+                  <input type="time" value={sectionForm.section_time}
+                    onChange={e => setSectionForm(f => ({ ...f, section_time: e.target.value }))}
+                    className={inputCls} />
+                </div>
+              </div>
+              <MBtn type="submit" disabled={sectionSaving || !sectionForm.title.trim()}
+                className="w-full py-2.5 bg-[#C9A84C] text-white text-sm font-medium rounded-xl hover:bg-[#A8853A] transition-colors disabled:opacity-50">
+                {sectionSaving ? '추가 중...' : '+ 섹션 추가'}
+              </MBtn>
+            </form>
+          )}
 
           {/* 섹션 목록 */}
-          {!sections.length ? (
-            <div className="bg-white border border-[#E8D5A3] rounded-2xl p-8 text-center">
-              <p className="text-[#8C6E55] text-sm">아직 섹션이 없어요.<br/>위에서 첫 섹션을 추가해보세요.</p>
-            </div>
-          ) : (
+          {sections.length > 0 && (
             <div className="bg-white border border-[#E8D5A3] rounded-2xl divide-y divide-[#F5EFE4]">
               {sections.map((s, i) => (
                 <div key={s.id} className="px-4 py-3 flex items-center gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[#F5EFE4] text-[#A8853A] text-xs font-semibold flex items-center justify-center shrink-0">
-                    {i + 1}
-                  </span>
+                  <div className="shrink-0 flex flex-col items-center gap-0.5">
+                    <span className="w-6 h-6 rounded-full bg-[#F5EFE4] text-[#A8853A] text-xs font-semibold flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    {i === 0 && <span className="text-[9px] text-[#C9A84C] leading-none">표지</span>}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#3D2B1F] truncate">{s.title}</p>
                     {(s.section_date || s.section_time) && (
@@ -410,10 +532,8 @@ export default function EventDetailPage() {
                       </p>
                     )}
                   </div>
-                  <button
-                    onClick={() => handleDeleteSection(s.id)}
-                    className="text-[#E8D5A3] hover:text-red-400 transition-colors text-base leading-none shrink-0"
-                  >×</button>
+                  <button onClick={() => handleDeleteSection(s.id)}
+                    className="text-[#E8D5A3] hover:text-red-400 transition-colors text-base leading-none shrink-0">×</button>
                 </div>
               ))}
             </div>
