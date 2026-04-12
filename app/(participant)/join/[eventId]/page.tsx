@@ -54,30 +54,24 @@ export default function JoinPage() {
     setLoading(true)
     setError('')
 
-    const supabase = createClient()
-    const sessionToken = crypto.randomUUID()
+    const res = await fetch('/api/join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId, name, subInfo }),
+    })
+    const json = await res.json()
 
-    const { data: participant, error: err } = await supabase
-      .from('grace_participants')
-      .insert({
-        event_id: eventId,
-        name,
-        sub_info: subInfo || null,
-        session_token: sessionToken,
-        record_count: 0,
-      })
-      .select()
-      .single()
-
-    if (err || !participant) {
-      setError(err?.message ?? '참여 등록 중 오류가 발생했습니다.')
+    if (!res.ok || !json.participant) {
+      setError(json.error ?? '참여 등록 중 오류가 발생했습니다.')
       setLoading(false)
       return
     }
 
+    const participant = json.participant
+
     localStorage.setItem(`grace_participant_${eventId}`, JSON.stringify({
       participantId: participant.id,
-      sessionToken,
+      sessionToken: participant.session_token,
       name: participant.name,
     }))
 
