@@ -5,7 +5,8 @@ import QRCode from 'qrcode'
 
 export default function QRCodeDisplay({ url }: { url: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [copied, setCopied] = useState(false)
+  const [btnCopied, setBtnCopied] = useState(false)
+  const [urlCopied, setUrlCopied] = useState(false)
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -20,10 +21,21 @@ export default function QRCodeDisplay({ url }: { url: string }) {
     link.click()
   }
 
-  function handleCopy() {
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+  function copyToClipboard(onDone: () => void) {
+    navigator.clipboard.writeText(url).then(onDone)
+  }
+
+  function handleBtnCopy() {
+    copyToClipboard(() => {
+      setBtnCopied(true)
+      setTimeout(() => setBtnCopied(false), 2000)
+    })
+  }
+
+  function handleUrlCopy() {
+    copyToClipboard(() => {
+      setUrlCopied(true)
+      setTimeout(() => setUrlCopied(false), 2000)
     })
   }
 
@@ -43,15 +55,15 @@ export default function QRCodeDisplay({ url }: { url: string }) {
           QR 다운로드
         </button>
         <button
-          onClick={handleCopy}
+          onClick={handleBtnCopy}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-sm border rounded-lg transition-all duration-200"
           style={
-            copied
+            btnCopied
               ? { backgroundColor: '#ed5f1e', color: 'white', borderColor: '#ed5f1e' }
               : { color: '#8C6E55', borderColor: '#E8D5A3' }
           }
         >
-          {copied ? (
+          {btnCopied ? (
             <>
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -70,14 +82,22 @@ export default function QRCodeDisplay({ url }: { url: string }) {
         </button>
       </div>
 
-      {/* URL 표시 — 클릭하면 복사 */}
+      {/* URL 박스 — 클릭하면 복사, 독립 피드백 */}
       <button
-        onClick={handleCopy}
+        onClick={handleUrlCopy}
         title="클릭하여 복사"
-        className="w-full max-w-xs group bg-[#FDF3E3] border border-[#E8D5A3] rounded-lg px-3 py-2.5 text-left hover:border-[#ed5f1e] transition-colors"
+        className="w-full max-w-xs text-left rounded-lg px-3 py-2.5 border transition-all duration-200"
+        style={
+          urlCopied
+            ? { backgroundColor: '#fff7ed', borderColor: '#ed5f1e' }
+            : { backgroundColor: '#FDF3E3', borderColor: '#E8D5A3' }
+        }
       >
-        <p className="text-[10px] text-[#C4A882] mb-0.5 group-hover:text-[#ed5f1e] transition-colors">
-          참여 링크 (클릭하여 복사)
+        <p
+          className="text-[10px] mb-0.5 transition-colors duration-200"
+          style={{ color: urlCopied ? '#ed5f1e' : '#C4A882' }}
+        >
+          {urlCopied ? '✓ 복사됨!' : '참여 링크 · 클릭하여 복사'}
         </p>
         <p className="text-xs text-[#8C6E55] break-all leading-relaxed">{url}</p>
       </button>
