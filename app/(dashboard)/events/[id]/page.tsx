@@ -465,25 +465,24 @@ export default function EventDetailPage() {
                 <div>
                   <p className="text-xs text-[#8C6E55] mb-2">하루에 섹션 몇 개?</p>
                   <div className="flex gap-2 items-center">
-                    {[1, 2].map(n => (
-                      <button key={n} onClick={() => setAutoPerDay(n)}
-                        className="px-5 py-2 rounded-xl text-sm font-medium border transition-colors"
-                        style={autoPerDay === n
-                          ? { backgroundColor: '#C9A84C', color: 'white', borderColor: '#C9A84C' }
-                          : { backgroundColor: 'white', color: '#8C6E55', borderColor: '#E8D5A3' }}>
-                        {n}개
-                      </button>
-                    ))}
                     <input
                       type="number"
                       min={1}
-                      max={10}
-                      value={autoPerDay}
-                      onChange={e => setAutoPerDay(Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
-                      className="w-20 py-2 px-3 rounded-xl text-sm text-center border border-[#E8D5A3] focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40"
-                      placeholder="직접"
+                      max={20}
+                      value={autoPerDay === 0 ? '' : autoPerDay}
+                      onChange={e => {
+                        const v = e.target.value
+                        if (v === '') { setAutoPerDay(0); return }
+                        const n = parseInt(v, 10)
+                        if (!isNaN(n) && n >= 1 && n <= 20) setAutoPerDay(n)
+                      }}
+                      onBlur={e => { if (!e.target.value || Number(e.target.value) < 1) setAutoPerDay(1) }}
+                      className="w-24 py-2.5 px-3 rounded-xl text-sm text-center border-2 border-[#C9A84C] focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 font-medium text-[#3D2B1F]"
+                      placeholder="숫자 입력"
+                      inputMode="numeric"
                     />
-                    <span className="text-xs text-[#8C6E55]">개</span>
+                    <span className="text-sm text-[#8C6E55]">개</span>
+                    <span className="text-xs text-[#C9B990]">· 최대 20개</span>
                   </div>
                 </div>
                 <div className="bg-[#FDFAF5] rounded-xl p-3 max-h-40 overflow-y-auto space-y-1">

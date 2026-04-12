@@ -164,171 +164,120 @@ export default function RecordPage() {
     setPhotoFile(null)
   }
 
+  // 공통 저장 헬퍼 (서버 API 경유 → RLS 우회)
+  async function saveEntry({
+    sectionId, bodyText: bt, bibleVerse: bv, quoteText: qt, photoUrl, isDraft,
+  }: {
+    sectionId: string | null
+    bodyText: string
+    bibleVerse: string
+    quoteText: string
+    photoUrl: string | null
+    isDraft: boolean
+  }) {
+    if (!session) return null
+    const res = await fetch('/api/save-entry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        participantId: session.participantId,
+        eventId,
+        sectionId,
+        bodyText: bt.trim() || null,
+        bibleVerse: bv.trim() || null,
+        quoteText: qt.trim() || null,
+        photoUrl,
+        isDraft,
+      }),
+    })
+    const json = await res.json()
+    if (!res.ok) throw new Error(json.error ?? '저장 실패')
+    return json.entry
+  }
+
   // 자동저장 트리거 (입력 멈춤 2초 후)
   useEffect(() => {
-    if (!selectedSection || (!bodyText && !bibleVerse && !quoteText && !photoPreview)) return
+    if (!selectedSection || (!bodyText && !bibleVerse && !quoteText)) return
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current)
     autoSaveTimer.current = setTimeout(async () => {
       if (!session || !selectedSection) return
-      const hasContent = bodyText.trim() || bibleVerse.trim() || quoteText.trim() || photoPreview
-      if (!hasContent) return
+      if (!bodyText.trim() && !bibleVerse.trim() && !quoteText.trim()) return
       setAutoSaveStatus('saving')
-      const supabase = createClient()
-      const existing = existingEntries[selectedSection.id]
-      const photoUrl = existing?.photo_url ?? null
-      const payload = {
-        event_id: eventId,
-        section_id: selectedSection.id,
-        participant_id: session.participantId,
-        body_text: bodyText.trim() || null,
-        bible_verse: bibleVerse.trim() || null,
-        quote_text: quoteText.trim() || null,
-        photo_url: photoUrl,
-        is_draft: true,
+      try {
+        const photoUrl = existingEntries[selectedSection.id]?.photo_url ?? null
+        const saved = await saveEntry({
+          sectionId: selectedSection.id, bodyText, bibleVerse, quoteText, photoUrl, isDraft: true,
+        })
+        if (saved) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: saved }))
+        setAutoSaveStatus('saved')
+        setTimeout(() => setAutoSaveStatus('idle'), 2000)
+      } catch {
+        setAutoSaveStatus('idle')
       }
-      if (existing) {
-        await supabase.from('grace_entries').update(payload).eq('id', existing.id)
-      } else {
-        const { data } = await supabase.from('grace_entries').insert(payload).select().single()
-        if (data) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: data }))
-      }
-      setAutoSaveStatus('saved')
-      setTimeout(() => setAutoSaveStatus('idle'), 2000)
     }, 2000)
     return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current) }
   }, [bodyText, bibleVerse, quoteText])
 
   // 섹션 전환 시 현재 내용 자동 저장
   const switchSection = useCallback(async (s: GraceSection) => {
-    if (selectedSection && session && (bodyText.trim() || bibleVerse.trim() || quoteText.trim() || photoPreview)) {
-      const supabase = createClient()
-      const existing = existingEntries[selectedSection.id]
-      const payload = {
-        event_id: eventId,
-        section_id: selectedSection.id,
-        participant_id: session.participantId,
-        body_text: bodyText.trim() || null,
-        bible_verse: bibleVerse.trim() || null,
-        quote_text: quoteText.trim() || null,
-        photo_url: existing?.photo_url ?? null,
-        is_draft: true,
-      }
-      if (existing) {
-        await supabase.from('grace_entries').update(payload).eq('id', existing.id)
-      } else {
-        const { data } = await supabase.from('grace_entries').insert(payload).select().single()
-        if (data) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: data }))
-      }
+    if (selectedSection && session && (bodyText.trim() || bibleVerse.trim() || quoteText.trim())) {
+      try {
+        const photoUrl = existingEntries[selectedSection.id]?.photo_url ?? null
+        const saved = await saveEntry({
+          sectionId: selectedSection.id, bodyText, bibleVerse, quoteText, photoUrl, isDraft: true,
+        })
+        if (saved) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: saved }))
+      } catch { /* 무시 */ }
     }
     setSelectedSection(s)
     setSectionPickerOpen(false)
-  }, [selectedSection, session, bodyText, bibleVerse, quoteText, photoPreview, existingEntries, eventId])
+  }, [selectedSection, session, bodyText, bibleVerse, quoteText, existingEntries, eventId])
 
   async function handleSave(isDraft = false) {
     if (!session || !selectedSection) return
-    if (!bodyText.trim() && !photoFile && !photoPreview && !bibleVerse.trim() && !quoteText.trim()) return
+    if (!bodyText.trim() && !photoPreview && !bibleVerse.trim() && !quoteText.trim()) return
     setSaving(true)
     setError('')
 
-    const supabase = createClient()
-    let photoUrl = existingEntries[selectedSection.id]?.photo_url ?? null
-
-    // 사진 업로드
-    if (photoFile) {
-      const ext = photoFile.name.split('.').pop()?.toLowerCase() ?? 'jpg'
-      const safeExt = ['jpg','jpeg','png','gif','webp','heic','heif'].includes(ext) ? ext : 'jpg'
-      const path = `grace_entries/${session.participantId}/${selectedSection.id}.${safeExt}`
-      const { error: uploadErr } = await supabase.storage
-        .from('photos').upload(path, photoFile, { upsert: true })
-      if (uploadErr) {
-        setError(`사진 업로드 실패: ${uploadErr.message}`)
-        setSaving(false)
-        return
+    try {
+      const photoUrl = existingEntries[selectedSection.id]?.photo_url ?? null
+      const saved = await saveEntry({
+        sectionId: selectedSection.id, bodyText, bibleVerse, quoteText, photoUrl, isDraft,
+      })
+      if (saved) {
+        setExistingEntries(prev => ({ ...prev, [selectedSection.id]: saved }))
+        if (!isDraft) {
+          setJustSaved(true)
+          setTimeout(() => setJustSaved(false), 2000)
+        }
       }
-      const { data } = supabase.storage.from('photos').getPublicUrl(path)
-      photoUrl = data.publicUrl
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : '저장 중 오류가 발생했습니다.')
+    } finally {
+      setSaving(false)
     }
-
-    const payload = {
-      event_id: eventId,
-      section_id: selectedSection.id,
-      participant_id: session.participantId,
-      body_text: bodyText.trim() || null,
-      bible_verse: bibleVerse.trim() || null,
-      quote_text: quoteText.trim() || null,
-      photo_url: photoUrl,
-      is_draft: isDraft,
-    }
-
-    const existing = existingEntries[selectedSection.id]
-    let savedEntry: GraceEntry | null = null
-    if (existing) {
-      const { data } = await supabase.from('grace_entries').update(payload).eq('id', existing.id).select().single()
-      savedEntry = data
-    } else {
-      const { data } = await supabase.from('grace_entries').insert(payload).select().single()
-      savedEntry = data
-    }
-
-    if (savedEntry) {
-      setExistingEntries(prev => ({ ...prev, [selectedSection.id]: savedEntry! }))
-      if (photoUrl) setPhotoPreview(photoUrl)
-      setPhotoFile(null)
-
-      if (!isDraft) {
-        // record_count 갱신
-        const count = Object.values({ ...existingEntries, [selectedSection.id]: savedEntry })
-          .filter(e => !e.is_draft).length
-        await supabase.from('grace_participants').update({ record_count: count }).eq('id', session.participantId)
-
-        setJustSaved(true)
-        setTimeout(() => setJustSaved(false), 2000)
-      }
-    }
-
-    setSaving(false)
   }
 
   async function handleSummarySave() {
-    if (!session || (!summaryText.trim() && !summaryPhotoFile && !summaryPhotoPreview)) return
+    if (!session || (!summaryText.trim() && !summaryPhotoPreview)) return
     setSummarySaving(true)
-    const supabase = createClient()
-    let photoUrl = summaryPhotoPreview && !summaryPhotoFile ? summaryPhotoPreview : null
-
-    if (summaryPhotoFile) {
-      const ext = summaryPhotoFile.name.split('.').pop()?.toLowerCase() ?? 'jpg'
-      const safeExt = ['jpg','jpeg','png','gif','webp','heic','heif'].includes(ext) ? ext : 'jpg'
-      const path = `grace_entries/${session.participantId}/summary.${safeExt}`
-      const { error: uploadErr } = await supabase.storage
-        .from('photos').upload(path, summaryPhotoFile, { upsert: true })
-      if (!uploadErr) {
-        const { data } = supabase.storage.from('photos').getPublicUrl(path)
-        photoUrl = data.publicUrl
-        setSummaryPhotoPreview(photoUrl)
-        setSummaryPhotoFile(null)
-      }
+    try {
+      const saved = await saveEntry({
+        sectionId: null,
+        bodyText: summaryText,
+        bibleVerse: '',
+        quoteText: '',
+        photoUrl: summaryPhotoPreview,
+        isDraft: false,
+      })
+      if (saved) setSummaryEntryId(saved.id)
+      setSummarySaved(true)
+      setTimeout(() => setSummarySaved(false), 2000)
+    } catch {
+      /* 무시 */
+    } finally {
+      setSummarySaving(false)
     }
-
-    const payload = {
-      event_id: eventId,
-      section_id: null,
-      participant_id: session.participantId,
-      body_text: summaryText.trim() || null,
-      photo_url: photoUrl,
-      is_draft: false,
-      updated_at: new Date().toISOString(),
-    }
-
-    if (summaryEntryId) {
-      await supabase.from('grace_entries').update(payload).eq('id', summaryEntryId)
-    } else {
-      const { data } = await supabase.from('grace_entries').insert(payload).select().single()
-      if (data) setSummaryEntryId(data.id)
-    }
-
-    setSummarySaving(false)
-    setSummarySaved(true)
-    setTimeout(() => setSummarySaved(false), 2000)
   }
 
   const completedCount = Object.values(existingEntries).filter(e => !e.is_draft).length
