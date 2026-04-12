@@ -248,23 +248,33 @@ export default function EventDetailPage() {
         </div>
       </header>
 
-      {/* 탭 바 */}
-      <div className="bg-[#FDFAF5] border-b border-[#E8D5A3]">
-        <div className="flex max-w-lg mx-auto px-4">
-          {TABS.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className="py-3 px-4 text-sm border-b-2 transition-colors whitespace-nowrap"
-              style={{
-                borderBottomColor: tab === t.key ? '#C9A84C' : 'transparent',
-                color: tab === t.key ? '#A8853A' : '#8C6E55',
-                fontWeight: tab === t.key ? 600 : 400,
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
+      {/* 탭 바 — 세그먼트 컨트롤 */}
+      <div className="bg-[#FDFAF5] border-b border-[#E8D5A3] px-4 py-3">
+        <div className="max-w-lg mx-auto">
+          <div
+            className="flex rounded-2xl p-1 gap-1"
+            style={{ backgroundColor: '#EDE3CE' }}
+          >
+            {TABS.map(t => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className="flex-1 py-2 px-2 text-sm rounded-xl transition-all duration-200 whitespace-nowrap font-medium"
+                style={tab === t.key ? {
+                  backgroundColor: '#fff',
+                  color: '#A8853A',
+                  fontWeight: 700,
+                  boxShadow: '0 1px 4px rgba(169,133,58,0.18), 0 0 0 1px rgba(201,168,76,0.15)',
+                } : {
+                  backgroundColor: 'transparent',
+                  color: '#8C6E55',
+                  fontWeight: 500,
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
