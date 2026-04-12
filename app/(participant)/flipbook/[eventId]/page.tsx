@@ -202,6 +202,12 @@ export default function FlipbookPage() {
         >
           🔗 링크 공유
         </button>
+        <button
+          onClick={() => router.push(`/pdf/${eventId}`)}
+          className="flex-1 py-2.5 text-sm text-[#8C6E55] rounded-2xl border border-[#E8D5A3] bg-white active:bg-[#F5EFE4]"
+        >
+          📄 PDF 저장
+        </button>
         {currentSection && (
           <button
             onClick={openEdit}
