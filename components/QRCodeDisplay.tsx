@@ -6,7 +6,6 @@ import QRCode from 'qrcode'
 export default function QRCodeDisplay({ url }: { url: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [btnCopied, setBtnCopied] = useState(false)
-  const [urlCopied, setUrlCopied] = useState(false)
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -21,21 +20,10 @@ export default function QRCodeDisplay({ url }: { url: string }) {
     link.click()
   }
 
-  function copyToClipboard(onDone: () => void) {
-    navigator.clipboard.writeText(url).then(onDone)
-  }
-
   function handleBtnCopy() {
-    copyToClipboard(() => {
+    navigator.clipboard.writeText(url).then(() => {
       setBtnCopied(true)
       setTimeout(() => setBtnCopied(false), 2000)
-    })
-  }
-
-  function handleUrlCopy() {
-    copyToClipboard(() => {
-      setUrlCopied(true)
-      setTimeout(() => setUrlCopied(false), 2000)
     })
   }
 
@@ -82,25 +70,11 @@ export default function QRCodeDisplay({ url }: { url: string }) {
         </button>
       </div>
 
-      {/* URL 박스 — 클릭하면 복사, 독립 피드백 */}
-      <button
-        onClick={handleUrlCopy}
-        title="클릭하여 복사"
-        className="w-full max-w-xs text-left rounded-lg px-3 py-2.5 border transition-all duration-200"
-        style={
-          urlCopied
-            ? { backgroundColor: '#fff7ed', borderColor: '#ed5f1e' }
-            : { backgroundColor: '#FDF3E3', borderColor: '#E8D5A3' }
-        }
-      >
-        <p
-          className="text-[10px] mb-0.5 transition-colors duration-200"
-          style={{ color: urlCopied ? '#ed5f1e' : '#C4A882' }}
-        >
-          {urlCopied ? '✓ 복사됨!' : '참여 링크 · 클릭하여 복사'}
-        </p>
+      {/* URL 표시 */}
+      <div className="w-full max-w-xs bg-[#FDF3E3] border border-[#E8D5A3] rounded-lg px-3 py-2.5">
+        <p className="text-[10px] text-[#C4A882] mb-0.5">참여 링크</p>
         <p className="text-xs text-[#8C6E55] break-all leading-relaxed">{url}</p>
-      </button>
+      </div>
     </div>
   )
 }
