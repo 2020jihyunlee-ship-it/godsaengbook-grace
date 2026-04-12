@@ -42,14 +42,15 @@ export default function FlipbookPage() {
     setParticipantId(session.participantId)
 
     const supabase = createClient()
-    const [{ data: ev }, { data: secs }, { data: ents }] = await Promise.all([
+    const [{ data: ev }, { data: secs }, entriesRes] = await Promise.all([
       supabase.from('grace_events').select('id, name, category, dates_start, dates_end').eq('id', eventId).single(),
       supabase.from('grace_sections').select('*').eq('event_id', eventId).order('order'),
-      supabase.from('grace_entries').select('*').eq('participant_id', session.participantId),
+      fetch(`/api/entries?participantId=${session.participantId}`, { cache: 'no-store' }).then(r => r.json()),
     ])
     if (ev) setEvent(ev)
     if (secs) setSections(secs)
-    if (ents) {
+    const ents: GraceEntry[] = entriesRes?.entries ?? []
+    if (ents.length > 0) {
       const map: Record<string, GraceEntry> = {}
       ents.forEach((e: GraceEntry) => {
         if (e.section_id) map[e.section_id] = e
@@ -98,24 +99,18 @@ export default function FlipbookPage() {
   async function handleSave() {
     if (!editingSection || !participantId) return
     setSaving(true)
-    const supabase = createClient()
-    const existing = entries[editingSection.id]
-    const payload = {
-      body_text: editText,
-      bible_verse: editBible || null,
-      updated_at: new Date().toISOString(),
-    }
-    if (existing) {
-      await supabase.from('grace_entries').update(payload).eq('id', existing.id)
-    } else {
-      await supabase.from('grace_entries').insert({
-        event_id: eventId,
-        section_id: editingSection.id,
-        participant_id: participantId,
-        ...payload,
-        is_draft: false,
-      })
-    }
+    await fetch('/api/save-entry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        participantId,
+        eventId,
+        sectionId: editingSection.id,
+        bodyText: editText,
+        bibleVerse: editBible || null,
+        isDraft: false,
+      }),
+    })
     setEntries(prev => ({
       ...prev,
       [editingSection.id]: {
