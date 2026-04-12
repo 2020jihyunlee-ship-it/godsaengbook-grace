@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 
 const NAV = [
   { href: '/dashboard', label: '이벤트 목록', icon: '📋' },
@@ -9,6 +10,14 @@ const NAV = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#F5F4F0' }}>
@@ -47,12 +56,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* 하단 계정 */}
         <div className="px-3 py-4 border-t border-stone-100">
-          <form action="/auth/signout" method="post">
-            <button className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-400 hover:text-stone-700 hover:bg-stone-50 w-full transition-colors">
-              <span>↩</span>
-              로그아웃
-            </button>
-          </form>
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-stone-400 hover:text-stone-700 hover:bg-stone-50 w-full transition-colors"
+          >
+            <span>↩</span>
+            로그아웃
+          </button>
         </div>
       </aside>
 

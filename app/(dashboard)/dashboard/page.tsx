@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import type { GraceEvent } from '@/types'
 import { PageTransition, MBtn } from '@/components/ui/motion'
+import SignOutButton from '@/components/SignOutButton'
 
 const CATEGORY_ICON: Record<string, string> = {
   '수련회': '⛺',
@@ -66,9 +67,7 @@ export default async function DashboardPage() {
           <h1 className="font-serif text-lg font-semibold text-[#3D2B1F]">
             갓생북 <span className="text-[#C9A84C]">은혜</span>
           </h1>
-          <form action="/auth/signout" method="post">
-            <button className="text-xs text-[#8C6E55] hover:text-[#3D2B1F] transition-colors">로그아웃</button>
-          </form>
+          <SignOutButton />
         </header>
 
         <main className="max-w-lg mx-auto px-4 py-8">
