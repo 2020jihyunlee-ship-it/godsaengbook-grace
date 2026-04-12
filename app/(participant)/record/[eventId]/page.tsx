@@ -48,8 +48,19 @@ export default function RecordPage() {
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [error, setError] = useState('')
 
+  // 총평 상태
+  const [summaryText, setSummaryText] = useState('')
+  const [summaryPhotoFile, setSummaryPhotoFile] = useState<File | null>(null)
+  const [summaryPhotoPreview, setSummaryPhotoPreview] = useState<string | null>(null)
+  const [summarySaving, setSummarySaving] = useState(false)
+  const [summarySaved, setSummarySaved] = useState(false)
+  const [summaryCropSrc, setSummaryCropSrc] = useState<string | null>(null)
+  const [summaryEntryId, setSummaryEntryId] = useState<string | null>(null)
+
   const cameraRef = useRef<HTMLInputElement>(null)
   const galleryRef = useRef<HTMLInputElement>(null)
+  const summaryCameraRef = useRef<HTMLInputElement>(null)
+  const summaryGalleryRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -79,6 +90,12 @@ export default function RecordPage() {
         const map: Record<string, GraceEntry> = {}
         ents.forEach((e: GraceEntry) => {
           if (e.section_id) map[e.section_id] = e
+          else {
+            // section_id = null → 총평 엔트리
+            setSummaryText(e.body_text ?? '')
+            setSummaryPhotoPreview(e.photo_url ?? null)
+            setSummaryEntryId(e.id)
+          }
         })
         setExistingEntries(map)
       }
@@ -114,10 +131,37 @@ export default function RecordPage() {
     e.target.value = ''
   }
 
-  function handleCropConfirm(croppedFile: File) {
-    setPhotoFile(croppedFile)
-    setPhotoPreview(URL.createObjectURL(croppedFile))
+  async function handleCropConfirm(croppedFile: File) {
+    const localUrl = URL.createObjectURL(croppedFile)
+    setPhotoPreview(localUrl)
     setCropSrc(null)
+    if (!session || !selectedSection) { setPhotoFile(croppedFile); return }
+
+    // 크롭 확인 즉시 스토리지에 업로드
+    const supabase = createClient()
+    const path = `grace_entries/${session.participantId}/${selectedSection.id}.jpg`
+    const { error: uploadErr } = await supabase.storage
+      .from('photos').upload(path, croppedFile, { upsert: true })
+    if (uploadErr) { setPhotoFile(croppedFile); return } // 실패 시 파일 보관
+
+    const { data } = supabase.storage.from('photos').getPublicUrl(path)
+    const photoUrl = data.publicUrl
+
+    // DB에 photo_url 즉시 반영
+    const existing = existingEntries[selectedSection.id]
+    if (existing) {
+      await supabase.from('grace_entries').update({ photo_url: photoUrl, updated_at: new Date().toISOString() }).eq('id', existing.id)
+      setExistingEntries(prev => ({ ...prev, [selectedSection.id]: { ...existing, photo_url: photoUrl } }))
+    } else {
+      const { data: newEntry } = await supabase.from('grace_entries').insert({
+        event_id: eventId, section_id: selectedSection.id,
+        participant_id: session.participantId,
+        photo_url: photoUrl, is_draft: true,
+      }).select().single()
+      if (newEntry) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: newEntry }))
+    }
+    setPhotoPreview(photoUrl)
+    setPhotoFile(null)
   }
 
   // 자동저장 트리거 (입력 멈춤 2초 후)
@@ -243,6 +287,48 @@ export default function RecordPage() {
     }
 
     setSaving(false)
+  }
+
+  async function handleSummarySave() {
+    if (!session || (!summaryText.trim() && !summaryPhotoFile && !summaryPhotoPreview)) return
+    setSummarySaving(true)
+    const supabase = createClient()
+    let photoUrl = summaryPhotoPreview && !summaryPhotoFile ? summaryPhotoPreview : null
+
+    if (summaryPhotoFile) {
+      const ext = summaryPhotoFile.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+      const safeExt = ['jpg','jpeg','png','gif','webp','heic','heif'].includes(ext) ? ext : 'jpg'
+      const path = `grace_entries/${session.participantId}/summary.${safeExt}`
+      const { error: uploadErr } = await supabase.storage
+        .from('photos').upload(path, summaryPhotoFile, { upsert: true })
+      if (!uploadErr) {
+        const { data } = supabase.storage.from('photos').getPublicUrl(path)
+        photoUrl = data.publicUrl
+        setSummaryPhotoPreview(photoUrl)
+        setSummaryPhotoFile(null)
+      }
+    }
+
+    const payload = {
+      event_id: eventId,
+      section_id: null,
+      participant_id: session.participantId,
+      body_text: summaryText.trim() || null,
+      photo_url: photoUrl,
+      is_draft: false,
+      updated_at: new Date().toISOString(),
+    }
+
+    if (summaryEntryId) {
+      await supabase.from('grace_entries').update(payload).eq('id', summaryEntryId)
+    } else {
+      const { data } = await supabase.from('grace_entries').insert(payload).select().single()
+      if (data) setSummaryEntryId(data.id)
+    }
+
+    setSummarySaving(false)
+    setSummarySaved(true)
+    setTimeout(() => setSummarySaved(false), 2000)
   }
 
   const completedCount = Object.values(existingEntries).filter(e => !e.is_draft).length
@@ -508,6 +594,74 @@ export default function RecordPage() {
             {error && <p className="text-red-500 text-sm px-1">{error}</p>}
 
           </>)}
+
+          {/* ── 마무리 총평 카드 (섹션 무관, 항상 표시) ── */}
+          {sections.length > 0 && (
+            <div className="bg-white border-2 border-dashed border-[#C9A84C]/40 rounded-2xl p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">✦</span>
+                <div>
+                  <p className="text-sm font-semibold text-[#3D2B1F]">마무리 총평</p>
+                  <p className="text-[11px] text-[#8C6E55]">플립북 마지막 페이지에 들어갑니다. 사진과 글을 남겨주세요.</p>
+                </div>
+              </div>
+
+              {/* 총평 사진 */}
+              {summaryPhotoPreview ? (
+                <div className="relative">
+                  <img src={summaryPhotoPreview} alt="총평 사진" className="w-full rounded-xl object-cover" style={{ aspectRatio: '3/4' }} />
+                  <button onClick={() => { setSummaryPhotoPreview(null); setSummaryPhotoFile(null) }}
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center text-sm">×</button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <button onClick={() => summaryCameraRef.current?.click()}
+                    className="flex-1 py-5 rounded-2xl border-2 border-dashed border-[#E8D5A3] flex flex-col items-center gap-1.5 active:bg-[#F5EFE4]">
+                    <span className="text-xl">📷</span>
+                    <span className="text-xs text-[#8C6E55]">촬영하기</span>
+                  </button>
+                  <button onClick={() => summaryGalleryRef.current?.click()}
+                    className="flex-1 py-5 rounded-2xl border-2 border-dashed border-[#E8D5A3] flex flex-col items-center gap-1.5 active:bg-[#F5EFE4]">
+                    <span className="text-xl">🖼️</span>
+                    <span className="text-xs text-[#8C6E55]">앨범 / 파일</span>
+                  </button>
+                </div>
+              )}
+              <input ref={summaryCameraRef} type="file" accept="image/*" capture="environment" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) { setSummaryCropSrc(URL.createObjectURL(f)); e.target.value = '' } }} />
+              <input ref={summaryGalleryRef} type="file" accept="image/*" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) { setSummaryCropSrc(URL.createObjectURL(f)); e.target.value = '' } }} />
+
+              {/* 총평 텍스트 */}
+              <textarea
+                value={summaryText}
+                onChange={e => setSummaryText(e.target.value)}
+                placeholder="이번 여정을 마치며 느낀 것, 감사한 것, 앞으로의 결단을 자유롭게 적어주세요."
+                className="w-full px-4 py-3 border border-[#E8D5A3] rounded-2xl text-sm text-[#3D2B1F] placeholder-[#C9B990] bg-[#FDFAF5] outline-none resize-none leading-relaxed"
+                style={{ minHeight: '120px', fontSize: '15px', lineHeight: 1.8 }}
+              />
+
+              <button
+                onClick={handleSummarySave}
+                disabled={summarySaving || (!summaryText.trim() && !summaryPhotoPreview && !summaryPhotoFile)}
+                className="w-full py-3.5 text-sm font-semibold rounded-2xl transition-colors disabled:opacity-40"
+                style={summarySaved
+                  ? { backgroundColor: '#22c55e', color: '#fff' }
+                  : { backgroundColor: '#C9A84C', color: '#fff' }}
+              >
+                {summarySaving ? '저장 중...' : summarySaved ? '✓ 총평 저장완료!' : '총평 저장하기'}
+              </button>
+            </div>
+          )}
+
+          {/* 총평 사진 크롭 모달 */}
+          {summaryCropSrc && (
+            <PhotoCropModal
+              imageSrc={summaryCropSrc}
+              onConfirm={file => { setSummaryPhotoFile(file); setSummaryPhotoPreview(URL.createObjectURL(file)); setSummaryCropSrc(null) }}
+              onCancel={() => setSummaryCropSrc(null)}
+            />
+          )}
         </div>
 
         {/* 하단 고정 버튼 */}

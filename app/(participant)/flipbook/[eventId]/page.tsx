@@ -18,6 +18,8 @@ export default function FlipbookPage() {
   const [entries, setEntries] = useState<Record<string, GraceEntry>>({})
   const [participantName, setParticipantName] = useState('')
   const [participantId, setParticipantId] = useState('')
+  const [summaryText, setSummaryText] = useState<string | null>(null)
+  const [summaryPhotoUrl, setSummaryPhotoUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   // UI 탭 → 표시, 2초 후 자동 숨김
@@ -50,7 +52,13 @@ export default function FlipbookPage() {
       if (secs) setSections(secs)
       if (ents) {
         const map: Record<string, GraceEntry> = {}
-        ents.forEach((e: GraceEntry) => { if (e.section_id) map[e.section_id] = e })
+        ents.forEach((e: GraceEntry) => {
+          if (e.section_id) map[e.section_id] = e
+          else {
+            setSummaryText(e.body_text ?? null)
+            setSummaryPhotoUrl(e.photo_url ?? null)
+          }
+        })
         setEntries(map)
       }
       setLoading(false)
@@ -161,6 +169,8 @@ export default function FlipbookPage() {
         sections={sections}
         entries={entries}
         participantName={participantName}
+        summaryText={summaryText}
+        summaryPhotoUrl={summaryPhotoUrl}
         onTap={handleTap}
         onPageChange={setCurrentSectionIdx}
       />

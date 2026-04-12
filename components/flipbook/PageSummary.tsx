@@ -2,6 +2,7 @@ import React from 'react'
 
 interface PageSummaryProps {
   summaryText: string | null
+  summaryPhotoUrl?: string | null
   eventName: string
   authorName: string | null
   pageNum: number
@@ -9,7 +10,7 @@ interface PageSummaryProps {
 }
 
 const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
-  ({ summaryText, eventName, authorName, pageNum, compact }, ref) => {
+  ({ summaryText, summaryPhotoUrl, eventName, authorName, pageNum, compact }, ref) => {
     const pad    = compact ? '28px 22px 18px' : '52px 48px 36px'
     const titleSz  = compact ? '16px' : '22px'
     const bodySz   = compact ? '12px' : '14.5px'
@@ -39,6 +40,17 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
           </h2>
         </div>
 
+        {/* 사진 (있을 경우) */}
+        {summaryPhotoUrl && (
+          <div style={{ marginBottom: compact ? 10 : 16, borderRadius: 8, overflow: 'hidden', maxHeight: compact ? 120 : 180 }}>
+            <img
+              src={summaryPhotoUrl}
+              alt="총평 사진"
+              style={{ width: '100%', height: compact ? 120 : 180, objectFit: 'cover', display: 'block' }}
+            />
+          </div>
+        )}
+
         {/* 본문 */}
         <div className="flex-1 overflow-hidden">
           {summaryText ? (
@@ -49,7 +61,7 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
                 lineHeight: bodyLH,
                 color: '#3d342e',
                 display: '-webkit-box',
-                WebkitLineClamp: compact ? 13 : 16,
+                WebkitLineClamp: summaryPhotoUrl ? (compact ? 7 : 10) : (compact ? 13 : 16),
                 WebkitBoxOrient: 'vertical' as const,
                 overflow: 'hidden',
                 wordBreak: 'keep-all',
@@ -63,7 +75,7 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
                 <span style={{ fontSize: compact ? '14px' : '18px', color: '#c7c3bf' }}>✦</span>
               </div>
               <p style={{ fontSize: compact ? '11px' : '12px', color: '#a8a29e', fontStyle: 'italic', textAlign: 'center', lineHeight: 1.8 }}>
-                리더님의 총평이<br />곧 채워질 예정이에요.
+                총평을 기록 페이지에서<br />작성할 수 있어요.
               </p>
             </div>
           )}

@@ -11,12 +11,12 @@ interface PagePhotoLeftProps {
 
 function getGradient(category?: string) {
   if (category && ['선교', '해외탐방'].some(k => category.includes(k)))
-    return 'linear-gradient(150deg, #2A1000 0%, #6A2800 55%, #3A1800 100%)'
+    return 'linear-gradient(150deg, #4A2800 0%, #8A5020 55%, #5A3010 100%)'
   if (category && ['수련회', '캠프'].some(k => category.includes(k)))
-    return 'linear-gradient(150deg, #0E1C36 0%, #2A1060 55%, #0A2040 100%)'
+    return 'linear-gradient(150deg, #3D2B1F 0%, #6B4A30 55%, #4A3020 100%)'
   if (category && category.includes('여행'))
-    return 'linear-gradient(150deg, #0d1f0d 0%, #1e3d1e 50%, #2d5c2d 100%)'
-  return 'linear-gradient(150deg, #0E1C36 0%, #2A1060 55%, #0A2040 100%)'
+    return 'linear-gradient(150deg, #2A3820 0%, #4A6030 50%, #3A5028 100%)'
+  return 'linear-gradient(150deg, #3D2B1F 0%, #6B4A30 55%, #4A3020 100%)'
 }
 
 function getCategoryLabel(category?: string) {

@@ -12,30 +12,50 @@ interface PageEssayRightProps {
 
 function getRuleColor(category?: string) {
   if (category && ['선교', '해외탐방'].some(k => category.includes(k))) return '#C07838'
-  return '#C9A84C'
+  return '#C8A84B'
 }
 
 function getQuoteColors(category?: string) {
   if (category && ['선교', '해외탐방'].some(k => category.includes(k))) {
     return { bg: '#FBF4EC', text: '#884010', ref: '#A05820' }
   }
-  return { bg: '#F5EFE4', text: '#8A6820', ref: '#B09040' }
+  return { bg: '#FBF8EE', text: '#8A6820', ref: '#B09040' }
+}
+
+function getBodyColor(category?: string) {
+  if (category && ['선교', '해외탐방'].some(k => category.includes(k))) return '#7A4010'
+  return '#555'
+}
+
+/** "본문 텍스트 — 마태복음 28:19" → { quote, ref } */
+function parseVerse(verse: string): { quote: string; ref: string | null } {
+  const idx = verse.lastIndexOf(' — ')
+  if (idx !== -1) {
+    return { quote: verse.slice(0, idx).trim(), ref: verse.slice(idx + 3).trim() }
+  }
+  // em-dash 없이 그냥 전체가 본문인 경우
+  return { quote: verse.trim(), ref: null }
 }
 
 const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
   ({ title, bodyText, bibleVerse, quoteText, pageNum, category, compact }, ref) => {
     const ruleClr = getRuleColor(category)
     const qClr = getQuoteColors(category)
+    const bodyClr = getBodyColor(category)
 
     const pad = compact ? '28px 22px' : '38px 32px'
-    const tagSz = compact ? '8px' : '9px'
-    const titleSz = compact ? '14px' : '20px'
-    const bodySz = compact ? '10px' : '12px'
-    const quoteSz = compact ? '9.5px' : '11px'
-    const quoteRefSz = compact ? '8px' : '9.5px'
-    const pageNumSz = compact ? '8px' : '9px'
+    const tagSz     = compact ? '8px'   : '9px'
+    const titleSz   = compact ? '14px'  : '20px'
+    const bodySz    = compact ? '10px'  : '12px'
+    const quoteSz   = compact ? '9.5px' : '11px'
+    const quoteRefSz = compact ? '8px'  : '9.5px'
+    const pageNumSz = compact ? '8px'   : '9px'
 
     const paragraphs = bodyText ? bodyText.split(/\n\n+/).filter(Boolean) : []
+
+    // 성경 말씀 파싱
+    const verseRaw = bibleVerse ?? quoteText
+    const verse = verseRaw ? parseVerse(verseRaw) : null
 
     return (
       <div
@@ -87,7 +107,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
               <p key={i} style={{
                 fontFamily: "'Noto Serif KR', serif",
                 fontSize: bodySz,
-                color: '#3D2B1F',
+                color: bodyClr,
                 lineHeight: 1.95,
                 marginBottom: '10px',
                 wordBreak: 'keep-all',
@@ -107,8 +127,8 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           )}
         </div>
 
-        {/* 성경 구절 */}
-        {bibleVerse && (
+        {/* 성경 말씀 / 인용구 박스 */}
+        {verse && (
           <div style={{
             marginTop: compact ? '12px' : '18px',
             padding: compact ? '10px 12px' : '14px 16px',
@@ -123,29 +143,18 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
               lineHeight: 1.75,
               color: qClr.text,
             }}>
-              &ldquo;{bibleVerse}&rdquo;
+              &ldquo;{verse.quote}&rdquo;
             </p>
-          </div>
-        )}
-
-        {/* 인용문 (성경 구절 없을 때) */}
-        {!bibleVerse && quoteText && (
-          <div style={{
-            marginTop: compact ? '12px' : '18px',
-            padding: compact ? '10px 12px' : '14px 16px',
-            borderRadius: '2px',
-            backgroundColor: qClr.bg,
-            flexShrink: 0,
-          }}>
-            <p style={{
-              fontFamily: "'Noto Serif KR', serif",
-              fontSize: quoteSz,
-              fontStyle: 'italic',
-              lineHeight: 1.75,
-              color: qClr.text,
-            }}>
-              &ldquo;{quoteText}&rdquo;
-            </p>
+            {verse.ref && (
+              <p style={{
+                fontSize: quoteRefSz,
+                color: qClr.ref,
+                marginTop: '6px',
+                letterSpacing: '0.04em',
+              }}>
+                — {verse.ref}
+              </p>
+            )}
           </div>
         )}
 

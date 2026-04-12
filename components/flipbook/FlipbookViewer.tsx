@@ -23,8 +23,10 @@ interface FlipbookViewerProps {
   entries: Record<string, GraceEntry>
   participantName: string
   summaryText?: string | null
+  summaryPhotoUrl?: string | null
   onTap?: () => void
   onPageChange?: (sectionIndex: number) => void
+  forcePortrait?: boolean
 }
 
 function Skeleton() {
@@ -36,19 +38,27 @@ function Skeleton() {
 }
 
 export default function FlipbookViewer({
-  event, sections, entries, participantName, summaryText, onTap, onPageChange
+  event, sections, entries, participantName, summaryText, summaryPhotoUrl, onTap, onPageChange, forcePortrait
 }: FlipbookViewerProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const bookRef = useRef<any>(null)
   const [isMobile, setIsMobile] = useState(false)
-  const [pageW, setPageW] = useState(595)
+  const [pageW, setPageW] = useState(forcePortrait ? 320 : 595)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
     function check() {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
-      setPageW(mobile ? Math.floor(window.innerWidth * 0.88) : 595)
+      if (forcePortrait) {
+        setPageW(Math.min(Math.floor(window.innerWidth * 0.8), 360))
+      } else if (mobile) {
+        setPageW(Math.floor(window.innerWidth * 0.88))
+      } else {
+        // 데스크탑: 2페이지 펼침 기준으로 뷰포트에 여유있게 맞춤
+        const available = window.innerWidth - 120 // 양쪽 여백
+        setPageW(Math.min(Math.floor(available / 2), 520))
+      }
     }
     check()
     window.addEventListener('resize', check)
@@ -56,8 +66,20 @@ export default function FlipbookViewer({
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  function prev() { bookRef.current?.pageFlip().flipPrev() }
-  function next() { bookRef.current?.pageFlip().flipNext() }
+  // 섹션 단위 페이지 점프 (2페이지씩 이동 → 항상 사진+에세이 한 쌍 유지)
+  // 페이지 구조: 0=표지, 1=목차, 2N/2N+1=섹션N(사진/에세이), 마지막=총평, 뒷표지
+  const sectionStarts = [0, 1, ...sections.map((_, i) => 2 + i * 2), 2 + sections.length * 2]
+
+  function prev() {
+    const current = bookRef.current?.pageFlip().getCurrentPageIndex() ?? 0
+    const prevStart = [...sectionStarts].reverse().find(p => p < current) ?? 0
+    bookRef.current?.pageFlip().turnToPage(prevStart)
+  }
+  function next() {
+    const current = bookRef.current?.pageFlip().getCurrentPageIndex() ?? 0
+    const nextStart = sectionStarts.find(p => p > current)
+    if (nextStart !== undefined) bookRef.current?.pageFlip().turnToPage(nextStart)
+  }
 
   function handleFlip(e: { data: number }) {
     const page = e.data
@@ -89,7 +111,7 @@ export default function FlipbookViewer({
         maxHeight={842}
         showCover
         mobileScrollSupport
-        usePortrait={isMobile}
+        usePortrait={forcePortrait ? true : isMobile}
         drawShadow
         flippingTime={600}
         startPage={0}
@@ -145,6 +167,7 @@ export default function FlipbookViewer({
 
         <PageSummary
           summaryText={summaryText ?? null}
+          summaryPhotoUrl={summaryPhotoUrl ?? null}
           eventName={event.name}
           authorName={event.author_name ?? null}
           pageNum={3 + sections.length * 2}
