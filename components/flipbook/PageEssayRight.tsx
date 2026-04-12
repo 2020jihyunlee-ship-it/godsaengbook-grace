@@ -110,7 +110,6 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
                 fontSize: bodySz,
                 color: bodyClr,
                 lineHeight: 2,
-                marginBottom: '12px',
                 wordBreak: 'keep-all',
                 margin: 0,
                 marginBottom: i < paragraphs.length - 1 ? '12px' : 0,
