@@ -164,25 +164,23 @@ export default function EventDetailPage() {
     const { data: profile } = await supabase.from('grace_users').select('name').eq('id', user.id).single()
     const creatorName = profile?.name?.trim() || user.email?.split('@')[0] || '리더'
 
+    // 이미 등록된 리더 참여자 확인
     let participant = participants.find(p => p.session_token === 'creator')
+
     if (!participant) {
-      const { data, error } = await supabase.from('grace_participants').insert({
-        event_id: id,
-        name: creatorName,
-        sub_info: '리더',
-        session_token: 'creator',
-        record_count: 0,
-      }).select().single()
-      if (error) {
-        const { data: existing } = await supabase
-          .from('grace_participants').select('*')
-          .eq('event_id', id).eq('session_token', 'creator').single()
-        participant = existing ?? undefined
-      } else if (data) {
-        participant = data
-        setParticipants(prev => [...prev, data])
+      // 서버 API로 등록 (RLS 우회)
+      const res = await fetch('/api/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: id, name: creatorName, subInfo: '리더', sessionToken: 'creator' }),
+      })
+      const json = await res.json()
+      if (json.participant) {
+        participant = json.participant
+        setParticipants(prev => [...prev, json.participant])
       }
     }
+
     if (participant) {
       localStorage.setItem(`grace_participant_${id}`, JSON.stringify({
         participantId: participant.id,

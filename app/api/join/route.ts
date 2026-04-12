@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: NextRequest) {
-  const { eventId, name, subInfo } = await request.json()
+  const { eventId, name, subInfo, sessionToken } = await request.json()
 
   if (!eventId || !name) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -25,7 +25,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: '이벤트를 찾을 수 없거나 종료되었습니다.' }, { status: 404 })
   }
 
-  const sessionToken = crypto.randomUUID()
+  const token = sessionToken ?? crypto.randomUUID()
+
+  // 이미 같은 session_token이 있으면 기존 것 반환
+  if (sessionToken) {
+    const { data: existing } = await supabase
+      .from('grace_participants')
+      .select('*')
+      .eq('event_id', eventId)
+      .eq('session_token', sessionToken)
+      .maybeSingle()
+    if (existing) return NextResponse.json({ participant: existing })
+  }
 
   const { data: participant, error } = await supabase
     .from('grace_participants')
@@ -33,7 +44,7 @@ export async function POST(request: NextRequest) {
       event_id: eventId,
       name,
       sub_info: subInfo || null,
-      session_token: sessionToken,
+      session_token: token,
       record_count: 0,
     })
     .select()
