@@ -19,7 +19,7 @@ export default function ResetPasswordPage() {
     // PKCE flow: /auth/confirm 에서 코드 교환 → /update-password로 이동
     const supabase = createClient()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/confirm?next=/update-password`,
+      redirectTo: `${window.location.origin}/auth/confirm`,
     })
 
     if (error) {
