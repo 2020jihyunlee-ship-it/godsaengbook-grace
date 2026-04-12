@@ -175,10 +175,13 @@ export default function EventDetailPage() {
         body: JSON.stringify({ eventId: id, name: creatorName, subInfo: '리더', sessionToken: 'creator' }),
       })
       const json = await res.json()
-      if (json.participant) {
-        participant = json.participant
-        setParticipants(prev => [...prev, json.participant])
+      if (!res.ok || !json.participant) {
+        alert(`기록 오류: ${json.error ?? res.status}`)
+        setCreatorJoining(false)
+        return
       }
+      participant = json.participant
+      setParticipants(prev => [...prev, json.participant])
     }
 
     if (participant) {
