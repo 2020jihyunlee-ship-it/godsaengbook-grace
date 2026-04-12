@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { createBrowserClient } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/client'
 import { PageTransition, MBtn } from '@/components/ui/motion'
 
 export default function ResetPasswordPage() {
@@ -16,14 +16,10 @@ export default function ResetPasswordPage() {
     setLoading(true)
     setError('')
 
-    // implicit flow 사용: 이메일 링크가 어느 기기/브라우저에서 열려도 동작
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { auth: { flowType: 'implicit' } }
-    )
+    // PKCE flow: /auth/confirm 에서 코드 교환 → /update-password로 이동
+    const supabase = createClient()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/update-password`,
+      redirectTo: `${window.location.origin}/auth/confirm?next=/update-password`,
     })
 
     if (error) {
@@ -83,7 +79,8 @@ export default function ResetPasswordPage() {
             <MBtn
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-brand-primary text-white text-sm font-medium rounded-lg hover:bg-brand-primary/90 disabled:opacity-50 transition-colors"
+              className="w-full py-2.5 text-white text-sm font-medium rounded-lg disabled:opacity-50 transition-colors"
+              style={{ backgroundColor: '#6B1FAD' }}
             >
               {loading ? '전송 중...' : '재설정 링크 보내기'}
             </MBtn>

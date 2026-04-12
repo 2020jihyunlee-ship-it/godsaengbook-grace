@@ -35,45 +35,45 @@ function LoginForm() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFAF5] px-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7FE] px-4">
         <div className="w-full max-w-sm">
           {/* 헤더 */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-serif font-semibold text-[#3D2B1F]">
-              갓생북 <span className="text-[#C9A84C]">은혜</span>
+            <h1 className="text-2xl font-extrabold text-[#1A0533]">
+              갓생북 <span className="text-[#6B1FAD]">은혜</span>
             </h1>
-            <p className="text-[#8C6E55] mt-1 text-sm">교회 공동체를 위한 무료 기록 플립북</p>
+            <p className="text-[#6B4E8A] mt-1 text-sm">교회 공동체를 위한 무료 기록 플립북</p>
           </div>
 
           <form
             onSubmit={handleLogin}
-            className="bg-white rounded-2xl shadow-sm border border-[#E8D5A3] p-6 space-y-4"
+            className="bg-white rounded-2xl shadow-sm border border-[#D8C2EF] p-6 space-y-4"
           >
             <div>
-              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">이메일</label>
+              <label className="block text-sm font-medium text-[#1A0533] mb-1">이메일</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
+                className="w-full px-3 py-2 border border-[#D8C2EF] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/30 bg-[#FAF7FE]"
                 placeholder="hello@example.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">비밀번호</label>
+              <label className="block text-sm font-medium text-[#1A0533] mb-1">비밀번호</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
+                className="w-full px-3 py-2 border border-[#D8C2EF] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/30 bg-[#FAF7FE]"
                 placeholder="••••••••"
               />
             </div>
 
             <div className="flex justify-end">
-              <Link href="/reset-password" className="text-xs text-[#8C6E55] hover:text-[#C9A84C]">
+              <Link href="/reset-password" className="text-xs text-[#6B4E8A] hover:text-[#6B1FAD]">
                 비밀번호를 잊으셨나요?
               </Link>
             </div>
@@ -89,15 +89,15 @@ function LoginForm() {
             <MBtn
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-[#C9A84C] text-white text-sm font-medium rounded-lg hover:bg-[#A8853A] disabled:opacity-50 transition-colors"
+              className="w-full py-2.5 bg-[#6B1FAD] text-white text-sm font-medium rounded-lg hover:bg-[#5A1590] disabled:opacity-50 transition-colors"
             >
               {loading ? '로그인 중...' : '로그인'}
             </MBtn>
           </form>
 
-          <p className="text-center text-sm text-[#8C6E55] mt-4">
+          <p className="text-center text-sm text-[#6B4E8A] mt-4">
             계정이 없으신가요?{' '}
-            <Link href="/signup" className="text-[#C9A84C] font-medium hover:underline">
+            <Link href="/signup" className="text-[#6B1FAD] font-medium hover:underline">
               무료 회원가입
             </Link>
           </p>

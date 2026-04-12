@@ -2,33 +2,35 @@
 
 /* ── 갓생북 은혜 브랜드 CSS 변수 ── */
 :root {
-  --background:    #FDFAF5;
-  --foreground:    #3D2B1F;
+  --background:      #FAF7FE;
+  --foreground:      #1A0533;
 
-  --brand-gold:    #C9A84C;
-  --brand-gold-dk: #A8853A;
-  --brand-gold-lt: #E8D5A3;
-  --brand-cream:   #F5EFE4;
-  --brand-text:    #3D2B1F;
-  --brand-muted:   #8C6E55;
-  --brand-divider: rgba(201,168,76,0.2);
-  --brand-surface: #FDFAF5;
+  --brand-purple:    #6B1FAD;
+  --brand-purple-dk: #5A1590;
+  --brand-purple-lt: #F0E8FA;
+  --brand-purple-md: #D8C2EF;
+  --brand-gold:      #C9A84C;
+  --brand-gold-dk:   #A8853A;
+  --brand-muted:     #6B4E8A;
+  --brand-surface:   #FAF7FE;
 }
 
 /* ── Tailwind v4 @theme ── */
 @theme inline {
-  --color-background:   var(--background);
-  --color-foreground:   var(--foreground);
-  --color-gold:         var(--brand-gold);
-  --color-gold-dk:      var(--brand-gold-dk);
-  --color-gold-lt:      var(--brand-gold-lt);
-  --color-cream:        var(--brand-cream);
-  --color-brand-muted:  var(--brand-muted);
-  --color-brand-surface: var(--brand-surface);
+  --color-background:      var(--background);
+  --color-foreground:      var(--foreground);
+  --color-brand-purple:    var(--brand-purple);
+  --color-brand-purple-dk: var(--brand-purple-dk);
+  --color-brand-purple-lt: var(--brand-purple-lt);
+  --color-brand-purple-md: var(--brand-purple-md);
+  --color-gold:            var(--brand-gold);
+  --color-gold-dk:         var(--brand-gold-dk);
+  --color-brand-muted:     var(--brand-muted);
+  --color-brand-surface:   var(--brand-surface);
 
   --font-sans:    'Noto Sans KR', sans-serif;
   --font-serif:   'Noto Serif KR', serif;
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Inter', sans-serif;
 
   --radius-card:  16px;
   --radius-modal: 24px;
@@ -36,8 +38,8 @@
 
 /* ── CTA Pulse ── */
 @keyframes cta-pulse {
-  0%, 100% { box-shadow: 0 0 0 0px rgba(201,168,76,0); }
-  50%       { box-shadow: 0 0 0 8px rgba(201,168,76,0.18); }
+  0%, 100% { box-shadow: 0 0 0 0px rgba(107,31,173,0); }
+  50%       { box-shadow: 0 0 0 8px rgba(107,31,173,0.18); }
 }
 .cta-pulse:not(:disabled) {
   animation: cta-pulse 2.4s ease-in-out infinite;
@@ -60,5 +62,13 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: var(--loaded-sans), 'Noto Sans KR', sans-serif;
+}
+
+/* ── next/font 강제 적용 ── */
+.font-serif, [class*="font-serif"] {
+  font-family: var(--loaded-serif), 'Noto Serif KR', serif !important;
+}
+.font-sans, [class*="font-sans"] {
+  font-family: var(--loaded-sans), 'Noto Sans KR', sans-serif !important;
 }

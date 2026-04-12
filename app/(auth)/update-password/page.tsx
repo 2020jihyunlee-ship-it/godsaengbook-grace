@@ -15,17 +15,30 @@ export default function UpdatePasswordPage() {
 
   useEffect(() => {
     const supabase = createClient()
-    // implicit flow: URL 해시에서 recovery 세션 감지
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
+
+    // PKCE flow: /auth/confirm 코드 교환 후 쿠키에 세션이 있는 상태로 도착
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
         setReady(true)
+        return
+      }
+      // 세션 없으면 PASSWORD_RECOVERY 이벤트 대기
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
+          setReady(true)
+        }
+      })
+      // 5초 내 세션 없으면 만료 처리
+      const timeout = setTimeout(() => {
+        subscription.unsubscribe()
+        window.location.href = '/login?error=link_expired'
+      }, 5000)
+
+      return () => {
+        subscription.unsubscribe()
+        clearTimeout(timeout)
       }
     })
-    // 이미 세션이 있는 경우(재방문 등)도 허용
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true)
-    })
-    return () => subscription.unsubscribe()
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -102,7 +115,8 @@ export default function UpdatePasswordPage() {
             <MBtn
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-brand-primary text-white text-sm font-medium rounded-lg hover:bg-brand-primary/90 disabled:opacity-50 transition-colors"
+              className="w-full py-2.5 text-white text-sm font-medium rounded-lg disabled:opacity-50 transition-colors"
+              style={{ backgroundColor: '#6B1FAD' }}
             >
               {loading ? '변경 중...' : '비밀번호 변경'}
             </MBtn>

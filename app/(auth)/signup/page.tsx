@@ -63,15 +63,15 @@ function SignupForm() {
   if (done) {
     return (
       <PageTransition>
-        <div className="min-h-screen flex items-center justify-center bg-[#FDFAF5] px-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#FAF7FE] px-4">
           <div className="w-full max-w-sm text-center">
             <p className="text-5xl mb-4">📬</p>
-            <h2 className="text-xl font-semibold text-[#3D2B1F] mb-2">이메일을 확인해주세요</h2>
-            <p className="text-[#8C6E55] text-sm mb-6 leading-relaxed">
+            <h2 className="text-xl font-semibold text-[#1A0533] mb-2">이메일을 확인해주세요</h2>
+            <p className="text-[#6B4E8A] text-sm mb-6 leading-relaxed">
               <strong>{email}</strong>로 인증 링크를 보냈어요.<br />
               메일함을 확인하고 링크를 클릭하면 바로 시작할 수 있어요.
             </p>
-            <Link href="/login" className="text-[#C9A84C] text-sm font-medium hover:underline">
+            <Link href="/login" className="text-[#6B1FAD] text-sm font-medium hover:underline">
               로그인 페이지로 →
             </Link>
           </div>
@@ -82,14 +82,14 @@ function SignupForm() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFAF5] px-4 py-10">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7FE] px-4 py-10">
         <div className="w-full max-w-sm">
           {/* 헤더 */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-serif font-semibold text-[#3D2B1F]">
-              갓생북 <span className="text-[#C9A84C]">은혜</span>
+            <h1 className="text-2xl font-extrabold text-[#1A0533]">
+              갓생북 <span className="text-[#6B1FAD]">은혜</span>
             </h1>
-            <p className="text-[#8C6E55] mt-1 text-sm">교회 공동체를 위한 무료 기록 플립북</p>
+            <p className="text-[#6B4E8A] mt-1 text-sm">교회 공동체를 위한 무료 기록 플립북</p>
           </div>
 
           {/* 계정 타입 선택 */}
@@ -104,15 +104,15 @@ function SignupForm() {
                 onClick={() => setAccountType(t.value as 'personal' | 'team')}
                 className={`p-4 rounded-2xl border-2 text-left transition-all ${
                   accountType === t.value
-                    ? 'border-[#C9A84C] bg-[#F5EFE4]'
-                    : 'border-[#E8D5A3] bg-white'
+                    ? 'border-[#6B1FAD] bg-[#F0E8FA]'
+                    : 'border-[#D8C2EF] bg-white'
                 }`}
               >
                 <p className="text-xl mb-1">{t.icon}</p>
-                <p className={`text-sm font-semibold ${accountType === t.value ? 'text-[#A8853A]' : 'text-[#3D2B1F]'}`}>
+                <p className={`text-sm font-semibold ${accountType === t.value ? 'text-[#5A1590]' : 'text-[#1A0533]'}`}>
                   {t.label}
                 </p>
-                <p className="text-xs text-[#8C6E55] mt-0.5">{t.desc}</p>
+                <p className="text-xs text-[#6B4E8A] mt-0.5">{t.desc}</p>
               </button>
             ))}
           </div>
@@ -120,58 +120,58 @@ function SignupForm() {
           {/* 폼 */}
           <form
             onSubmit={handleSignup}
-            className="bg-white rounded-2xl shadow-sm border border-[#E8D5A3] p-6 space-y-4"
+            className="bg-white rounded-2xl shadow-sm border border-[#D8C2EF] p-6 space-y-4"
           >
             {/* 이름 */}
             <div>
-              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">이름</label>
+              <label className="block text-sm font-medium text-[#1A0533] mb-1">이름</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
+                className="w-full px-3 py-2 border border-[#D8C2EF] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/30 bg-[#FAF7FE]"
                 placeholder="홍길동"
               />
             </div>
 
             {/* 소속 교회 */}
             <div>
-              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">
-                소속 교회 <span className="text-[#8C6E55] font-normal">(선택)</span>
+              <label className="block text-sm font-medium text-[#1A0533] mb-1">
+                소속 교회 <span className="text-[#6B4E8A] font-normal">(선택)</span>
               </label>
               <input
                 type="text"
                 value={churchName}
                 onChange={(e) => setChurchName(e.target.value)}
-                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
+                className="w-full px-3 py-2 border border-[#D8C2EF] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/30 bg-[#FAF7FE]"
                 placeholder="예) 한국중앙교회"
               />
             </div>
 
             {/* 이메일 */}
             <div>
-              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">이메일</label>
+              <label className="block text-sm font-medium text-[#1A0533] mb-1">이메일</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
+                className="w-full px-3 py-2 border border-[#D8C2EF] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/30 bg-[#FAF7FE]"
                 placeholder="hello@example.com"
               />
             </div>
 
             {/* 비밀번호 */}
             <div>
-              <label className="block text-sm font-medium text-[#3D2B1F] mb-1">비밀번호</label>
+              <label className="block text-sm font-medium text-[#1A0533] mb-1">비밀번호</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-3 py-2 border border-[#E8D5A3] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
+                className="w-full px-3 py-2 border border-[#D8C2EF] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/30 bg-[#FAF7FE]"
                 placeholder="6자 이상"
               />
             </div>
@@ -182,15 +182,15 @@ function SignupForm() {
                 type="checkbox"
                 checked={marketingConsent}
                 onChange={(e) => setMarketingConsent(e.target.checked)}
-                className="mt-0.5 accent-[#C9A84C]"
+                className="mt-0.5 accent-[#6B1FAD]"
               />
-              <span className="text-xs text-[#8C6E55] leading-relaxed">
+              <span className="text-xs text-[#6B4E8A] leading-relaxed">
                 갓생북 은혜의 새 기능 및 업데이트 소식을 이메일로 받겠습니다.{' '}
-                <span className="text-[#A8853A]">(선택)</span>
+                <span className="text-[#5A1590]">(선택)</span>
               </span>
             </label>
 
-            <p className="text-xs text-[#8C6E55]">
+            <p className="text-xs text-[#6B4E8A]">
               서비스 공지를 위해 이메일 주소는 수집됩니다.
             </p>
 
@@ -199,15 +199,15 @@ function SignupForm() {
             <MBtn
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-[#C9A84C] text-white text-sm font-medium rounded-lg hover:bg-[#A8853A] disabled:opacity-50 transition-colors"
+              className="w-full py-2.5 bg-[#6B1FAD] text-white text-sm font-medium rounded-lg hover:bg-[#5A1590] disabled:opacity-50 transition-colors"
             >
               {loading ? '가입 중...' : '무료로 시작하기'}
             </MBtn>
           </form>
 
-          <p className="text-center text-sm text-[#8C6E55] mt-4">
+          <p className="text-center text-sm text-[#6B4E8A] mt-4">
             이미 계정이 있으신가요?{' '}
-            <Link href="/login" className="text-[#C9A84C] font-medium hover:underline">
+            <Link href="/login" className="text-[#6B1FAD] font-medium hover:underline">
               로그인
             </Link>
           </p>
