@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import PageCover from './PageCover'
 import PageTableOfContents from './PageTableOfContents'
@@ -37,6 +37,174 @@ function Skeleton() {
   )
 }
 
+// ── 모바일 카드뷰 (갓생북 메인 레퍼런스 스타일) ──
+function MobileCardView({
+  event, sections, entries, participantName, summaryText, summaryPhotoUrl, onPageChange,
+}: Omit<FlipbookViewerProps, 'onTap' | 'forcePortrait'>) {
+  // 페이지 목록: 표지(0), 목차(1), [사진i(2+i*2), 글i(3+i*2)], 총평(2+n*2)
+  const totalPages = 2 + sections.length * 2 + 1
+  const [idx, setIdx] = useState(0)
+  const touchStartX = useRef<number | null>(null)
+
+  const go = useCallback((dir: 1 | -1) => {
+    setIdx(i => Math.max(0, Math.min(totalPages - 1, i + dir)))
+  }, [totalPages])
+
+  useEffect(() => {
+    // onPageChange 콜백 호출
+    if (idx >= 2 && idx < 2 + sections.length * 2) {
+      onPageChange?.(Math.floor((idx - 2) / 2))
+    } else {
+      onPageChange?.(-1)
+    }
+  }, [idx, sections.length, onPageChange])
+
+  function renderPage() {
+    if (idx === 0) {
+      return (
+        <PageCover
+          eventName={event.name}
+          category={event.category}
+          authorName={event.author_name ?? null}
+          datesStart={event.dates_start}
+          datesEnd={event.dates_end}
+          participantName={participantName}
+          coverPhotoUrl={null}
+          compact={false}
+        />
+      )
+    }
+    if (idx === 1) {
+      return <PageTableOfContents sections={sections} category={event.category} compact={false} />
+    }
+    if (idx === totalPages - 1) {
+      return (
+        <PageSummary
+          summaryText={summaryText ?? null}
+          summaryPhotoUrl={summaryPhotoUrl ?? null}
+          eventName={event.name}
+          authorName={event.author_name ?? null}
+          pageNum={2 + sections.length * 2}
+          compact={false}
+        />
+      )
+    }
+    const sectionIdx = Math.floor((idx - 2) / 2)
+    const isPhoto = (idx - 2) % 2 === 0
+    const section = sections[sectionIdx]
+    const entry = entries[section?.id ?? '']
+    const pageNum = 3 + sectionIdx * 2
+
+    if (isPhoto) {
+      return (
+        <PagePhotoLeft
+          photoUrl={entry?.photo_url ?? null}
+          caption={section?.title ?? ''}
+          pageNum={pageNum}
+          category={event.category}
+          date={section?.section_date ?? event.dates_start}
+        />
+      )
+    }
+    return (
+      <PageEssayRight
+        title={section?.title ?? ''}
+        bodyText={entry?.body_text ?? null}
+        bibleVerse={entry?.bible_verse ?? null}
+        quoteText={entry?.quote_text ?? null}
+        pageNum={pageNum + 1}
+        category={event.category}
+        compact={false}
+      />
+    )
+  }
+
+  return (
+    <div
+      className="flex-1 flex flex-col items-center justify-between"
+      style={{ backgroundColor: '#EDE8E2', padding: '20px 16px 24px' }}
+    >
+      {/* 페이지 카드 */}
+      <div
+        style={{ flex: 1, width: '100%', maxWidth: 380, display: 'flex', alignItems: 'center' }}
+        onTouchStart={e => { touchStartX.current = e.touches[0].clientX }}
+        onTouchEnd={e => {
+          if (touchStartX.current === null) return
+          const dx = e.changedTouches[0].clientX - touchStartX.current
+          if (dx < -40) go(1)
+          else if (dx > 40) go(-1)
+          touchStartX.current = null
+        }}
+      >
+        <div style={{
+          width: '100%',
+          aspectRatio: '3 / 4.5',
+          borderRadius: 16,
+          overflow: 'hidden',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
+          position: 'relative',
+        }}>
+          {renderPage()}
+        </div>
+      </div>
+
+      {/* 네비게이션 */}
+      <div style={{ width: '100%', maxWidth: 380, display: 'flex', alignItems: 'center', gap: 10, marginTop: 20 }}>
+        <button
+          onClick={() => go(-1)}
+          disabled={idx === 0}
+          style={{
+            width: 64, height: 64, borderRadius: 16,
+            backgroundColor: '#fff',
+            border: 'none',
+            color: idx === 0 ? '#CCC' : '#C9A84C',
+            fontSize: 22, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            cursor: idx === 0 ? 'default' : 'pointer',
+            flexShrink: 0,
+          }}
+        >←</button>
+
+        {/* 도트 인디케이터 */}
+        <div style={{ flex: 1, display: 'flex', gap: 5, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <div
+              key={i}
+              onClick={() => setIdx(i)}
+              style={{
+                width: i === idx ? 16 : 6, height: 6,
+                borderRadius: 3,
+                backgroundColor: i === idx ? '#C9A84C' : 'rgba(0,0,0,0.18)',
+                transition: 'all 0.2s',
+                cursor: 'pointer',
+              }}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => go(1)}
+          disabled={idx === totalPages - 1}
+          style={{
+            width: 64, height: 64, borderRadius: 16,
+            backgroundColor: '#fff',
+            border: 'none',
+            color: idx === totalPages - 1 ? '#CCC' : '#C9A84C',
+            fontSize: 22, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            cursor: idx === totalPages - 1 ? 'default' : 'pointer',
+            flexShrink: 0,
+          }}
+        >→</button>
+      </div>
+      <p style={{ fontSize: 11, color: 'rgba(0,0,0,0.35)', marginTop: 8, letterSpacing: '0.04em' }}>← 스와이프해서 넘기기 →</p>
+    </div>
+  )
+}
+
+// ── 메인 FlipbookViewer ──
 export default function FlipbookViewer({
   event, sections, entries, participantName, summaryText, summaryPhotoUrl, onTap, onPageChange, forcePortrait
 }: FlipbookViewerProps) {
@@ -51,24 +219,20 @@ export default function FlipbookViewer({
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
       if (forcePortrait) {
-        setPageW(Math.min(Math.floor(window.innerWidth * 0.8), 360))
-      } else if (mobile) {
-        setPageW(Math.floor(window.innerWidth * 0.88))
+        setPageW(Math.min(Math.floor(window.innerWidth * 0.78), 340))
       } else {
-        // 데스크탑: 2페이지 펼침 기준으로 뷰포트에 여유있게 맞춤
-        const available = window.innerWidth - 120 // 양쪽 여백
-        setPageW(Math.min(Math.floor(available / 2), 520))
+        const available = window.innerWidth - 160
+        setPageW(Math.min(Math.floor(available / 2), 480))
       }
     }
     check()
     window.addEventListener('resize', check)
     document.fonts.ready.then(() => setReady(true))
     return () => window.removeEventListener('resize', check)
-  }, [])
+  }, [forcePortrait])
 
-  // 페이지 구조: 0=표지(showCover단독), 1=목차, 2=빈칸(쌍 맞춤), 3=사진1, 4=글1, 5=사진2, 6=글2, ...
-  // showCover=true → 표지(0)는 단독 표시 → 1+2, 3+4, 5+6 쌍으로 묶임
-  // 빈칸(2)을 끼워야 사진+글이 같은 쌍이 됨
+  // 데스크탑 전용: 섹션 단위 페이지 점프
+  // 페이지 구조: 0=표지(showCover단독), 1=목차, 2=빈칸, 3=사진1, 4=글1, 5=사진2, 6=글2...
   const sectionStarts = [0, 1, ...sections.map((_, i) => 3 + i * 2), 3 + sections.length * 2]
 
   function prev() {
@@ -84,19 +248,35 @@ export default function FlipbookViewer({
 
   function handleFlip(e: { data: number }) {
     const page = e.data
-    // page 0=표지, 1=목차, 2=빈칸, 3~=섹션 페이지쌍(사진/글)
     const sectionIndex = page >= 3 ? Math.floor((page - 3) / 2) : -1
     onPageChange?.(sectionIndex)
   }
 
   if (!ready) return <Skeleton />
 
+  // 모바일: 카드뷰 (갓생북 메인 레퍼런스 스타일)
+  if (isMobile && !forcePortrait) {
+    return (
+      <MobileCardView
+        event={event}
+        sections={sections}
+        entries={entries}
+        participantName={participantName}
+        summaryText={summaryText}
+        summaryPhotoUrl={summaryPhotoUrl}
+        onPageChange={onPageChange}
+      />
+    )
+  }
+
+  // 데스크탑 / forcePortrait: react-pageflip 책 펼침 뷰
   const W = pageW
   const H = Math.floor(pageW * 1.414)
 
   return (
     <div
-      className="flex-1 flex flex-col items-center justify-center gap-4"
+      className="flex-1 flex flex-col items-center justify-center gap-6"
+      style={{ padding: '24px 0 32px', backgroundColor: '#F5EFE4' }}
       onClick={onTap}
     >
       <HTMLFlipBook
@@ -110,7 +290,7 @@ export default function FlipbookViewer({
         maxHeight={842}
         showCover
         mobileScrollSupport
-        usePortrait={forcePortrait ? true : isMobile}
+        usePortrait={forcePortrait ? true : false}
         drawShadow
         flippingTime={600}
         startPage={0}
@@ -126,7 +306,6 @@ export default function FlipbookViewer({
         style={{}}
         onFlip={handleFlip}
       >
-        {/* 표지 — 항상 그라데이션 디자인, 섹션 사진 사용 안 함 */}
         <PageCover
           eventName={event.name}
           category={event.category}
@@ -135,17 +314,14 @@ export default function FlipbookViewer({
           datesEnd={event.dates_end}
           participantName={participantName}
           coverPhotoUrl={null}
-          compact={isMobile}
+          compact={false}
         />
-        {/* 목차 */}
-        <PageTableOfContents sections={sections} category={event.category} compact={isMobile} />
-        {/* 빈 페이지 — showCover로 인한 쌍 오프셋 보정 (이 페이지는 목차 뒷면) */}
-        <div className="w-full h-full bg-[#FAFAF8]" />
+        <PageTableOfContents sections={sections} category={event.category} compact={false} />
+        <div className="w-full h-full" style={{ backgroundColor: '#FAFAF8' }} />
 
         {sections.map((section, i) => {
           const entry = entries[section.id]
           const pageNum = 3 + i * 2
-
           return [
             <PagePhotoLeft
               key={`photo-${section.id}`}
@@ -163,7 +339,7 @@ export default function FlipbookViewer({
               quoteText={entry?.quote_text ?? null}
               pageNum={pageNum + 1}
               category={event.category}
-              compact={isMobile}
+              compact={false}
             />,
           ]
         }).flat()}
@@ -174,7 +350,7 @@ export default function FlipbookViewer({
           eventName={event.name}
           authorName={event.author_name ?? null}
           pageNum={3 + sections.length * 2}
-          compact={isMobile}
+          compact={false}
         />
 
         <div className="bg-stone-900 w-full h-full flex items-center justify-center select-none">
@@ -182,20 +358,16 @@ export default function FlipbookViewer({
         </div>
       </HTMLFlipBook>
 
-      {/* 화살표 네비게이션 */}
+      {/* 데스크탑 화살표 */}
       <div className="flex items-center gap-10">
         <button
           onClick={e => { e.stopPropagation(); prev() }}
-          className="w-10 h-10 rounded-full bg-white/80 border border-stone-200 text-stone-500 flex items-center justify-center text-xl shadow-sm"
-        >
-          ‹
-        </button>
+          className="w-12 h-12 rounded-2xl bg-white border border-stone-200 text-[#C9A84C] flex items-center justify-center text-xl shadow-sm hover:shadow-md transition-shadow"
+        >‹</button>
         <button
           onClick={e => { e.stopPropagation(); next() }}
-          className="w-10 h-10 rounded-full bg-white/80 border border-stone-200 text-stone-500 flex items-center justify-center text-xl shadow-sm"
-        >
-          ›
-        </button>
+          className="w-12 h-12 rounded-2xl bg-white border border-stone-200 text-[#C9A84C] flex items-center justify-center text-xl shadow-sm hover:shadow-md transition-shadow"
+        >›</button>
       </div>
     </div>
   )

@@ -43,12 +43,12 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
     const qClr = getQuoteColors(category)
     const bodyClr = getBodyColor(category)
 
-    const pad = compact ? '32px 26px 44px' : '38px 32px 48px'
-    const tagSz      = '10px'
-    const titleSz    = compact ? '17px' : '20px'
-    const bodySz     = compact ? '13px' : '13.5px'
-    const quoteSz    = compact ? '11px' : '12px'
-    const quoteRefSz = compact ? '10px' : '10.5px'
+    const pad = compact ? '36px 28px 48px' : '40px 32px 52px'
+    const tagSz      = compact ? '10px' : '11px'
+    const titleSz    = compact ? '18px' : '24px'
+    const bodySz     = compact ? '13px' : '15px'
+    const quoteSz    = compact ? '11px' : '13px'
+    const quoteRefSz = compact ? '10px' : '11px'
     const pageNumSz  = '9px'
 
     const paragraphs = bodyText ? bodyText.split(/\n\n+/).filter(Boolean) : []
