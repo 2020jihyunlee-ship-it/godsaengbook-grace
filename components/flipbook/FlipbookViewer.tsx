@@ -66,9 +66,10 @@ export default function FlipbookViewer({
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  // 섹션 단위 페이지 점프 (2페이지씩 이동 → 항상 사진+에세이 한 쌍 유지)
-  // 페이지 구조: 0=표지, 1=목차, 2N/2N+1=섹션N(사진/에세이), 마지막=총평, 뒷표지
-  const sectionStarts = [0, 1, ...sections.map((_, i) => 2 + i * 2), 2 + sections.length * 2]
+  // 페이지 구조: 0=표지(showCover단독), 1=목차, 2=빈칸(쌍 맞춤), 3=사진1, 4=글1, 5=사진2, 6=글2, ...
+  // showCover=true → 표지(0)는 단독 표시 → 1+2, 3+4, 5+6 쌍으로 묶임
+  // 빈칸(2)을 끼워야 사진+글이 같은 쌍이 됨
+  const sectionStarts = [0, 1, ...sections.map((_, i) => 3 + i * 2), 3 + sections.length * 2]
 
   function prev() {
     const current = bookRef.current?.pageFlip().getCurrentPageIndex() ?? 0
@@ -83,12 +84,10 @@ export default function FlipbookViewer({
 
   function handleFlip(e: { data: number }) {
     const page = e.data
-    // page 0=표지, 1=목차, 2~=섹션 페이지쌍
-    const sectionIndex = page >= 2 ? Math.floor((page - 2) / 2) : -1
+    // page 0=표지, 1=목차, 2=빈칸, 3~=섹션 페이지쌍(사진/글)
+    const sectionIndex = page >= 3 ? Math.floor((page - 3) / 2) : -1
     onPageChange?.(sectionIndex)
   }
-
-  const coverPhoto = sections.map(s => entries[s.id]?.photo_url).find(Boolean) ?? null
 
   if (!ready) return <Skeleton />
 
@@ -127,6 +126,7 @@ export default function FlipbookViewer({
         style={{}}
         onFlip={handleFlip}
       >
+        {/* 표지 — 항상 그라데이션 디자인, 섹션 사진 사용 안 함 */}
         <PageCover
           eventName={event.name}
           category={event.category}
@@ -134,10 +134,13 @@ export default function FlipbookViewer({
           datesStart={event.dates_start}
           datesEnd={event.dates_end}
           participantName={participantName}
-          coverPhotoUrl={coverPhoto}
+          coverPhotoUrl={null}
           compact={isMobile}
         />
+        {/* 목차 */}
         <PageTableOfContents sections={sections} category={event.category} compact={isMobile} />
+        {/* 빈 페이지 — showCover로 인한 쌍 오프셋 보정 (이 페이지는 목차 뒷면) */}
+        <div className="w-full h-full bg-[#FAFAF8]" />
 
         {sections.map((section, i) => {
           const entry = entries[section.id]
