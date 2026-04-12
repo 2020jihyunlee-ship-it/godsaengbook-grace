@@ -423,7 +423,7 @@ export default function RecordPage() {
               </div>
               {photoPreview ? (
                 <div className="relative">
-                  <img src={photoPreview} alt="첨부 사진" className="w-full rounded-xl object-cover max-h-64" />
+                  <img src={photoPreview} alt="첨부 사진" className="w-full rounded-xl object-cover" style={{ aspectRatio: '3/4' }} />
                   {isFirstSection && (
                     <div className="absolute top-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">표지 배경</div>
                   )}
