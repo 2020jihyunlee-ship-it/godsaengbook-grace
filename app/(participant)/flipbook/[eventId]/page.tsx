@@ -102,6 +102,7 @@ export default function FlipbookPage() {
         ...(prev[editingSection.id] ?? {} as GraceEntry),
         body_text: editText,
         bible_verse: editBible || null,
+        updated_at: new Date().toISOString(),
       },
     }))
     setSaving(false)
@@ -153,8 +154,9 @@ export default function FlipbookPage() {
         <div style={{ width: 32 }} />
       </header>
 
-      {/* 플립북 */}
+      {/* 플립북 — entries가 바뀌면 key가 바뀌어 재마운트됨 */}
       <FlipbookViewer
+        key={Object.values(entries).map(e => `${e.id}:${e.updated_at ?? ''}`).join('|') || 'empty'}
         event={event}
         sections={sections}
         entries={entries}
