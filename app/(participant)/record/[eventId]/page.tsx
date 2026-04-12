@@ -46,7 +46,8 @@ export default function RecordPage() {
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [error, setError] = useState('')
 
-  const photoRef = useRef<HTMLInputElement>(null)
+  const cameraRef = useRef<HTMLInputElement>(null)
+  const galleryRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -411,16 +412,25 @@ export default function RecordPage() {
                     className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center text-sm">×</button>
                 </div>
               ) : (
-                <button onClick={() => photoRef.current?.click()}
-                  className="w-full py-8 rounded-2xl border-2 border-dashed flex flex-col items-center gap-2 active:bg-[#F5EFE4] transition-colors"
-                  style={{ borderColor: isFirstSection ? '#C9A84C' : '#E8D5A3' }}>
-                  <span className="text-2xl">📷</span>
-                  <span className="text-xs text-[#8C6E55]">
-                    {isFirstSection ? '표지 배경이 될 사진을 올려주세요' : '카메라 또는 앨범에서 선택'}
-                  </span>
-                </button>
+                <div className="flex gap-2">
+                  <button onClick={() => cameraRef.current?.click()}
+                    className="flex-1 py-6 rounded-2xl border-2 border-dashed flex flex-col items-center gap-1.5 active:bg-[#F5EFE4] transition-colors"
+                    style={{ borderColor: isFirstSection ? '#C9A84C' : '#E8D5A3' }}>
+                    <span className="text-xl">📷</span>
+                    <span className="text-xs text-[#8C6E55]">촬영하기</span>
+                  </button>
+                  <button onClick={() => galleryRef.current?.click()}
+                    className="flex-1 py-6 rounded-2xl border-2 border-dashed flex flex-col items-center gap-1.5 active:bg-[#F5EFE4] transition-colors"
+                    style={{ borderColor: isFirstSection ? '#C9A84C' : '#E8D5A3' }}>
+                    <span className="text-xl">🖼️</span>
+                    <span className="text-xs text-[#8C6E55]">앨범 / 파일</span>
+                  </button>
+                </div>
               )}
-              <input ref={photoRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoChange} />
+              {/* 카메라 전용 (모바일 직접 촬영) */}
+              <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoChange} />
+              {/* 갤러리 / 파일 선택 (앨범, 노트북 파일 등) */}
+              <input ref={galleryRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
             </div>
 
             {/* ② 가이드 질문 */}

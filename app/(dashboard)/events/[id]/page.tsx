@@ -164,15 +164,17 @@ export default function EventDetailPage() {
     const { data: profile } = await supabase.from('grace_users').select('name').eq('id', user.id).single()
     const creatorName = profile?.name?.trim() || user.email?.split('@')[0] || '리더'
 
+    const creatorToken = `creator_${id}`
+
     // 이미 등록된 리더 참여자 확인
-    let participant = participants.find(p => p.session_token === 'creator')
+    let participant = participants.find(p => p.session_token === creatorToken)
 
     if (!participant) {
       // 서버 API로 등록 (RLS 우회)
       const res = await fetch('/api/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId: id, name: creatorName, subInfo: '리더', sessionToken: 'creator' }),
+        body: JSON.stringify({ eventId: id, name: creatorName, subInfo: '리더', sessionToken: creatorToken }),
       })
       const json = await res.json()
       if (!res.ok || !json.participant) {
@@ -188,7 +190,7 @@ export default function EventDetailPage() {
       localStorage.setItem(`grace_participant_${id}`, JSON.stringify({
         participantId: participant.id,
         name: participant.name,
-        sessionToken: 'creator',
+        sessionToken: creatorToken,
       }))
       router.push(`/record/${id}`)
     }
