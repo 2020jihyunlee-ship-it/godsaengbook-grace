@@ -131,39 +131,6 @@ export default function RecordPage() {
     e.target.value = ''
   }
 
-  async function handleCropConfirm(croppedFile: File) {
-    const localUrl = URL.createObjectURL(croppedFile)
-    setPhotoPreview(localUrl)
-    setCropSrc(null)
-    if (!session || !selectedSection) { setPhotoFile(croppedFile); return }
-
-    // 크롭 확인 즉시 스토리지에 업로드
-    const supabase = createClient()
-    const path = `grace_entries/${session.participantId}/${selectedSection.id}.jpg`
-    const { error: uploadErr } = await supabase.storage
-      .from('photos').upload(path, croppedFile, { upsert: true })
-    if (uploadErr) { setPhotoFile(croppedFile); return } // 실패 시 파일 보관
-
-    const { data } = supabase.storage.from('photos').getPublicUrl(path)
-    const photoUrl = data.publicUrl
-
-    // DB에 photo_url 즉시 반영
-    const existing = existingEntries[selectedSection.id]
-    if (existing) {
-      await supabase.from('grace_entries').update({ photo_url: photoUrl, updated_at: new Date().toISOString() }).eq('id', existing.id)
-      setExistingEntries(prev => ({ ...prev, [selectedSection.id]: { ...existing, photo_url: photoUrl } }))
-    } else {
-      const { data: newEntry } = await supabase.from('grace_entries').insert({
-        event_id: eventId, section_id: selectedSection.id,
-        participant_id: session.participantId,
-        photo_url: photoUrl, is_draft: true,
-      }).select().single()
-      if (newEntry) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: newEntry }))
-    }
-    setPhotoPreview(photoUrl)
-    setPhotoFile(null)
-  }
-
   // 공통 저장 헬퍼 (서버 API 경유 → RLS 우회)
   async function saveEntry({
     sectionId, bodyText: bt, bibleVerse: bv, quoteText: qt, photoUrl, isDraft,
@@ -193,6 +160,29 @@ export default function RecordPage() {
     const json = await res.json()
     if (!res.ok) throw new Error(json.error ?? '저장 실패')
     return json.entry
+  }
+
+  async function uploadPhoto(file: File, path: string): Promise<string | null> {
+    const form = new FormData()
+    form.append('file', file)
+    form.append('path', path)
+    const res = await fetch('/api/upload-photo', { method: 'POST', body: form })
+    if (!res.ok) return null
+    return (await res.json()).url ?? null
+  }
+
+  async function handleCropConfirm(croppedFile: File) {
+    setPhotoPreview(URL.createObjectURL(croppedFile))
+    setCropSrc(null)
+    if (!session || !selectedSection) return
+    const path = `grace_entries/${session.participantId}/${selectedSection.id}.jpg`
+    const photoUrl = await uploadPhoto(croppedFile, path)
+    if (!photoUrl) return
+    const saved = await saveEntry({
+      sectionId: selectedSection.id, bodyText, bibleVerse, quoteText, photoUrl, isDraft: true,
+    }).catch(() => null)
+    if (saved) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: saved }))
+    setPhotoPreview(photoUrl)
   }
 
   // 자동저장 트리거 (입력 멈춤 2초 후)
@@ -607,7 +597,15 @@ export default function RecordPage() {
           {summaryCropSrc && (
             <PhotoCropModal
               imageSrc={summaryCropSrc}
-              onConfirm={file => { setSummaryPhotoFile(file); setSummaryPhotoPreview(URL.createObjectURL(file)); setSummaryCropSrc(null) }}
+              onConfirm={async file => {
+                setSummaryPhotoPreview(URL.createObjectURL(file))
+                setSummaryCropSrc(null)
+                if (!session) return
+                const path = `grace_entries/${session.participantId}/summary.jpg`
+                const url = await uploadPhoto(file, path)
+                if (url) setSummaryPhotoPreview(url)
+                setSummaryPhotoFile(url ? null : file)
+              }}
               onCancel={() => setSummaryCropSrc(null)}
             />
           )}
