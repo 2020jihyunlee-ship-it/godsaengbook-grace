@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { GraceSection, GraceEntry } from '@/types'
 import { PageTransition, MBtn } from '@/components/ui/motion'
+import PhotoCropModal from '@/components/ui/PhotoCropModal'
 
 // 카테고리별 가이드 질문
 const GUIDE_QUESTIONS: Record<string, string[]> = {
@@ -39,6 +40,7 @@ export default function RecordPage() {
   const [quoteText, setQuoteText] = useState('')
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
 
   const [sectionPickerOpen, setSectionPickerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -106,8 +108,16 @@ export default function RecordPage() {
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    setPhotoFile(file)
-    setPhotoPreview(URL.createObjectURL(file))
+    // 크롭 모달로 넘기기 위해 objectURL만 생성
+    setCropSrc(URL.createObjectURL(file))
+    // input 초기화 (같은 파일 재선택 가능하도록)
+    e.target.value = ''
+  }
+
+  function handleCropConfirm(croppedFile: File) {
+    setPhotoFile(croppedFile)
+    setPhotoPreview(URL.createObjectURL(croppedFile))
+    setCropSrc(null)
   }
 
   // 자동저장 트리거 (입력 멈춤 2초 후)
@@ -270,6 +280,15 @@ export default function RecordPage() {
 
   return (
     <PageTransition>
+      {/* 크롭 모달 */}
+      {cropSrc && (
+        <PhotoCropModal
+          imageSrc={cropSrc}
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropSrc(null)}
+        />
+      )}
+
       <div className="min-h-screen bg-[#FDFAF5] pb-32">
 
         {/* 헤더 */}
