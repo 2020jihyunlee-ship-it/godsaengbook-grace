@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import QRCode from 'qrcode'
 
 export default function QRCodeDisplay({ url }: { url: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -12,19 +13,73 @@ export default function QRCodeDisplay({ url }: { url: string }) {
     }
   }, [url])
 
+  function handleDownload() {
+    const link = document.createElement('a')
+    link.download = 'qrcode.png'
+    link.href = canvasRef.current?.toDataURL() ?? ''
+    link.click()
+  }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-4 w-full">
       <canvas ref={canvasRef} className="rounded-lg" />
+
+      {/* 액션 버튼 */}
+      <div className="flex gap-2 w-full max-w-xs">
+        <button
+          onClick={handleDownload}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-sm text-[#8C6E55] border border-[#E8D5A3] rounded-lg hover:bg-[#FDF3E3] transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+          QR 다운로드
+        </button>
+        <button
+          onClick={handleCopy}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-sm border rounded-lg transition-all duration-200"
+          style={
+            copied
+              ? { backgroundColor: '#ed5f1e', color: 'white', borderColor: '#ed5f1e' }
+              : { color: '#8C6E55', borderColor: '#E8D5A3' }
+          }
+        >
+          {copied ? (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              복사됨!
+            </>
+          ) : (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+              </svg>
+              링크 복사
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* URL 표시 — 클릭하면 복사 */}
       <button
-        onClick={() => {
-          const link = document.createElement('a')
-          link.download = 'qrcode.png'
-          link.href = canvasRef.current?.toDataURL() ?? ''
-          link.click()
-        }}
-        className="text-sm text-stone-500 hover:text-stone-900 underline"
+        onClick={handleCopy}
+        title="클릭하여 복사"
+        className="w-full max-w-xs group bg-[#FDF3E3] border border-[#E8D5A3] rounded-lg px-3 py-2.5 text-left hover:border-[#ed5f1e] transition-colors"
       >
-        QR 코드 다운로드
+        <p className="text-[10px] text-[#C4A882] mb-0.5 group-hover:text-[#ed5f1e] transition-colors">
+          참여 링크 (클릭하여 복사)
+        </p>
+        <p className="text-xs text-[#8C6E55] break-all leading-relaxed">{url}</p>
       </button>
     </div>
   )

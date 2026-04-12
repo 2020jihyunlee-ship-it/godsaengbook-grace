@@ -40,13 +40,11 @@ export default function EventDetailPage() {
 
     if (!ev) { router.push('/dashboard'); return }
 
-    // QR URL 자동 갱신 (localhost → 배포 URL)
-    if (ev.event_type === 'group') {
-      const correctUrl = `${window.location.origin}/join/${id}`
-      if (ev.qr_code_url !== correctUrl) {
-        await supabase.from('grace_events').update({ qr_code_url: correctUrl }).eq('id', id)
-        ev.qr_code_url = correctUrl
-      }
+    // QR URL 자동 갱신 (localhost → 배포 URL, 모든 이벤트 타입)
+    const correctUrl = `${window.location.origin}/join/${id}`
+    if (ev.qr_code_url !== correctUrl) {
+      await supabase.from('grace_events').update({ qr_code_url: correctUrl }).eq('id', id)
+      ev.qr_code_url = correctUrl
     }
 
     setEvent(ev)
@@ -276,19 +274,20 @@ export default function EventDetailPage() {
             </div>
           </div>
 
-          {/* QR 코드 — 단체 이벤트 */}
-          {event.event_type === 'group' && event.qr_code_url && (
+          {/* QR 코드 — 모든 이벤트 타입 */}
+          {event.qr_code_url && (
             <div className="bg-white border border-[#E8D5A3] rounded-2xl p-5">
-              <h2 className="font-medium text-[#3D2B1F] mb-1">참여자 QR 코드</h2>
+              <h2 className="font-medium text-[#3D2B1F] mb-1">
+                {event.event_type === 'group' ? '참여자 QR 코드' : '기록 링크'}
+              </h2>
               <p className="text-xs text-[#8C6E55] mb-4">
                 {event.status === 'active'
-                  ? '화면을 보여주거나 스크린샷을 공유하세요.'
-                  : '이벤트가 진행 중일 때 참여자가 접속할 수 있어요.'}
+                  ? '화면을 보여주거나 링크를 공유하세요.'
+                  : '이벤트가 진행 중일 때 접속할 수 있어요.'}
               </p>
               <div className="flex justify-center">
                 <QRCodeDisplay url={event.qr_code_url} />
               </div>
-              <p className="text-xs text-[#8C6E55] mt-3 text-center break-all">{event.qr_code_url}</p>
             </div>
           )}
         </>)}
