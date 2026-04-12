@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { GraceSection, GraceEntry } from '@/types'
@@ -43,10 +43,12 @@ export default function RecordPage() {
   const [sectionPickerOpen, setSectionPickerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [justSaved, setJustSaved] = useState(false)
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [error, setError] = useState('')
 
   const photoRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // 세션 복원
   useEffect(() => {
@@ -106,6 +108,66 @@ export default function RecordPage() {
     setPhotoFile(file)
     setPhotoPreview(URL.createObjectURL(file))
   }
+
+  // 자동저장 트리거 (입력 멈춤 2초 후)
+  useEffect(() => {
+    if (!selectedSection || (!bodyText && !bibleVerse && !quoteText && !photoPreview)) return
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current)
+    autoSaveTimer.current = setTimeout(async () => {
+      if (!session || !selectedSection) return
+      const hasContent = bodyText.trim() || bibleVerse.trim() || quoteText.trim() || photoPreview
+      if (!hasContent) return
+      setAutoSaveStatus('saving')
+      const supabase = createClient()
+      const existing = existingEntries[selectedSection.id]
+      const photoUrl = existing?.photo_url ?? null
+      const payload = {
+        event_id: eventId,
+        section_id: selectedSection.id,
+        participant_id: session.participantId,
+        body_text: bodyText.trim() || null,
+        bible_verse: bibleVerse.trim() || null,
+        quote_text: quoteText.trim() || null,
+        photo_url: photoUrl,
+        is_draft: true,
+      }
+      if (existing) {
+        await supabase.from('grace_entries').update(payload).eq('id', existing.id)
+      } else {
+        const { data } = await supabase.from('grace_entries').insert(payload).select().single()
+        if (data) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: data }))
+      }
+      setAutoSaveStatus('saved')
+      setTimeout(() => setAutoSaveStatus('idle'), 2000)
+    }, 2000)
+    return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current) }
+  }, [bodyText, bibleVerse, quoteText])
+
+  // 섹션 전환 시 현재 내용 자동 저장
+  const switchSection = useCallback(async (s: GraceSection) => {
+    if (selectedSection && session && (bodyText.trim() || bibleVerse.trim() || quoteText.trim() || photoPreview)) {
+      const supabase = createClient()
+      const existing = existingEntries[selectedSection.id]
+      const payload = {
+        event_id: eventId,
+        section_id: selectedSection.id,
+        participant_id: session.participantId,
+        body_text: bodyText.trim() || null,
+        bible_verse: bibleVerse.trim() || null,
+        quote_text: quoteText.trim() || null,
+        photo_url: existing?.photo_url ?? null,
+        is_draft: true,
+      }
+      if (existing) {
+        await supabase.from('grace_entries').update(payload).eq('id', existing.id)
+      } else {
+        const { data } = await supabase.from('grace_entries').insert(payload).select().single()
+        if (data) setExistingEntries(prev => ({ ...prev, [selectedSection.id]: data }))
+      }
+    }
+    setSelectedSection(s)
+    setSectionPickerOpen(false)
+  }, [selectedSection, session, bodyText, bibleVerse, quoteText, photoPreview, existingEntries, eventId])
 
   async function handleSave(isDraft = false) {
     if (!session || !selectedSection) return
@@ -217,6 +279,8 @@ export default function RecordPage() {
               <p className="text-sm font-semibold text-[#3D2B1F]">{session.name} 님의 기록</p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              {autoSaveStatus === 'saving' && <span className="text-[10px] text-[#C9B990]">저장 중...</span>}
+              {autoSaveStatus === 'saved' && <span className="text-[10px] text-emerald-500">✓ 자동저장</span>}
               <span className="text-xs text-[#8C6E55]">{completedCount}/{sections.length}</span>
               <button
                 onClick={() => router.push(`/flipbook/${eventId}`)}
@@ -268,7 +332,7 @@ export default function RecordPage() {
                   return (
                     <button
                       key={s.id}
-                      onClick={() => { setSelectedSection(s); setSectionPickerOpen(false) }}
+                      onClick={() => switchSection(s)}
                       className="w-full flex items-center gap-3 px-5 py-4 text-left transition-colors active:bg-[#F5EFE4]"
                       style={{ backgroundColor: isActive ? '#F5EFE4' : 'transparent' }}
                     >
@@ -424,13 +488,6 @@ export default function RecordPage() {
             style={{ paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}
           >
             <div className="max-w-lg mx-auto flex gap-2">
-              <MBtn
-                onClick={() => handleSave(true)}
-                disabled={saving}
-                className="px-4 py-3.5 text-sm font-medium rounded-2xl border border-[#E8D5A3] text-[#8C6E55] bg-white disabled:opacity-50 transition-colors"
-              >
-                임시저장
-              </MBtn>
               <MBtn
                 onClick={() => handleSave(false)}
                 disabled={saving || (!bodyText.trim() && !photoPreview && !bibleVerse.trim() && !quoteText.trim())}

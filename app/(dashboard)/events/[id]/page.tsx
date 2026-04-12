@@ -24,6 +24,10 @@ export default function EventDetailPage() {
   const [addMode, setAddMode] = useState<'auto' | 'manual' | null>(null)
   const [autoPerDay, setAutoPerDay] = useState<number>(2)
 
+  // 섹션 인라인 수정
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null)
+  const [editSectionForm, setEditSectionForm] = useState({ title: '', section_date: '', section_time: '' })
+
   // 리더 기록
   const [creatorJoining, setCreatorJoining] = useState(false)
 
@@ -90,6 +94,23 @@ export default function EventDetailPage() {
     const supabase = createClient()
     await supabase.from('grace_sections').delete().eq('id', sectionId)
     setSections(prev => prev.filter(s => s.id !== sectionId))
+  }
+
+  function startEditSection(s: GraceSection) {
+    setEditingSectionId(s.id)
+    setEditSectionForm({ title: s.title, section_date: s.section_date ?? '', section_time: s.section_time ?? '' })
+  }
+
+  async function handleUpdateSection(sectionId: string) {
+    if (!editSectionForm.title.trim()) return
+    const supabase = createClient()
+    const { data } = await supabase.from('grace_sections').update({
+      title: editSectionForm.title.trim(),
+      section_date: editSectionForm.section_date || null,
+      section_time: editSectionForm.section_time || null,
+    }).eq('id', sectionId).select().single()
+    if (data) setSections(prev => prev.map(s => s.id === sectionId ? data : s))
+    setEditingSectionId(null)
   }
 
   const QUICK_NAMES = ['오전 예배', '저녁 집회', '오후 집회', '기도회', '강의', '소그룹', '교제', '수료 예배']
@@ -527,23 +548,54 @@ export default function EventDetailPage() {
           {sections.length > 0 && (
             <div className="bg-white border border-[#E8D5A3] rounded-2xl divide-y divide-[#F5EFE4]">
               {sections.map((s, i) => (
-                <div key={s.id} className="px-4 py-3 flex items-center gap-3">
-                  <div className="shrink-0 flex flex-col items-center gap-0.5">
-                    <span className="w-6 h-6 rounded-full bg-[#F5EFE4] text-[#A8853A] text-xs font-semibold flex items-center justify-center">
-                      {i + 1}
-                    </span>
-                    {i === 0 && <span className="text-[9px] text-[#C9A84C] leading-none">표지</span>}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#3D2B1F] truncate">{s.title}</p>
-                    {(s.section_date || s.section_time) && (
-                      <p className="text-xs text-[#8C6E55]">
-                        {s.section_date}{s.section_date && s.section_time ? ' ' : ''}{s.section_time}
-                      </p>
-                    )}
-                  </div>
-                  <button onClick={() => handleDeleteSection(s.id)}
-                    className="text-[#E8D5A3] hover:text-red-400 transition-colors text-base leading-none shrink-0">×</button>
+                <div key={s.id}>
+                  {editingSectionId === s.id ? (
+                    /* 인라인 수정 폼 */
+                    <div className="px-4 py-3 space-y-2 bg-[#FDFAF5]">
+                      <input
+                        value={editSectionForm.title}
+                        onChange={e => setEditSectionForm(f => ({ ...f, title: e.target.value }))}
+                        className={inputCls}
+                        autoFocus
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <input type="date" value={editSectionForm.section_date}
+                          onChange={e => setEditSectionForm(f => ({ ...f, section_date: e.target.value }))}
+                          className={inputCls} />
+                        <input type="time" value={editSectionForm.section_time}
+                          onChange={e => setEditSectionForm(f => ({ ...f, section_time: e.target.value }))}
+                          className={inputCls} />
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => setEditingSectionId(null)}
+                          className="flex-1 py-2 text-xs text-[#8C6E55] border border-[#E8D5A3] rounded-xl">취소</button>
+                        <button onClick={() => handleUpdateSection(s.id)}
+                          className="flex-1 py-2 text-xs text-white rounded-xl font-medium"
+                          style={{ backgroundColor: '#C9A84C' }}>저장</button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* 일반 행 — 탭하면 수정 */
+                    <div className="px-4 py-3 flex items-center gap-3">
+                      <div className="shrink-0 flex flex-col items-center gap-0.5">
+                        <span className="w-6 h-6 rounded-full bg-[#F5EFE4] text-[#A8853A] text-xs font-semibold flex items-center justify-center">
+                          {i + 1}
+                        </span>
+                        {i === 0 && <span className="text-[9px] text-[#C9A84C] leading-none">표지</span>}
+                      </div>
+                      <div className="flex-1 min-w-0" onClick={() => startEditSection(s)} style={{ cursor: 'pointer' }}>
+                        <p className="text-sm font-medium text-[#3D2B1F] truncate">{s.title}</p>
+                        {(s.section_date || s.section_time) && (
+                          <p className="text-xs text-[#8C6E55]">
+                            {s.section_date}{s.section_date && s.section_time ? ' ' : ''}{s.section_time}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-[#C9B990] mt-0.5">탭하여 수정</p>
+                      </div>
+                      <button onClick={() => handleDeleteSection(s.id)}
+                        className="text-[#E8D5A3] hover:text-red-400 transition-colors text-base leading-none shrink-0 px-1">×</button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
