@@ -328,7 +328,7 @@ export default function RecordPage() {
               {autoSaveStatus === 'saved' && <span className="text-[10px] text-emerald-500">✓ 자동저장</span>}
               <span className="text-xs text-[#8C6E55]">{completedCount}/{sections.length}</span>
               <button
-                onClick={() => router.push(`/flipbook/${eventId}`)}
+                onClick={() => { window.location.href = `/flipbook/${eventId}` }}
                 className="text-xs px-3 py-1.5 border border-[#E8D5A3] rounded-full text-[#8C6E55] hover:border-[#C9A84C] transition-colors"
               >
                 📖 플립북

@@ -34,37 +34,49 @@ export default function FlipbookPage() {
   const [saving, setSaving] = useState(false)
   const [savedAnim, setSavedAnim] = useState(false)
 
-  useEffect(() => {
-    async function load() {
-      const raw = localStorage.getItem(`grace_participant_${eventId}`)
-      const session = raw ? JSON.parse(raw) : null
-      if (!session?.participantId) { router.push(`/join/${eventId}`); return }
-      setParticipantName(session.name)
-      setParticipantId(session.participantId)
+  const loadData = useCallback(async () => {
+    const raw = localStorage.getItem(`grace_participant_${eventId}`)
+    const session = raw ? JSON.parse(raw) : null
+    if (!session?.participantId) { router.push(`/join/${eventId}`); return }
+    setParticipantName(session.name)
+    setParticipantId(session.participantId)
 
-      const supabase = createClient()
-      const [{ data: ev }, { data: secs }, { data: ents }] = await Promise.all([
-        supabase.from('grace_events').select('id, name, category, dates_start, dates_end').eq('id', eventId).single(),
-        supabase.from('grace_sections').select('*').eq('event_id', eventId).order('order'),
-        supabase.from('grace_entries').select('*').eq('participant_id', session.participantId),
-      ])
-      if (ev) setEvent(ev)
-      if (secs) setSections(secs)
-      if (ents) {
-        const map: Record<string, GraceEntry> = {}
-        ents.forEach((e: GraceEntry) => {
-          if (e.section_id) map[e.section_id] = e
-          else {
-            setSummaryText(e.body_text ?? null)
-            setSummaryPhotoUrl(e.photo_url ?? null)
-          }
-        })
-        setEntries(map)
-      }
-      setLoading(false)
+    const supabase = createClient()
+    const [{ data: ev }, { data: secs }, { data: ents }] = await Promise.all([
+      supabase.from('grace_events').select('id, name, category, dates_start, dates_end').eq('id', eventId).single(),
+      supabase.from('grace_sections').select('*').eq('event_id', eventId).order('order'),
+      supabase.from('grace_entries').select('*').eq('participant_id', session.participantId),
+    ])
+    if (ev) setEvent(ev)
+    if (secs) setSections(secs)
+    if (ents) {
+      const map: Record<string, GraceEntry> = {}
+      ents.forEach((e: GraceEntry) => {
+        if (e.section_id) map[e.section_id] = e
+        else {
+          setSummaryText(e.body_text ?? null)
+          setSummaryPhotoUrl(e.photo_url ?? null)
+        }
+      })
+      setEntries(map)
     }
-    load()
+    setLoading(false)
   }, [eventId, router])
+
+  useEffect(() => {
+    loadData()
+  }, [loadData])
+
+  // 기록 페이지에서 돌아올 때 항상 최신 데이터 반영
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') {
+        loadData()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [loadData])
 
   const handleTap = useCallback(() => {
     setUiVisible(true)
