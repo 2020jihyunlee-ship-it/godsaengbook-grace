@@ -151,7 +151,7 @@ export default function JoinPage() {
                 <input
                   ref={subInfoRef}
                   type="text"
-                  placeholder="청년부 / 중3 등"
+                  placeholder="1청년부 / 순장 등"
                   className={inputCls}
                 />
               </div>
