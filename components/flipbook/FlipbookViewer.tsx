@@ -150,7 +150,7 @@ export default function FlipbookViewer({
               caption={section.title}
               pageNum={pageNum}
               category={event.category}
-              date={event.dates_start}
+              date={section.section_date ?? event.dates_start}
             />,
             <PageEssayRight
               key={`essay-${section.id}`}

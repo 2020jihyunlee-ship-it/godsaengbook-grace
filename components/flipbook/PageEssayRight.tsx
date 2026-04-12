@@ -43,13 +43,13 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
     const qClr = getQuoteColors(category)
     const bodyClr = getBodyColor(category)
 
-    const pad = compact ? '28px 22px' : '38px 32px'
-    const tagSz     = compact ? '8px'   : '9px'
-    const titleSz   = compact ? '14px'  : '20px'
-    const bodySz    = compact ? '10px'  : '12px'
-    const quoteSz   = compact ? '9.5px' : '11px'
-    const quoteRefSz = compact ? '8px'  : '9.5px'
-    const pageNumSz = compact ? '8px'   : '9px'
+    const pad = compact ? '32px 26px 44px' : '38px 32px 48px'
+    const tagSz      = '10px'
+    const titleSz    = compact ? '17px' : '20px'
+    const bodySz     = compact ? '13px' : '13.5px'
+    const quoteSz    = compact ? '11px' : '12px'
+    const quoteRefSz = compact ? '10px' : '10.5px'
+    const pageNumSz  = '9px'
 
     const paragraphs = bodyText ? bodyText.split(/\n\n+/).filter(Boolean) : []
 
@@ -73,7 +73,8 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           fontSize: tagSz,
           color: '#999',
           letterSpacing: '0.14em',
-          marginBottom: compact ? '10px' : '14px',
+          marginBottom: '12px',
+          fontFamily: "'Inter', sans-serif",
         }}>
           {category ?? '은혜'}
         </div>
@@ -85,7 +86,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           fontWeight: 500,
           color: '#1A1A1A',
           lineHeight: 1.35,
-          marginBottom: compact ? '10px' : '16px',
+          marginBottom: '14px',
           wordBreak: 'keep-all',
         }}>
           {title}
@@ -94,9 +95,9 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
         {/* 골드 구분선 */}
         <div style={{
           width: '28px',
-          height: '1px',
+          height: '1.5px',
           backgroundColor: ruleClr,
-          marginBottom: compact ? '12px' : '18px',
+          marginBottom: '18px',
           flexShrink: 0,
         }} />
 
@@ -108,9 +109,11 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
                 fontFamily: "'Noto Serif KR', serif",
                 fontSize: bodySz,
                 color: bodyClr,
-                lineHeight: 1.95,
-                marginBottom: '10px',
+                lineHeight: 2,
+                marginBottom: '12px',
                 wordBreak: 'keep-all',
+                margin: 0,
+                marginBottom: i < paragraphs.length - 1 ? '12px' : 0,
               }}>
                 {p}
               </p>
@@ -130,9 +133,9 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
         {/* 성경 말씀 / 인용구 박스 */}
         {verse && (
           <div style={{
-            marginTop: compact ? '12px' : '18px',
-            padding: compact ? '10px 12px' : '14px 16px',
-            borderRadius: '2px',
+            marginTop: '18px',
+            padding: '14px 16px',
+            borderRadius: '4px',
             backgroundColor: qClr.bg,
             flexShrink: 0,
           }}>
@@ -140,8 +143,9 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
               fontFamily: "'Noto Serif KR', serif",
               fontSize: quoteSz,
               fontStyle: 'italic',
-              lineHeight: 1.75,
+              lineHeight: 1.8,
               color: qClr.text,
+              margin: 0,
             }}>
               &ldquo;{verse.quote}&rdquo;
             </p>
@@ -150,6 +154,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
                 fontSize: quoteRefSz,
                 color: qClr.ref,
                 marginTop: '6px',
+                marginBottom: 0,
                 letterSpacing: '0.04em',
               }}>
                 — {verse.ref}
@@ -160,12 +165,12 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
 
         {/* 페이지 번호 */}
         <div style={{
+          position: 'absolute',
+          bottom: '14px', left: 0, right: 0,
           fontSize: pageNumSz,
           color: '#BBB',
           textAlign: 'center',
-          marginTop: compact ? '8px' : '12px',
           letterSpacing: '0.06em',
-          flexShrink: 0,
         }}>
           P.{String(pageNum).padStart(2, '0')}
         </div>
