@@ -191,7 +191,7 @@ export default function RecordPage() {
     setPhotoPreview(URL.createObjectURL(croppedFile))
     setCropSrc(null)
     if (!session || !selectedSection) return
-    const path = `grace_entries/${session.participantId}/${selectedSection.id}.jpg`
+    const path = `grace_entries/${session.participantId}/${selectedSection.id}_${Date.now()}.jpg`
     const photoUrl = await uploadPhoto(croppedFile, path)
     if (!photoUrl) return
     const saved = await saveEntry({
@@ -783,7 +783,7 @@ export default function RecordPage() {
                 setSummaryPhotoPreview(URL.createObjectURL(file))
                 setSummaryCropSrc(null)
                 if (!session) return
-                const path = `grace_entries/${session.participantId}/summary.jpg`
+                const path = `grace_entries/${session.participantId}/summary_${Date.now()}.jpg`
                 const url = await uploadPhoto(file, path)
                 if (url) setSummaryPhotoPreview(url)
                 setSummaryPhotoFile(url ? null : file)
