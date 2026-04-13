@@ -203,7 +203,7 @@ export default function LandingPage() {
             <img src="/logo.svg" alt="" width={20} height={20} />
             <span className="text-[#6B1FAD]">갓생북</span> <span className="text-[#C9A84C]">은혜</span>
           </span>
-          <span>교회 공동체를 위한 무료 기록 플립북 서비스</span>
+          <span>교회 공동체를 위한 기록 플립북</span>
           <a href="mailto:gatsaengbook@gmail.com" className="hover:text-[#6B1FAD] transition-colors">
             gatsaengbook@gmail.com
           </a>
