@@ -102,7 +102,7 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
                 color: '#3D2B1F',
                 fontWeight: 500,
                 letterSpacing: '0.02em',
-                fontFamily: "'Noto Serif KR', serif",
+                fontFamily: "'Gowun Batang', serif",
                 lineHeight: 1.5,
               }}>
                 {caption}
@@ -127,7 +127,7 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
                   {date}
                 </div>
               )}
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.9)', fontWeight: 500, fontFamily: "'Noto Serif KR', serif" }}>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.9)', fontWeight: 500, fontFamily: "'Gowun Batang', serif" }}>
                 {caption}
               </div>
             </div>
@@ -145,7 +145,7 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
               <img src={allPhotos[1]} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="absolute" style={{ bottom: 0, left: 0, right: 0, padding: '14px 22px', background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)', zIndex: 2 }}>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)', fontFamily: "'Noto Serif KR', serif" }}>{caption}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)', fontFamily: "'Gowun Batang', serif" }}>{caption}</div>
             </div>
             <div style={{ position: 'absolute', bottom: '14px', right: '16px', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', zIndex: 3 }}>
               P.{String(pageNum).padStart(2, '0')}
@@ -166,7 +166,7 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
               </div>
             </div>
             <div className="absolute" style={{ bottom: 0, left: 0, right: 0, padding: '12px 22px', background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)', zIndex: 2 }}>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)', fontFamily: "'Noto Serif KR', serif" }}>{caption}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)', fontFamily: "'Gowun Batang', serif" }}>{caption}</div>
             </div>
             <div style={{ position: 'absolute', bottom: '14px', right: '16px', fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', zIndex: 3 }}>
               P.{String(pageNum).padStart(2, '0')}

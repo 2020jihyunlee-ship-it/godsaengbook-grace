@@ -46,7 +46,7 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
             </p>
           </div>
           <h2 style={{
-            fontFamily: "'Noto Serif KR', serif",
+            fontFamily: "'Gowun Batang', serif",
             fontSize: compact ? 16 : 21,
             fontWeight: 600,
             color: '#1A1208',
@@ -84,7 +84,7 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
         <div className="flex-1 overflow-hidden">
           {summaryText ? (
             <p style={{
-              fontFamily: "'Noto Serif KR', serif",
+              fontFamily: "'Gowun Batang', serif",
               fontSize: compact ? 12 : 14,
               lineHeight: compact ? 2.0 : 2.1,
               color: '#3A2E26',
@@ -127,7 +127,7 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
         }}>
           <div>
             <p style={{
-              fontFamily: "'Noto Serif KR', serif",
+              fontFamily: "'Gowun Batang', serif",
               fontSize: compact ? 10 : 11,
               color: '#3A2E26', fontWeight: 600,
               marginBottom: 2,

@@ -64,7 +64,7 @@ const PageTableOfContents = React.forwardRef<HTMLDivElement, PageTableOfContents
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <span style={{
-                  fontFamily: "'Noto Serif KR', serif",
+                  fontFamily: "'Gowun Batang', serif",
                   fontSize: compact ? '10px' : '12px',
                   color: '#1A1A1A',
                   flex: 1,

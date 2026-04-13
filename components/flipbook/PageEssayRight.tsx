@@ -82,7 +82,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
 
         {/* 제목 */}
         <div style={{
-          fontFamily: "'Noto Serif KR', serif",
+          fontFamily: "'Gowun Batang', serif",
           fontSize: titleSz,
           fontWeight: 600,
           color: '#1A1208',
@@ -108,7 +108,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           {paragraphs.length > 0 ? (
             paragraphs.map((p, i) => (
               <p key={i} style={{
-                fontFamily: "'Noto Serif KR', serif",
+                fontFamily: "'Gowun Batang', serif",
                 fontSize: bodySz,
                 color: bodyClr,
                 lineHeight: 2.1,
@@ -124,7 +124,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
               height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
               opacity: 0.25,
             }}>
-              <p style={{ fontSize: '11px', color: '#a8a29e', fontStyle: 'italic', fontFamily: "'Noto Serif KR', serif" }}>
+              <p style={{ fontSize: '11px', color: '#a8a29e', fontStyle: 'italic', fontFamily: "'Gowun Batang', serif" }}>
                 기록이 없습니다
               </p>
             </div>
@@ -166,7 +166,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
               opacity: 0.8,
             }} />
             <p style={{
-              fontFamily: "'Noto Serif KR', serif",
+              fontFamily: "'Gowun Batang', serif",
               fontSize: quoteSz,
               fontStyle: 'italic',
               lineHeight: 2.0,

@@ -151,7 +151,7 @@ export default function HeroSection({
 
           <h1
             style={{
-              fontFamily: "'Noto Serif KR', serif",
+              fontFamily: "'Gowun Batang', serif",
               fontSize: 'clamp(28px, 7vw, 64px)',
               fontWeight: 700,
               color: '#ffffff',
@@ -167,7 +167,7 @@ export default function HeroSection({
           {participantName && (
             <p
               style={{
-                fontFamily: "'Noto Serif KR', serif",
+                fontFamily: "'Gowun Batang', serif",
                 fontSize: 'clamp(13px, 2vw, 16px)',
                 color: 'rgba(255,255,255,0.65)',
                 marginTop: '1rem',

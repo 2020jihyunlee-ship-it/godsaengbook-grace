@@ -63,8 +63,8 @@ function RenderPage({ data, compact = false }: { data: PageData; compact?: boole
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: compact ? '24px 20px' : '32px 28px' }}>
           <div style={{ fontSize: compact ? 8 : 9, letterSpacing: '0.2em', color: 'rgba(201,168,76,0.7)', marginBottom: 18 }}>GOD-SAENG BOOK · GRACE</div>
           <div style={{ width: 1, height: 22, background: 'rgba(201,168,76,0.4)', marginBottom: 16 }} />
-          <h1 style={{ fontFamily: "'Noto Serif KR', serif", fontSize: compact ? 18 : 22, fontWeight: 500, color: '#fff', lineHeight: 1.35, textAlign: 'center', margin: 0 }}>{data.title}</h1>
-          <p style={{ fontFamily: "'Noto Serif KR', serif", fontSize: compact ? 10 : 11, color: 'rgba(255,255,255,0.55)', textAlign: 'center', marginTop: 10, marginBottom: 16 }}>{data.sub}</p>
+          <h1 style={{ fontFamily: "'Gowun Batang', serif", fontSize: compact ? 18 : 22, fontWeight: 500, color: '#fff', lineHeight: 1.35, textAlign: 'center', margin: 0 }}>{data.title}</h1>
+          <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: compact ? 10 : 11, color: 'rgba(255,255,255,0.55)', textAlign: 'center', marginTop: 10, marginBottom: 16 }}>{data.sub}</p>
           <div style={{ width: 36, height: 0.5, background: 'rgba(201,168,76,0.4)', marginBottom: 14 }} />
           <div style={{ fontSize: compact ? 9 : 10, color: 'rgba(255,255,255,0.35)', textAlign: 'center', letterSpacing: '0.06em', lineHeight: 1.8 }}>
             <p style={{ margin: 0 }}>{data.date}</p>
@@ -83,7 +83,7 @@ function RenderPage({ data, compact = false }: { data: PageData; compact?: boole
         {data.items.map((item, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'baseline', padding: `${compact ? 9 : 11}px 0`, borderBottom: '0.5px solid #EBEBEB' }}>
             <span style={{ fontSize: compact ? 10 : 11, color: '#AAA', minWidth: 22, flexShrink: 0 }}>{String(i + 1).padStart(2, '0')}</span>
-            <span style={{ fontSize: compact ? 12 : 13, color: '#1A1A1A', fontFamily: "'Noto Serif KR', serif", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item}</span>
+            <span style={{ fontSize: compact ? 12 : 13, color: '#1A1A1A', fontFamily: "'Gowun Batang', serif", flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item}</span>
             <span style={{ fontSize: compact ? 10 : 11, color: '#AAA', flexShrink: 0, marginLeft: 8 }}>{(i + 1) * 2 + 1}</span>
           </div>
         ))}
@@ -100,7 +100,7 @@ function RenderPage({ data, compact = false }: { data: PageData; compact?: boole
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: 9, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)', whiteSpace: 'nowrap' }}>GOD-SAENG BOOK</div>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: compact ? '16px 18px' : '20px 22px', zIndex: 2 }}>
           <div style={{ fontSize: compact ? 9 : 10, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', marginBottom: 5 }}>{data.date}</div>
-          <div style={{ fontSize: compact ? 13 : 15, fontWeight: 600, color: '#fff', fontFamily: "'Noto Serif KR', serif", textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{data.caption}</div>
+          <div style={{ fontSize: compact ? 13 : 15, fontWeight: 600, color: '#fff', fontFamily: "'Gowun Batang', serif", textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>{data.caption}</div>
         </div>
         <div style={{ position: 'absolute', bottom: 16, right: 18, fontSize: 9, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em' }}>P.{String(data.pageNum).padStart(2, '0')}</div>
       </div>
@@ -114,13 +114,13 @@ function RenderPage({ data, compact = false }: { data: PageData; compact?: boole
   return (
     <div style={{ width: '100%', height: '100%', background: '#FFFFFF', display: 'flex', flexDirection: 'column', padding: compact ? '28px 22px 40px' : '32px 28px 44px', overflow: 'hidden', position: 'relative' }}>
       <div style={{ fontSize: 10, color: '#999', letterSpacing: '0.14em', marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>{data.category}</div>
-      <div style={{ fontFamily: "'Noto Serif KR', serif", fontSize: compact ? 16 : 19, fontWeight: 500, color: '#1A1A1A', lineHeight: 1.35, marginBottom: 14, wordBreak: 'keep-all' }}>{data.title}</div>
+      <div style={{ fontFamily: "'Gowun Batang', serif", fontSize: compact ? 16 : 19, fontWeight: 500, color: '#1A1A1A', lineHeight: 1.35, marginBottom: 14, wordBreak: 'keep-all' }}>{data.title}</div>
       <div style={{ width: 28, height: 1.5, background: ruleClr, marginBottom: 18, flexShrink: 0 }} />
       <div style={{ flex: 1, overflow: 'hidden' }}>
-        <p style={{ fontFamily: "'Noto Serif KR', serif", fontSize: compact ? 12.5 : 13.5, color: bodyClr, lineHeight: 2, wordBreak: 'keep-all', margin: 0 }}>{data.body}</p>
+        <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: compact ? 12.5 : 13.5, color: bodyClr, lineHeight: 2, wordBreak: 'keep-all', margin: 0 }}>{data.body}</p>
       </div>
       <div style={{ marginTop: 18, padding: '14px 16px', borderRadius: 4, background: qClr.bg, flexShrink: 0 }}>
-        <p style={{ fontFamily: "'Noto Serif KR', serif", fontSize: compact ? 11 : 12, fontStyle: 'italic', lineHeight: 1.8, color: qClr.text, margin: 0 }}>&ldquo;{data.verse}&rdquo;</p>
+        <p style={{ fontFamily: "'Gowun Batang', serif", fontSize: compact ? 11 : 12, fontStyle: 'italic', lineHeight: 1.8, color: qClr.text, margin: 0 }}>&ldquo;{data.verse}&rdquo;</p>
         <p style={{ fontSize: compact ? 10 : 10.5, color: qClr.ref, marginTop: 6, marginBottom: 0, letterSpacing: '0.04em' }}>— {data.ref}</p>
       </div>
       <div style={{ position: 'absolute', bottom: 14, left: 0, right: 0, fontSize: 9, color: '#BBB', textAlign: 'center', letterSpacing: '0.06em' }}>P.{String(data.pageNum).padStart(2, '0')}</div>

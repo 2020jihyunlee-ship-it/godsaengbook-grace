@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Sans_KR, Noto_Serif_KR, Inter, Cormorant_Garamond } from "next/font/google";
+import { Noto_Sans_KR, Gowun_Batang, Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 const notoSans = Noto_Sans_KR({
@@ -9,9 +9,9 @@ const notoSans = Noto_Sans_KR({
   display: "swap",
 });
 
-const notoSerif = Noto_Serif_KR({
+const gowunBatang = Gowun_Batang({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["400", "700"],
   variable: "--loaded-serif",
   display: "swap",
 });
@@ -65,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`h-full antialiased ${notoSans.variable} ${notoSerif.variable} ${inter.variable} ${cormorant.variable}`}>
+    <html lang="ko" className={`h-full antialiased ${notoSans.variable} ${gowunBatang.variable} ${inter.variable} ${cormorant.variable}`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

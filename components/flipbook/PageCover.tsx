@@ -376,7 +376,7 @@ const PageCover = React.forwardRef<HTMLDivElement, PageCoverProps>(
 
           {/* 이벤트 이름 */}
           <h1 style={{
-            fontFamily: "'Noto Serif KR', serif",
+            fontFamily: "'Gowun Batang', serif",
             fontSize: compact ? '17px' : '23px',
             fontWeight: 500,
             color: '#fff',
@@ -390,7 +390,7 @@ const PageCover = React.forwardRef<HTMLDivElement, PageCoverProps>(
 
           {/* 참여자 이름 */}
           <p style={{
-            fontFamily: "'Noto Serif KR', serif",
+            fontFamily: "'Gowun Batang', serif",
             fontSize: compact ? '11px' : '11.5px',
             color: 'rgba(255,255,255,0.62)',
             textAlign: 'center',

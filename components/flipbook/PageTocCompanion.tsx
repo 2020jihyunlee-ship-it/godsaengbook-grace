@@ -38,7 +38,7 @@ const PageTocCompanion = React.forwardRef<HTMLDivElement, PageTocCompanionProps>
               </div>
             )}
             <div style={{
-              fontFamily: "'Noto Serif KR', serif",
+              fontFamily: "'Gowun Batang', serif",
               fontSize: '16px', fontWeight: 500,
               color: '#fff',
               lineHeight: 1.4,
@@ -107,7 +107,7 @@ const PageTocCompanion = React.forwardRef<HTMLDivElement, PageTocCompanionProps>
 
         {/* 이벤트명 */}
         <div style={{
-          fontFamily: "'Noto Serif KR', serif",
+          fontFamily: "'Gowun Batang', serif",
           fontSize: '18px',
           fontWeight: 500,
           color: '#2A1F14',
