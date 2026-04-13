@@ -60,131 +60,134 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
     return (
       <div
         ref={ref}
-        className="w-full h-full select-none overflow-hidden"
-        style={{
-          backgroundColor: '#FFFFFF',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: `${vPad} ${hPad}`,
-          position: 'relative',
-        }}
+        className="w-full h-full select-none"
+        style={{ backgroundColor: '#FFFFFF', position: 'relative', overflow: 'hidden' }}
       >
-        {/* 섹션 태그 */}
-        <p style={{
-          fontSize: tagSz,
-          color: '#bbb',
-          letterSpacing: '0.16em',
-          marginBottom: compact ? '10px' : '14px',
-          fontFamily: "'Inter', sans-serif",
-        }}>
-          {category ?? '은혜'}
-        </p>
-
-        {/* 제목 */}
+        {/* 수직 중앙 정렬 래퍼 — absolute + translateY(-50%) */}
         <div style={{
-          fontFamily: "'Gowun Batang', serif",
-          fontSize: titleSz,
-          fontWeight: 600,
-          color: '#1A1208',
-          lineHeight: 1.4,
-          marginBottom: compact ? '10px' : '14px',
-          wordBreak: 'keep-all',
+          position: 'absolute',
+          top: '50%',
+          left: hPad,
+          right: hPad,
+          transform: 'translateY(-50%)',
+          overflow: 'hidden',
         }}>
-          {title}
-        </div>
-
-        {/* 골드 구분선 */}
-        <div style={{
-          width: compact ? '24px' : '32px',
-          height: '1.5px',
-          backgroundColor: ruleClr,
-          marginBottom: compact ? '20px' : '28px',
-        }} />
-
-        {/* 본문 */}
-        <div style={{ overflow: 'hidden' }}>
-          {paragraphs.length > 0 ? (
-            paragraphs.map((p, i) => (
-              <p key={i} style={{
-                fontFamily: "'Gowun Batang', serif",
-                fontSize: bodySz,
-                color: bodyClr,
-                lineHeight: 2.1,
-                wordBreak: 'keep-all',
-                margin: 0,
-                marginBottom: i < paragraphs.length - 1 ? (compact ? '10px' : '14px') : 0,
-              }}>
-                {p}
-              </p>
-            ))
-          ) : (
-            <p style={{ fontSize: '11px', color: '#a8a29e', fontStyle: 'italic', fontFamily: "'Gowun Batang', serif", opacity: 0.4 }}>
-              기록이 없습니다
-            </p>
-          )}
-        </div>
-
-        {/* 성경 말씀 / 인용구 — 포인트 카드 */}
-        {verse && (
-          <div style={{
-            marginTop: compact ? '22px' : '36px',
-            borderRadius: compact ? 8 : 12,
-            backgroundColor: qClr.bg,
-            padding: compact ? '14px 18px 14px' : '20px 24px 18px',
-            position: 'relative',
-            overflow: 'hidden',
+          {/* 섹션 태그 */}
+          <p style={{
+            fontSize: tagSz,
+            color: '#bbb',
+            letterSpacing: '0.16em',
+            marginBottom: compact ? '10px' : '14px',
+            fontFamily: "'Inter', sans-serif",
           }}>
-            {/* 배경 장식 — 큰 따옴표 */}
-            <div style={{
-              position: 'absolute',
-              top: compact ? -4 : -6,
-              left: compact ? 10 : 14,
-              fontSize: compact ? 48 : 64,
-              color: ruleClr,
-              opacity: 0.12,
-              fontFamily: 'Georgia, serif',
-              lineHeight: 1,
-              pointerEvents: 'none',
-              userSelect: 'none',
-            }}>
-              "
-            </div>
-            {/* 상단 포인트 라인 */}
-            <div style={{
-              width: compact ? 20 : 28,
-              height: 2,
-              backgroundColor: ruleClr,
-              marginBottom: compact ? 10 : 14,
-              opacity: 0.8,
-            }} />
-            <p style={{
-              fontFamily: "'Gowun Batang', serif",
-              fontSize: quoteSz,
-              fontStyle: 'italic',
-              lineHeight: 2.0,
-              color: qClr.text,
-              margin: 0,
-              wordBreak: 'keep-all',
-              position: 'relative',
-              zIndex: 1,
-            }}>
-              {verse.quote}
-            </p>
-            {verse.ref && (
-              <p style={{
-                fontSize: quoteRefSz,
-                color: ruleClr,
-                marginTop: compact ? 8 : 12,
-                marginBottom: 0,
-                letterSpacing: '0.06em',
-                fontWeight: 500,
-              }}>
-                — {verse.ref}
+            {category ?? '은혜'}
+          </p>
+
+          {/* 제목 */}
+          <div style={{
+            fontFamily: "'Gowun Batang', serif",
+            fontSize: titleSz,
+            fontWeight: 600,
+            color: '#1A1208',
+            lineHeight: 1.4,
+            marginBottom: compact ? '10px' : '14px',
+            wordBreak: 'keep-all',
+          }}>
+            {title}
+          </div>
+
+          {/* 골드 구분선 */}
+          <div style={{
+            width: compact ? '24px' : '32px',
+            height: '1.5px',
+            backgroundColor: ruleClr,
+            marginBottom: compact ? '20px' : '28px',
+          }} />
+
+          {/* 본문 */}
+          <div>
+            {paragraphs.length > 0 ? (
+              paragraphs.map((p, i) => (
+                <p key={i} style={{
+                  fontFamily: "'Gowun Batang', serif",
+                  fontSize: bodySz,
+                  color: bodyClr,
+                  lineHeight: 2.1,
+                  wordBreak: 'keep-all',
+                  margin: 0,
+                  marginBottom: i < paragraphs.length - 1 ? (compact ? '10px' : '14px') : 0,
+                }}>
+                  {p}
+                </p>
+              ))
+            ) : (
+              <p style={{ fontSize: '11px', color: '#a8a29e', fontStyle: 'italic', fontFamily: "'Gowun Batang', serif", opacity: 0.4 }}>
+                기록이 없습니다
               </p>
             )}
           </div>
-        )}
+
+          {/* 성경 말씀 / 인용구 — 포인트 카드 */}
+          {verse && (
+            <div style={{
+              marginTop: compact ? '22px' : '36px',
+              borderRadius: compact ? 8 : 12,
+              backgroundColor: qClr.bg,
+              padding: compact ? '14px 18px 14px' : '20px 24px 18px',
+              position: 'relative',
+              overflow: 'hidden',
+            }}>
+              {/* 배경 장식 — 큰 따옴표 */}
+              <div style={{
+                position: 'absolute',
+                top: compact ? -4 : -6,
+                left: compact ? 10 : 14,
+                fontSize: compact ? 48 : 64,
+                color: ruleClr,
+                opacity: 0.12,
+                fontFamily: 'Georgia, serif',
+                lineHeight: 1,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              }}>
+                "
+              </div>
+              {/* 상단 포인트 라인 */}
+              <div style={{
+                width: compact ? 20 : 28,
+                height: 2,
+                backgroundColor: ruleClr,
+                marginBottom: compact ? 10 : 14,
+                opacity: 0.8,
+              }} />
+              <p style={{
+                fontFamily: "'Gowun Batang', serif",
+                fontSize: quoteSz,
+                fontStyle: 'italic',
+                lineHeight: 2.0,
+                color: qClr.text,
+                margin: 0,
+                wordBreak: 'keep-all',
+                position: 'relative',
+                zIndex: 1,
+              }}>
+                {verse.quote}
+              </p>
+              {verse.ref && (
+                <p style={{
+                  fontSize: quoteRefSz,
+                  color: ruleClr,
+                  marginTop: compact ? 8 : 12,
+                  marginBottom: 0,
+                  letterSpacing: '0.06em',
+                  fontWeight: 500,
+                }}>
+                  — {verse.ref}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* 페이지 번호 */}
         <p style={{
