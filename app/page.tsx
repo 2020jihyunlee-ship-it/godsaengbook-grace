@@ -189,6 +189,10 @@ export default function LandingPage() {
           >
             지금 시작하기 →
           </Link>
+          <p className="text-xs text-purple-300 mt-5 leading-relaxed" style={{ wordBreak: 'keep-all' }}>
+            * 기록과 사진은 마지막 활동일로부터 30일간 보관됩니다.<br />
+            PDF로 저장하면 영구 보관할 수 있어요.
+          </p>
         </div>
       </section>
 
