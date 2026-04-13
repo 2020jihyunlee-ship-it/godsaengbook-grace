@@ -22,66 +22,68 @@ function getAccent(category?: string) {
 const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
   ({ summaryText, summaryPhotoUrl, eventName, authorName, pageNum, compact, category }, ref) => {
     const accent = getAccent(category)
-    const pad = compact ? '28px 24px 20px' : '44px 44px 32px'
+    const hPad = compact ? '24px' : '44px'
 
     return (
       <div
         ref={ref}
-        className="w-full h-full flex flex-col select-none overflow-hidden"
-        style={{ backgroundColor: '#FEFCF7', padding: pad }}
+        className="w-full h-full select-none"
+        style={{ backgroundColor: '#FEFCF7', position: 'relative', overflow: 'hidden' }}
       >
-        {/* 헤더 */}
-        <div style={{ marginBottom: compact ? 20 : 28, flexShrink: 0 }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8, marginBottom: compact ? 6 : 8,
-          }}>
-            <div style={{ width: compact ? 18 : 24, height: 1.5, backgroundColor: accent }} />
-            <p style={{
-              fontSize: compact ? 8 : 9,
-              color: accent,
-              letterSpacing: '0.18em',
-              fontFamily: "'Inter', sans-serif",
-            }}>
-              EPILOGUE
-            </p>
-          </div>
-          <h2 style={{
-            fontFamily: "'Gowun Batang', serif",
-            fontSize: compact ? 16 : 21,
-            fontWeight: 600,
-            color: '#1A1208',
-            lineHeight: 1.3,
-          }}>
-            마무리 총평
-          </h2>
-        </div>
-
-        {/* 사진 — 여백과 둥근 모서리 */}
-        {summaryPhotoUrl && (
-          <div style={{
-            marginBottom: compact ? 14 : 20,
-            borderRadius: compact ? 8 : 12,
-            overflow: 'hidden',
-            height: compact ? 110 : 160,
-            flexShrink: 0,
-            boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
-            position: 'relative',
-          }}>
-            <img
-              src={summaryPhotoUrl}
-              alt="총평 사진"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
-            {/* 사진 하단 미세 그라디언트 */}
+        {/* 수직 중앙 정렬 래퍼 */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: hPad,
+          right: hPad,
+          transform: 'translateY(-50%)',
+          overflow: 'hidden',
+        }}>
+          {/* 헤더 */}
+          <div style={{ marginBottom: compact ? 20 : 28 }}>
             <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%',
-              background: 'linear-gradient(to top, rgba(0,0,0,0.18), transparent)',
-            }} />
+              display: 'flex', alignItems: 'center', gap: 8, marginBottom: compact ? 6 : 8,
+            }}>
+              <div style={{ width: compact ? 18 : 24, height: 1.5, backgroundColor: accent }} />
+              <p style={{
+                fontSize: compact ? 8 : 9,
+                color: accent,
+                letterSpacing: '0.18em',
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                EPILOGUE
+              </p>
+            </div>
+            <h2 style={{
+              fontFamily: "'Gowun Batang', serif",
+              fontSize: compact ? 16 : 21,
+              fontWeight: 600,
+              color: '#1A1208',
+              lineHeight: 1.3,
+            }}>
+              마무리 총평
+            </h2>
           </div>
-        )}
 
-        {/* 본문 */}
-        <div className="flex-1 overflow-hidden">
+          {/* 사진 (모바일 카드뷰에서만 표시) */}
+          {summaryPhotoUrl && compact && (
+            <div style={{
+              marginBottom: 14,
+              borderRadius: 8,
+              overflow: 'hidden',
+              height: 110,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
+              position: 'relative',
+            }}>
+              <img
+                src={summaryPhotoUrl}
+                alt="총평 사진"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            </div>
+          )}
+
+          {/* 본문 */}
           {summaryText ? (
             <p style={{
               fontFamily: "'Gowun Batang', serif",
@@ -90,7 +92,7 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
               color: '#3A2E26',
               wordBreak: 'keep-all',
               display: '-webkit-box',
-              WebkitLineClamp: summaryPhotoUrl ? (compact ? 7 : 9) : (compact ? 13 : 15),
+              WebkitLineClamp: (compact && summaryPhotoUrl) ? 7 : (compact ? 13 : 15),
               WebkitBoxOrient: 'vertical' as const,
               overflow: 'hidden',
             }}>
@@ -98,8 +100,9 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
             </p>
           ) : (
             <div style={{
-              height: '100%', display: 'flex', flexDirection: 'column',
+              display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center', gap: 12, opacity: 0.4,
+              padding: '20px 0',
             }}>
               <div style={{
                 width: 36, height: 36, borderRadius: '50%',
@@ -118,11 +121,14 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
           )}
         </div>
 
-        {/* 하단 */}
+        {/* 하단 고정 푸터 */}
         <div style={{
-          paddingTop: compact ? 12 : 18,
+          position: 'absolute',
+          bottom: compact ? '16px' : '24px',
+          left: hPad,
+          right: hPad,
+          paddingTop: compact ? 12 : 16,
           borderTop: `1px solid rgba(0,0,0,0.06)`,
-          flexShrink: 0,
           display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
         }}>
           <div>
