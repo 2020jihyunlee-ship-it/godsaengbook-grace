@@ -43,7 +43,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
     const qClr = getQuoteColors(category)
     const bodyClr = getBodyColor(category)
 
-    const pad = compact ? '36px 28px 48px' : '40px 32px 52px'
+    const pad = compact ? '36px 28px 48px' : '48px 56px 56px'
     const tagSz      = compact ? '10px' : '11px'
     const titleSz    = compact ? '18px' : '24px'
     const bodySz     = compact ? '13px' : '15px'
@@ -66,7 +66,7 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           display: 'flex',
           flexDirection: 'column',
           padding: pad,
-        }}
+          }}
       >
         {/* 섹션 태그 */}
         <div style={{

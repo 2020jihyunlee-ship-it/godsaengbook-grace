@@ -13,7 +13,7 @@ export default function FlipbookPage() {
   const router = useRouter()
   const eventId = params.eventId as string
 
-  const [event, setEvent] = useState<{ id: string; name: string; category: string; dates_start: string | null; dates_end: string | null } | null>(null)
+  const [event, setEvent] = useState<{ id: string; name: string; category: string; dates_start: string | null; dates_end: string | null; toc_photo_url?: string | null } | null>(null)
   const [sections, setSections] = useState<GraceSection[]>([])
   const [entries, setEntries] = useState<Record<string, GraceEntry>>({})
   const [participantName, setParticipantName] = useState('')
@@ -43,7 +43,7 @@ export default function FlipbookPage() {
 
     const supabase = createClient()
     const [{ data: ev }, { data: secs }, entriesRes] = await Promise.all([
-      supabase.from('grace_events').select('id, name, category, dates_start, dates_end').eq('id', eventId).single(),
+      supabase.from('grace_events').select('id, name, category, dates_start, dates_end, toc_photo_url').eq('id', eventId).single(),
       supabase.from('grace_sections').select('*').eq('event_id', eventId).order('order'),
       fetch(`/api/entries?participantId=${session.participantId}`, { cache: 'no-store' }).then(r => r.json()),
     ])
@@ -178,6 +178,7 @@ export default function FlipbookPage() {
         participantName={participantName}
         summaryText={summaryText}
         summaryPhotoUrl={summaryPhotoUrl}
+        tocPhotoUrl={event?.toc_photo_url ?? null}
         onTap={handleTap}
         onPageChange={setCurrentSectionIdx}
       />

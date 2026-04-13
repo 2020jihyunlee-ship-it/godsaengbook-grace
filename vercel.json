@@ -1,3 +1,9 @@
 {
-  "alias": ["godsaengbook-grace.vercel.app", "gatsaengbook-grace.vercel.app"]
+  "alias": ["godsaengbook-grace.vercel.app", "gatsaengbook-grace.vercel.app"],
+  "crons": [
+    {
+      "path": "/api/cron/cleanup",
+      "schedule": "0 2 * * *"
+    }
+  ]
 }

@@ -22,30 +22,36 @@ const PageTableOfContents = React.forwardRef<HTMLDivElement, PageTableOfContents
     return (
       <div
         ref={ref}
-        className="w-full h-full flex flex-col select-none overflow-hidden"
-        style={{ backgroundColor: bg, padding: pad }}
+        className="w-full h-full select-none"
+        style={{ backgroundColor: bg, position: 'relative', overflow: 'hidden' }}
       >
-        {/* 레이블 */}
+        {/* 콘텐츠 — 절대 중앙 배치 */}
         <div style={{
-          fontSize: compact ? '8px' : '9px',
-          color: labelClr,
-          letterSpacing: '0.16em',
-          marginBottom: compact ? '14px' : '20px',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: `calc(100% - ${compact ? '44px' : '60px'})`,
         }}>
-          {label}
-        </div>
+          {/* 레이블 */}
+          <div style={{
+            fontSize: compact ? '8px' : '9px',
+            color: labelClr,
+            letterSpacing: '0.16em',
+            marginBottom: compact ? '16px' : '22px',
+          }}>
+            {label}
+          </div>
 
-        {/* 목록 */}
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          {sections.map((s, i) => {
-            const pageNum = 3 + i * 2
-            return (
+          {/* 목록 */}
+          <div>
+            {sections.map((s, i) => (
               <div
                 key={s.id}
                 style={{
                   display: 'flex',
                   alignItems: 'baseline',
-                  padding: compact ? '7px 0' : '9px 0',
+                  padding: compact ? '7px 0' : '10px 0',
                   borderBottom: '0.5px solid #E8E8E8',
                 }}
               >
@@ -59,47 +65,31 @@ const PageTableOfContents = React.forwardRef<HTMLDivElement, PageTableOfContents
                 </span>
                 <span style={{
                   fontFamily: "'Noto Serif KR', serif",
-                  fontSize: compact ? '10px' : '11px',
+                  fontSize: compact ? '10px' : '12px',
                   color: '#1A1A1A',
-                  whiteSpace: 'nowrap',
+                  flex: 1,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  flex: '0 1 auto',
-                  maxWidth: '55%',
+                  whiteSpace: 'nowrap',
                 }}>
                   {s.title}
                 </span>
-                <span style={{
-                  flex: 1,
-                  borderBottom: '0.5px dotted #DDD',
-                  margin: '0 8px',
-                  position: 'relative',
-                  top: '-3px',
-                  display: 'inline-block',
-                  minWidth: '8px',
-                }} />
-                <span style={{
-                  fontSize: compact ? '9px' : '10px',
-                  color: '#AAA',
-                  flexShrink: 0,
-                }}>
-                  {pageNum}
-                </span>
               </div>
-            )
-          })}
+            ))}
+          </div>
         </div>
 
-        {/* 푸터 */}
+        {/* 푸터 — 절대 하단 */}
         <div style={{
-          marginTop: 'auto',
-          paddingTop: compact ? '14px' : '20px',
+          position: 'absolute',
+          bottom: compact ? '16px' : '22px',
+          left: 0, right: 0,
           fontSize: compact ? '8px' : '9px',
           color: '#BBB',
           textAlign: 'center',
           letterSpacing: '0.06em',
         }}>
-          갓생북 · God-Saeng Book
+          갓생북 은혜
         </div>
       </div>
     )

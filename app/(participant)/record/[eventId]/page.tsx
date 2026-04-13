@@ -29,7 +29,7 @@ export default function RecordPage() {
   const eventId = params.eventId as string
 
   const [session, setSession] = useState<ParticipantSession | null>(null)
-  const [event, setEvent] = useState<{ id: string; name: string; category: string; status: string } | null>(null)
+  const [event, setEvent] = useState<{ id: string; name: string; category: string; status: string; event_type?: string; toc_photo_url?: string | null } | null>(null)
   const [sections, setSections] = useState<GraceSection[]>([])
   const [selectedSection, setSelectedSection] = useState<GraceSection | null>(null)
   const [existingEntries, setExistingEntries] = useState<Record<string, GraceEntry>>({})
@@ -48,6 +48,11 @@ export default function RecordPage() {
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [error, setError] = useState('')
 
+  // 목차 사진 상태 (리더 전용)
+  const [tocPhotoPreview, setTocPhotoPreview] = useState<string | null>(null)
+  const [tocPhotoSaving, setTocPhotoSaving] = useState(false)
+  const [tocPhotoSaved, setTocPhotoSaved] = useState(false)
+
   // 총평 상태
   const [summaryText, setSummaryText] = useState('')
   const [summaryPhotoFile, setSummaryPhotoFile] = useState<File | null>(null)
@@ -57,6 +62,9 @@ export default function RecordPage() {
   const [summaryCropSrc, setSummaryCropSrc] = useState<string | null>(null)
   const [summaryEntryId, setSummaryEntryId] = useState<string | null>(null)
 
+  const [showStorageNotice, setShowStorageNotice] = useState(false)
+  const [showPdfNotice, setShowPdfNotice] = useState(false)
+
   const cameraRef = useRef<HTMLInputElement>(null)
   const galleryRef = useRef<HTMLInputElement>(null)
   const summaryCameraRef = useRef<HTMLInputElement>(null)
@@ -64,11 +72,16 @@ export default function RecordPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // 세션 복원
+  // 세션 복원 + 보관 안내 모달
   useEffect(() => {
     const raw = localStorage.getItem(`grace_participant_${eventId}`)
     if (!raw) { router.push(`/join/${eventId}`); return }
     setSession(JSON.parse(raw))
+    // 보관 안내: 이 이벤트에 처음 접속 시 1회만 표시
+    const noticeKey = `grace_storage_notice_${eventId}`
+    if (!localStorage.getItem(noticeKey)) {
+      setShowStorageNotice(true)
+    }
   }, [eventId, router])
 
   // 이벤트 + 섹션 + 기존 기록 로드
@@ -77,11 +90,14 @@ export default function RecordPage() {
     async function load() {
       const supabase = createClient()
       const [{ data: ev }, { data: secs }, { data: ents }] = await Promise.all([
-        supabase.from('grace_events').select('id, name, category, status').eq('id', eventId).single(),
+        supabase.from('grace_events').select('id, name, category, status, event_type, toc_photo_url').eq('id', eventId).single(),
         supabase.from('grace_sections').select('*').eq('event_id', eventId).order('order'),
         supabase.from('grace_entries').select('*').eq('participant_id', session!.participantId),
       ])
-      if (ev) setEvent(ev)
+      if (ev) {
+        setEvent(ev)
+        if (ev.toc_photo_url) setTocPhotoPreview(ev.toc_photo_url)
+      }
       if (secs && secs.length > 0) {
         setSections(secs)
         setSelectedSection(secs[0])
@@ -235,10 +251,23 @@ export default function RecordPage() {
         sectionId: selectedSection.id, bodyText, bibleVerse, quoteText, photoUrl, isDraft,
       })
       if (saved) {
-        setExistingEntries(prev => ({ ...prev, [selectedSection.id]: saved }))
+        const updatedEntries = { ...existingEntries, [selectedSection.id]: saved }
+        setExistingEntries(updatedEntries)
         if (!isDraft) {
           setJustSaved(true)
           setTimeout(() => setJustSaved(false), 2000)
+          // 모든 섹션 완성 여부 확인 → PDF 저장 안내
+          const allDone = sections.every(s => {
+            const e = updatedEntries[s.id]
+            return e && !e.is_draft && (e.body_text || e.photo_url)
+          })
+          if (allDone) {
+            const pdfNoticeKey = `grace_pdf_notice_${eventId}`
+            if (!localStorage.getItem(pdfNoticeKey)) {
+              localStorage.setItem(pdfNoticeKey, '1')
+              setTimeout(() => setShowPdfNotice(true), 800)
+            }
+          }
         }
       }
     } catch (e: unknown) {
@@ -246,6 +275,26 @@ export default function RecordPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  async function handleTocPhotoUpload(file: File) {
+    setTocPhotoSaving(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('path', `toc/${eventId}/${Date.now()}.jpg`)
+    const res = await fetch('/api/upload-photo', { method: 'POST', body: formData })
+    const json = await res.json()
+    if (json.url) {
+      setTocPhotoPreview(json.url)
+      await fetch('/api/update-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId, tocPhotoUrl: json.url }),
+      })
+      setTocPhotoSaved(true)
+      setTimeout(() => setTocPhotoSaved(false), 2000)
+    }
+    setTocPhotoSaving(false)
   }
 
   async function handleSummarySave() {
@@ -303,8 +352,113 @@ export default function RecordPage() {
 
   const inputCls = "w-full px-4 py-3 border border-[#E8D5A3] rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-white text-[#3D2B1F] placeholder-[#C9B990]"
 
+  function dismissStorageNotice() {
+    localStorage.setItem(`grace_storage_notice_${eventId}`, '1')
+    setShowStorageNotice(false)
+  }
+
   return (
     <PageTransition>
+      {/* ── 보관 안내 모달 ── */}
+      {showStorageNotice && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
+        >
+          <div
+            className="w-full max-w-sm mx-4 mb-6 sm:mb-0 rounded-3xl overflow-hidden"
+            style={{ background: '#FDFAF5', boxShadow: '0 24px 64px rgba(0,0,0,0.3)' }}
+          >
+            {/* 헤더 */}
+            <div style={{ background: 'linear-gradient(135deg, #3D2B1F, #7A5230)', padding: '28px 28px 20px', textAlign: 'center' }}>
+              <div style={{ fontSize: 36, marginBottom: 10 }}>📦</div>
+              <p style={{ color: '#C9A84C', fontSize: 10, letterSpacing: '0.18em', marginBottom: 8 }}>보관 기간 안내</p>
+              <h3 style={{ color: '#fff', fontSize: 18, fontWeight: 700, lineHeight: 1.35 }}>
+                기록은 30일간 보관돼요
+              </h3>
+            </div>
+            {/* 본문 */}
+            <div style={{ padding: '24px 28px' }}>
+              <p style={{ fontSize: 14, color: '#3D2B1F', lineHeight: 1.8, marginBottom: 16 }}>
+                갓생북 은혜는 <strong>완전 무료</strong> 서비스예요.<br />
+                소중한 기록과 사진은 <strong>마지막 활동일로부터 30일</strong> 후 자동으로 삭제됩니다.
+              </p>
+              <div style={{ background: '#F5EFE4', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
+                <p style={{ fontSize: 13, color: '#8C6E55', lineHeight: 1.75 }}>
+                  💡 <strong>기록이 완성되면 꼭 PDF로 저장</strong>해 두세요.<br />
+                  플립북 화면에서 &lsquo;PDF 저장&rsquo; 버튼으로 영구 보관할 수 있어요.
+                </p>
+              </div>
+              <button
+                onClick={dismissStorageNotice}
+                style={{
+                  width: '100%', padding: '14px', borderRadius: 50, border: 'none',
+                  background: '#C9A84C', color: '#fff', fontSize: 15, fontWeight: 700,
+                  cursor: 'pointer', letterSpacing: '0.03em',
+                }}
+              >
+                확인했어요 ✓
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── PDF 저장 안내 모달 (모든 섹션 완성 시) ── */}
+      {showPdfNotice && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+        >
+          <div
+            className="w-full max-w-sm mx-4 mb-6 sm:mb-0 rounded-3xl overflow-hidden"
+            style={{ background: '#FDFAF5', boxShadow: '0 24px 64px rgba(0,0,0,0.35)' }}
+          >
+            {/* 헤더 */}
+            <div style={{ background: 'linear-gradient(135deg, #1A2D5A, #0C1B3A)', padding: '28px 28px 20px', textAlign: 'center' }}>
+              <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
+              <p style={{ color: '#B4D2FF', fontSize: 10, letterSpacing: '0.18em', marginBottom: 8 }}>기록 완성</p>
+              <h3 style={{ color: '#fff', fontSize: 18, fontWeight: 700, lineHeight: 1.35 }}>
+                모든 기록이 완성됐어요!
+              </h3>
+            </div>
+            {/* 본문 */}
+            <div style={{ padding: '24px 28px' }}>
+              <p style={{ fontSize: 14, color: '#3D2B1F', lineHeight: 1.8, marginBottom: 16 }}>
+                수고하셨어요 😊<br />
+                이 기록은 <strong>30일 후 자동 삭제</strong>돼요.<br />
+                소중한 은혜의 기억, 지금 바로 PDF로 저장해 두세요.
+              </p>
+              <div style={{ background: '#F5EFE4', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
+                <p style={{ fontSize: 13, color: '#8C6E55', lineHeight: 1.75 }}>
+                  📥 플립북 → <strong>PDF 저장</strong> 버튼으로<br />
+                  나만의 은혜북을 영구 보관할 수 있어요.
+                </p>
+              </div>
+              <button
+                onClick={() => { setShowPdfNotice(false); router.push(`/flipbook/${eventId}`) }}
+                style={{
+                  width: '100%', padding: '14px', borderRadius: 50, border: 'none',
+                  background: '#C9A84C', color: '#fff', fontSize: 15, fontWeight: 700,
+                  cursor: 'pointer', marginBottom: 10,
+                }}
+              >
+                플립북 보러 가기 →
+              </button>
+              <button
+                onClick={() => setShowPdfNotice(false)}
+                style={{
+                  width: '100%', padding: '12px', borderRadius: 50, border: '1.5px solid #E8D5A3',
+                  background: 'transparent', color: '#8C6E55', fontSize: 14, cursor: 'pointer',
+                }}
+              >
+                계속 수정할게요
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 크롭 모달 */}
       {cropSrc && (
         <PhotoCropModal
@@ -318,8 +472,12 @@ export default function RecordPage() {
 
         {/* 헤더 */}
         <header className="bg-[#FDFAF5]/95 backdrop-blur border-b border-[#E8D5A3] px-4 py-3 sticky top-0 z-20">
-          <div className="max-w-lg mx-auto flex items-center justify-between">
-            <div className="min-w-0">
+          <div className="max-w-lg mx-auto flex items-center gap-3">
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="text-[#8C6E55] hover:text-[#3D2B1F] text-lg leading-none p-1 -ml-1 shrink-0"
+            >←</button>
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-[#8C6E55] truncate">{event.name}</p>
               <p className="text-sm font-semibold text-[#3D2B1F]">{session.name} 님의 기록</p>
             </div>
@@ -406,16 +564,14 @@ export default function RecordPage() {
 
             {/* 플립북 연동 안내 배너 */}
             <div className="rounded-2xl border px-4 py-3 flex items-start gap-3"
-              style={{ backgroundColor: isFirstSection ? '#FBF8EE' : '#F5EFE4', borderColor: '#E8D5A3' }}>
-              <span className="text-lg shrink-0">{isFirstSection ? '🏅' : '📄'}</span>
+              style={{ backgroundColor: '#F5EFE4', borderColor: '#E8D5A3' }}>
+              <span className="text-lg shrink-0">📄</span>
               <div>
                 <p className="text-xs font-semibold text-[#A8853A]">
-                  {isFirstSection ? '첫 번째 섹션 — 표지 페이지' : `${sectionIndex + 1}번째 섹션 — 플립북 P.${String(sectionIndex * 2 + 3).padStart(2, '0')}~${String(sectionIndex * 2 + 4).padStart(2, '0')}`}
+                  {`${sectionIndex + 1}번째 섹션 — 플립북 P.${String(sectionIndex * 2 + 4).padStart(2, '0')}~${String(sectionIndex * 2 + 5).padStart(2, '0')}`}
                 </p>
                 <p className="text-xs text-[#8C6E55] mt-0.5 leading-relaxed">
-                  {isFirstSection
-                    ? '이 섹션의 사진이 플립북 표지 배경이 됩니다. 가장 인상적인 사진을 올려주세요.'
-                    : '사진(왼쪽)과 묵상 기록(오른쪽)이 한 세트로 완성됩니다.'}
+                  사진(왼쪽)과 묵상 기록(오른쪽)이 한 세트로 완성됩니다.
                 </p>
               </div>
             </div>
@@ -442,16 +598,10 @@ export default function RecordPage() {
                 <label className="text-xs font-medium text-[#8C6E55]">
                   📷 사진 <span className="text-[#C9B990] font-normal">(플립북 왼쪽 페이지 전체)</span>
                 </label>
-                {isFirstSection && !hasPhoto && (
-                  <span className="text-[10px] bg-[#FBF8EE] text-[#C9A84C] border border-[#E8D5A3] rounded-full px-2 py-0.5">표지 배경</span>
-                )}
               </div>
               {photoPreview ? (
                 <div className="relative">
                   <img src={photoPreview} alt="첨부 사진" className="w-full rounded-xl object-cover" style={{ aspectRatio: '3/4' }} />
-                  {isFirstSection && (
-                    <div className="absolute top-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">표지 배경</div>
-                  )}
                   <button onClick={() => { setPhotoPreview(null); setPhotoFile(null) }}
                     className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center text-sm">×</button>
                 </div>
@@ -534,8 +684,39 @@ export default function RecordPage() {
 
           </>)}
 
-          {/* ── 마무리 총평 카드 (섹션 무관, 항상 표시) ── */}
-          {sections.length > 0 && (
+          {/* ── 목차 사진 + 총평 — 리더 전용 ── */}
+          {sections.length > 0 && session && (event?.event_type === 'personal' || session.sessionToken?.startsWith('creator_')) && (<>
+
+            {/* 목차 옆 사진 */}
+            <div className="bg-white border-2 border-dashed border-[#C9A84C]/40 rounded-2xl p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">🖼️</span>
+                <div>
+                  <p className="text-sm font-semibold text-[#3D2B1F]">목차 옆 사진</p>
+                  <p className="text-[11px] text-[#8C6E55]">플립북 목차 페이지 옆에 들어갑니다. 없으면 이벤트 정보로 자동 생성됩니다.</p>
+                </div>
+              </div>
+              {tocPhotoPreview ? (
+                <div className="relative">
+                  <img src={tocPhotoPreview} alt="목차 사진" className="w-full rounded-xl object-cover" style={{ aspectRatio: '3/4' }} />
+                  <label className="absolute bottom-2 right-2 px-3 py-1.5 bg-black/50 text-white text-xs rounded-lg cursor-pointer">
+                    {tocPhotoSaving ? '업로드 중...' : tocPhotoSaved ? '✓ 저장됨' : '변경'}
+                    <input type="file" accept="image/*" className="hidden" disabled={tocPhotoSaving}
+                      onChange={e => { const f = e.target.files?.[0]; if (f) handleTocPhotoUpload(f) }} />
+                  </label>
+                </div>
+              ) : (
+                <label className={`flex flex-col items-center justify-center gap-2 h-28 border-2 border-dashed border-[#E8D5A3] rounded-xl cursor-pointer hover:border-[#C9A84C] transition-colors ${tocPhotoSaving ? 'opacity-50' : ''}`}>
+                  <span className="text-2xl">📷</span>
+                  <span className="text-xs text-[#8C6E55]">{tocPhotoSaving ? '업로드 중...' : '사진 선택'}</span>
+                  <input type="file" accept="image/*" className="hidden" disabled={tocPhotoSaving}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handleTocPhotoUpload(f) }} />
+                </label>
+              )}
+            </div>
+
+          {/* ── 마무리 총평 카드 ── */}
+          {true && (
             <div className="bg-white border-2 border-dashed border-[#C9A84C]/40 rounded-2xl p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <span className="text-base">✦</span>
@@ -592,6 +773,7 @@ export default function RecordPage() {
               </button>
             </div>
           )}
+          </>)}
 
           {/* 총평 사진 크롭 모달 */}
           {summaryCropSrc && (

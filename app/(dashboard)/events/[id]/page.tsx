@@ -31,7 +31,25 @@ export default function EventDetailPage() {
   // 리더 기록
   const [creatorJoining, setCreatorJoining] = useState(false)
 
+  // TOC 사진 업로드
+  const [tocUploading, setTocUploading] = useState(false)
+
   const inputCls = "w-full px-3 py-2.5 border border-[#E8D5A3] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A84C]/40 bg-[#FDFAF5]"
+
+  async function handleTocPhotoUpload(file: File) {
+    setTocUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('path', `toc/${id}/${Date.now()}.jpg`)
+    const res = await fetch('/api/upload-photo', { method: 'POST', body: formData })
+    const json = await res.json()
+    if (json.url) {
+      const supabase = createClient()
+      const { data } = await supabase.from('grace_events').update({ toc_photo_url: json.url }).eq('id', id).select().single()
+      if (data) setEvent(data)
+    }
+    setTocUploading(false)
+  }
 
   async function load() {
     const supabase = createClient()
@@ -426,7 +444,7 @@ export default function EventDetailPage() {
             <p className="text-xs font-semibold text-[#A8853A] mb-1">📖 섹션 = 플립북의 챕터</p>
             <p className="text-xs text-[#8C6E55] leading-relaxed">
               섹션 하나가 플립북 두 페이지(사진 + 기록)로 완성됩니다.<br/>
-              <span className="text-[#A8853A] font-medium">첫 번째 섹션의 사진이 표지 배경</span>이 되므로, 가장 인상적인 순서로 배치하세요.
+              순서대로 배치하면 플립북이 자연스럽게 구성됩니다.
             </p>
           </div>
 

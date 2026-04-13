@@ -10,6 +10,24 @@ const CATEGORY_ICON: Record<string, string> = {
   '예배': '🕊️', '모임': '🤝', '개인': '📖',
 }
 
+function getCategoryBg(category: string): string {
+  if (category === '수련회') return 'linear-gradient(160deg, #06101E 0%, #0C1B3A 100%)'
+  if (category === '선교')   return 'linear-gradient(160deg, #1A0800 0%, #3D1600 100%)'
+  if (category === '캠프')   return 'linear-gradient(160deg, #071408 0%, #122A14 100%)'
+  if (category === '예배')   return 'linear-gradient(160deg, #0E0618 0%, #1E0A30 100%)'
+  if (category === '모임')   return 'linear-gradient(160deg, #140A02 0%, #2E1608 100%)'
+  return 'linear-gradient(160deg, #060A18 0%, #0E1530 100%)'
+}
+
+function getCategoryAccent(category: string): string {
+  if (category === '수련회') return 'rgba(180,210,255,0.75)'
+  if (category === '선교')   return 'rgba(224,140,60,0.85)'
+  if (category === '캠프')   return 'rgba(130,196,88,0.85)'
+  if (category === '예배')   return 'rgba(210,180,255,0.85)'
+  if (category === '모임')   return 'rgba(212,136,44,0.85)'
+  return 'rgba(160,175,230,0.75)'
+}
+
 export default function PdfPage() {
   const params = useParams()
   const router = useRouter()
@@ -106,23 +124,32 @@ export default function PdfPage() {
             className="pdf-page page-break relative w-full overflow-hidden shadow-md"
             style={{
               aspectRatio: '210/297',
-              background: coverPhoto ? 'none' : 'linear-gradient(160deg, #3D2B1F 0%, #7A5230 100%)',
+              background: coverPhoto ? 'none' : getCategoryBg(event.category),
             }}
           >
             {coverPhoto && (
               <>
                 <img src={coverPhoto} alt="표지" className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(30,15,5,0.85) 45%, rgba(30,15,5,0.2) 100%)' }} />
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,5,20,0.85) 45%, rgba(10,5,20,0.2) 100%)' }} />
               </>
             )}
-            <div className="absolute inset-0 flex flex-col items-center justify-end pb-16 px-10 text-center">
-              <div className="text-4xl mb-4">{icon}</div>
-              <h1 className="text-white font-bold text-3xl leading-tight mb-2">{event.name}</h1>
-              {dateStr && <p className="text-white/70 text-base mb-4">{dateStr}</p>}
-              <div style={{ width: 40, height: 2, backgroundColor: 'rgba(201,168,76,0.8)', margin: '0 auto 16px' }} />
-              <p className="text-white/90 text-lg font-medium">{participantName}</p>
-              <p className="text-white/50 text-sm mt-1">갓생북 은혜</p>
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center">
+              <div className="text-5xl mb-5">{icon}</div>
+              <p style={{ fontSize: 9, color: getCategoryAccent(event.category), letterSpacing: '0.2em', marginBottom: 18 }}>
+                GOD-SAENG BOOK
+              </p>
+              <div style={{ width: 1, height: 32, backgroundColor: getCategoryAccent(event.category), opacity: 0.45, margin: '0 auto 20px' }} />
+              <h1 className="text-white font-semibold text-3xl leading-tight mb-3">{event.name}</h1>
+              <p className="text-white/65 text-sm mb-5">{participantName}</p>
+              <div style={{ width: 36, height: 1, backgroundColor: getCategoryAccent(event.category), opacity: 0.45, margin: '0 auto 16px' }} />
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.38)', letterSpacing: '0.06em', lineHeight: 1.9 }}>
+                {dateStr && <p>{dateStr}</p>}
+                <p>{event.category}</p>
+              </div>
             </div>
+            <p style={{ position: 'absolute', bottom: 20, left: 0, right: 0, textAlign: 'center', fontSize: 8, color: 'rgba(255,255,255,0.12)', letterSpacing: '0.1em' }}>
+              MEMORY BOOK
+            </p>
           </div>
 
           {/* ── 섹션별 페이지 ── */}

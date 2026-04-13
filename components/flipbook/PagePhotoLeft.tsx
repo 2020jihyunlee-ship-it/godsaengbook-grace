@@ -42,64 +42,68 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
     const count = allPhotos.length
 
     return (
-      <div ref={ref} className="relative w-full h-full overflow-hidden select-none">
+      <div ref={ref} className="w-full h-full select-none" style={{ backgroundColor: '#F0EBE3', position: 'relative', overflow: 'hidden' }}>
+        {/* 오른쪽 여백 — 제본 공간 */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: '14px', bottom: 0, overflow: 'hidden' }}>
         {count === 0 ? (
-          /* 사진 없을 때 — 데모 스타일 */
+          /* 사진 없을 때 — 밝은 크림 스타일 */
           <div style={{
             width: '100%',
             height: '100%',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'flex-end',
-            background: getGradient(category),
+            justifyContent: 'space-between',
+            backgroundColor: '#F5EFE4',
           }}>
-            {/* 오버레이 */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.72) 100%)',
-            }} />
+            {/* 상단 날짜 */}
+            <div style={{ padding: '22px 24px 0' }}>
+              {date && (
+                <div style={{
+                  fontSize: '10px',
+                  color: '#B8A878',
+                  letterSpacing: '0.1em',
+                }}>
+                  {date}
+                </div>
+              )}
+            </div>
             {/* 중앙 아이콘 */}
             <div style={{
-              position: 'absolute', inset: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexDirection: 'column', gap: '8px',
+              flexDirection: 'column', gap: '12px',
             }}>
               <div style={{
-                width: '82px', height: '82px', borderRadius: '50%',
-                border: '1.5px solid rgba(255,255,255,0.22)',
+                width: '80px', height: '80px', borderRadius: '50%',
+                border: '1.5px solid #D9C898',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(255,255,255,0.07)',
+                background: 'rgba(201,168,76,0.08)',
               }}>
-                <span style={{ fontSize: '32px', lineHeight: 1 }}>{getCategoryIcon(category)}</span>
+                <span style={{ fontSize: '30px', lineHeight: 1 }}>{getCategoryIcon(category)}</span>
               </div>
               <div style={{
                 fontSize: '9px',
-                color: 'rgba(255,255,255,0.4)',
-                letterSpacing: '0.12em',
-                marginTop: '6px',
+                color: '#C9A84C',
+                letterSpacing: '0.18em',
               }}>
                 {getCategoryLabel(category)}
               </div>
             </div>
             {/* 하단 캡션 */}
-            <div style={{ position: 'relative', zIndex: 2, padding: '18px 22px' }}>
-              {date && (
-                <div style={{
-                  fontSize: '10px',
-                  color: 'rgba(255,255,255,0.5)',
-                  letterSpacing: '0.1em',
-                  marginBottom: '4px',
-                }}>
-                  {date}
-                </div>
-              )}
+            <div style={{ padding: '0 24px 20px' }}>
               <div style={{
-                fontSize: '12px',
-                color: 'rgba(255,255,255,0.9)',
+                width: '24px', height: '1px',
+                backgroundColor: '#C9A84C',
+                marginBottom: '10px',
+                opacity: 0.6,
+              }} />
+              <div style={{
+                fontSize: '13px',
+                color: '#3D2B1F',
                 fontWeight: 500,
                 letterSpacing: '0.02em',
                 fontFamily: "'Noto Serif KR', serif",
+                lineHeight: 1.5,
               }}>
                 {caption}
               </div>
@@ -107,7 +111,7 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
             {/* 페이지 번호 */}
             <div style={{
               position: 'absolute', bottom: '14px', right: '16px',
-              fontSize: '9px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em',
+              fontSize: '9px', color: '#C9A84C', opacity: 0.5, letterSpacing: '0.08em',
             }}>
               P.{String(pageNum).padStart(2, '0')}
             </div>
@@ -169,6 +173,7 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
             </div>
           </div>
         )}
+        </div>
       </div>
     )
   }

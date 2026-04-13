@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import PageCover from './PageCover'
 import PageTableOfContents from './PageTableOfContents'
+import PageTocCompanion from './PageTocCompanion'
 import PagePhotoLeft from './PagePhotoLeft'
 import PageEssayRight from './PageEssayRight'
 import PageSummary from './PageSummary'
@@ -15,6 +16,7 @@ interface EventData {
   dates_start: string | null
   dates_end: string | null
   author_name?: string | null
+  toc_photo_url?: string | null
 }
 
 interface FlipbookViewerProps {
@@ -24,6 +26,7 @@ interface FlipbookViewerProps {
   participantName: string
   summaryText?: string | null
   summaryPhotoUrl?: string | null
+  tocPhotoUrl?: string | null
   onTap?: () => void
   onPageChange?: (sectionIndex: number) => void
   forcePortrait?: boolean
@@ -39,10 +42,11 @@ function Skeleton() {
 
 // ── 모바일 카드뷰 (갓생북 메인 레퍼런스 스타일) ──
 function MobileCardView({
-  event, sections, entries, participantName, summaryText, summaryPhotoUrl, onPageChange,
+  event, sections, entries, participantName, summaryText, summaryPhotoUrl, tocPhotoUrl, onPageChange,
 }: Omit<FlipbookViewerProps, 'onTap' | 'forcePortrait'>) {
-  // 페이지 목록: 표지(0), 목차(1), [사진i(2+i*2), 글i(3+i*2)], 총평(2+n*2)
-  const totalPages = 2 + sections.length * 2 + 1
+  // 페이지 목록: 표지(0), 목차(1), TOC동반(2), [사진i(3+i*2), 글i(4+i*2)], 총평
+  const totalPages = 3 + sections.length * 2 + 1
+
   const [idx, setIdx] = useState(0)
   const touchStartX = useRef<number | null>(null)
 
@@ -51,9 +55,9 @@ function MobileCardView({
   }, [totalPages])
 
   useEffect(() => {
-    // onPageChange 콜백 호출
-    if (idx >= 2 && idx < 2 + sections.length * 2) {
-      onPageChange?.(Math.floor((idx - 2) / 2))
+    // onPageChange 콜백 호출: 섹션 페이지는 idx 3부터 시작
+    if (idx >= 3 && idx < 3 + sections.length * 2) {
+      onPageChange?.(Math.floor((idx - 3) / 2))
     } else {
       onPageChange?.(-1)
     }
@@ -77,6 +81,17 @@ function MobileCardView({
     if (idx === 1) {
       return <PageTableOfContents sections={sections} category={event.category} compact={false} />
     }
+    if (idx === 2) {
+      return (
+        <PageTocCompanion
+          photoUrl={tocPhotoUrl}
+          eventName={event.name}
+          category={event.category}
+          datesStart={event.dates_start}
+          datesEnd={event.dates_end}
+        />
+      )
+    }
     if (idx === totalPages - 1) {
       return (
         <PageSummary
@@ -84,16 +99,16 @@ function MobileCardView({
           summaryPhotoUrl={summaryPhotoUrl ?? null}
           eventName={event.name}
           authorName={event.author_name ?? null}
-          pageNum={2 + sections.length * 2}
+          pageNum={3 + sections.length * 2}
           compact={false}
         />
       )
     }
-    const sectionIdx = Math.floor((idx - 2) / 2)
-    const isPhoto = (idx - 2) % 2 === 0
+    const sectionIdx = Math.floor((idx - 3) / 2)
+    const isPhoto = (idx - 3) % 2 === 0
     const section = sections[sectionIdx]
     const entry = entries[section?.id ?? '']
-    const pageNum = 3 + sectionIdx * 2
+    const pageNum = 4 + sectionIdx * 2
 
     if (isPhoto) {
       return (
@@ -138,7 +153,7 @@ function MobileCardView({
       >
         <div style={{
           width: '100%',
-          aspectRatio: '3 / 4.5',
+          aspectRatio: '3 / 4',
           borderRadius: 16,
           overflow: 'hidden',
           boxShadow: '0 8px 40px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
@@ -206,7 +221,7 @@ function MobileCardView({
 
 // ── 메인 FlipbookViewer ──
 export default function FlipbookViewer({
-  event, sections, entries, participantName, summaryText, summaryPhotoUrl, onTap, onPageChange, forcePortrait
+  event, sections, entries, participantName, summaryText, summaryPhotoUrl, tocPhotoUrl, onTap, onPageChange, forcePortrait
 }: FlipbookViewerProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const bookRef = useRef<any>(null)
@@ -276,87 +291,101 @@ export default function FlipbookViewer({
   return (
     <div
       className="flex-1 flex flex-col items-center justify-center gap-6"
-      style={{ padding: '24px 0 32px', backgroundColor: '#F5EFE4' }}
+      style={{ padding: '24px 0 32px', backgroundColor: '#EDE8E2' }}
       onClick={onTap}
     >
-      <HTMLFlipBook
-        ref={bookRef}
-        width={W}
-        height={H}
-        size="fixed"
-        minWidth={280}
-        maxWidth={595}
-        minHeight={380}
-        maxHeight={842}
-        showCover
-        mobileScrollSupport
-        usePortrait={forcePortrait ? true : false}
-        drawShadow
-        flippingTime={600}
-        startPage={0}
-        startZIndex={0}
-        autoSize={false}
-        clickEventForward
-        useMouseEvents
-        swipeDistance={30}
-        showPageCorners
-        disableFlipByClick={false}
-        maxShadowOpacity={0.4}
-        className="shadow-2xl"
-        style={{}}
-        onFlip={handleFlip}
-      >
-        <PageCover
-          eventName={event.name}
-          category={event.category}
-          authorName={event.author_name ?? null}
-          datesStart={event.dates_start}
-          datesEnd={event.dates_end}
-          participantName={participantName}
-          coverPhotoUrl={null}
-          compact={false}
-        />
-        <PageTableOfContents sections={sections} category={event.category} compact={false} />
-        <div className="w-full h-full" style={{ backgroundColor: '#FAFAF8' }} />
+      {/* 책 본체 + 중앙 제본 그림자 */}
+      <div style={{ position: 'relative', display: 'inline-block' }}>
+        <HTMLFlipBook
+          ref={bookRef}
+          width={W}
+          height={H}
+          size="fixed"
+          minWidth={280}
+          maxWidth={595}
+          minHeight={380}
+          maxHeight={842}
+          showCover
+          mobileScrollSupport
+          usePortrait={forcePortrait ? true : false}
+          drawShadow
+          flippingTime={600}
+          startPage={0}
+          startZIndex={0}
+          autoSize={false}
+          clickEventForward
+          useMouseEvents
+          swipeDistance={30}
+          showPageCorners
+          disableFlipByClick={false}
+          maxShadowOpacity={0.5}
+          className="shadow-2xl"
+          style={{}}
+          onFlip={handleFlip}
+        >
+          <PageCover
+            eventName={event.name}
+            category={event.category}
+            authorName={event.author_name ?? null}
+            datesStart={event.dates_start}
+            datesEnd={event.dates_end}
+            participantName={participantName}
+            coverPhotoUrl={null}
+            compact={false}
+          />
+          <PageTableOfContents sections={sections} category={event.category} compact={false} />
+          <PageTocCompanion
+            photoUrl={tocPhotoUrl}
+            eventName={event.name}
+            category={event.category}
+            datesStart={event.dates_start}
+            datesEnd={event.dates_end}
+          />
 
-        {sections.map((section, i) => {
-          const entry = entries[section.id]
-          const pageNum = 3 + i * 2
-          return [
-            <PagePhotoLeft
-              key={`photo-${section.id}`}
-              photoUrl={entry?.photo_url ?? null}
-              caption={section.title}
-              pageNum={pageNum}
-              category={event.category}
-              date={section.section_date ?? event.dates_start}
-            />,
-            <PageEssayRight
-              key={`essay-${section.id}`}
-              title={section.title}
-              bodyText={entry?.body_text ?? null}
-              bibleVerse={entry?.bible_verse ?? null}
-              quoteText={entry?.quote_text ?? null}
-              pageNum={pageNum + 1}
-              category={event.category}
-              compact={false}
-            />,
-          ]
-        }).flat()}
+          {sections.map((section, i) => {
+            const entry = entries[section.id]
+            const pageNum = 3 + i * 2
+            return [
+              <PagePhotoLeft
+                key={`photo-${section.id}`}
+                photoUrl={entry?.photo_url ?? null}
+                caption={section.title}
+                pageNum={pageNum}
+                category={event.category}
+                date={section.section_date ?? event.dates_start}
+              />,
+              <PageEssayRight
+                key={`essay-${section.id}`}
+                title={section.title}
+                bodyText={entry?.body_text ?? null}
+                bibleVerse={entry?.bible_verse ?? null}
+                quoteText={entry?.quote_text ?? null}
+                pageNum={pageNum + 1}
+                category={event.category}
+                compact={false}
+              />,
+            ]
+          }).flat()}
 
-        <PageSummary
-          summaryText={summaryText ?? null}
-          summaryPhotoUrl={summaryPhotoUrl ?? null}
-          eventName={event.name}
-          authorName={event.author_name ?? null}
-          pageNum={3 + sections.length * 2}
-          compact={false}
-        />
+          <PageSummary
+            summaryText={summaryText ?? null}
+            summaryPhotoUrl={summaryPhotoUrl ?? null}
+            eventName={event.name}
+            authorName={event.author_name ?? null}
+            pageNum={3 + sections.length * 2}
+            compact={false}
+          />
 
-        <div className="bg-stone-900 w-full h-full flex items-center justify-center select-none">
-          <p className="text-stone-600 text-xs tracking-widest">갓생북</p>
-        </div>
-      </HTMLFlipBook>
+          {/* 뒷표지 — 크림 백커버 */}
+          <div className="w-full h-full flex flex-col items-center justify-center select-none"
+            style={{ backgroundColor: '#F0EBE3' }}>
+            <div style={{ width: '32px', height: '1px', backgroundColor: '#C9A84C', opacity: 0.4, marginBottom: '16px' }} />
+            <p style={{ fontSize: '11px', color: '#C9A84C', letterSpacing: '0.22em', opacity: 0.7 }}>갓생북 은혜</p>
+            <p style={{ fontSize: '9px', color: '#B8A888', letterSpacing: '0.12em', marginTop: '6px', opacity: 0.6 }}>God-Saeng Book Grace</p>
+          </div>
+        </HTMLFlipBook>
+
+      </div>
 
       {/* 데스크탑 화살표 */}
       <div className="flex items-center gap-10">
