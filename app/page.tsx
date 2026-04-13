@@ -163,13 +163,7 @@ export default function LandingPage() {
       {/* 교회에 드리는 선물 */}
       <section className="max-w-2xl mx-auto px-5 py-12 text-center">
         <div className="bg-gradient-to-br from-[#6B1FAD] to-[#4A1080] rounded-3xl px-6 py-10">
-          <div className="text-3xl mb-3 text-[#C9A84C]">✦</div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
-            교회에 드리는 선물
-          </h2>
-          <p className="text-sm text-purple-200 max-w-xs mx-auto leading-loose mb-6" style={{ wordBreak: 'keep-all' }}>
-            교회 공동체를 위해 무료로 제공됩니다.
-          </p>
+          <div className="text-3xl mb-6 text-[#C9A84C]">✦</div>
           <div className="grid grid-cols-2 gap-3 max-w-xs mx-auto mb-6">
             {[
               ['∞', '기록 횟수'],
