@@ -101,6 +101,7 @@ function MobileCardView({
           authorName={event.author_name ?? null}
           pageNum={3 + sections.length * 2}
           compact={false}
+          category={event.category}
         />
       )
     }
@@ -374,14 +375,49 @@ export default function FlipbookViewer({
             authorName={event.author_name ?? null}
             pageNum={3 + sections.length * 2}
             compact={false}
+            category={event.category}
           />
 
-          {/* 뒷표지 — 크림 백커버 */}
+          {/* 뒷표지 — 우아한 백커버 */}
           <div className="w-full h-full flex flex-col items-center justify-center select-none"
-            style={{ backgroundColor: '#F0EBE3' }}>
-            <div style={{ width: '32px', height: '1px', backgroundColor: '#C9A84C', opacity: 0.4, marginBottom: '16px' }} />
-            <p style={{ fontSize: '11px', color: '#C9A84C', letterSpacing: '0.22em', opacity: 0.7 }}>갓생북 은혜</p>
-            <p style={{ fontSize: '9px', color: '#B8A888', letterSpacing: '0.12em', marginTop: '6px', opacity: 0.6 }}>God-Saeng Book Grace</p>
+            style={{ backgroundColor: '#F5EFE4', position: 'relative', overflow: 'hidden' }}>
+            {/* 배경 — 미세한 대각선 패턴 */}
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.07 }}
+              viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice">
+              {Array.from({ length: 14 }).map((_, i) => (
+                <line key={i} x1={-20 + i * 16} y1="0" x2={i * 16 - 40} y2="140"
+                  stroke="#C9A84C" strokeWidth="0.5" />
+              ))}
+            </svg>
+            {/* 중앙 콘텐츠 */}
+            <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '0 40px' }}>
+              {/* 상단 장식선 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 28 }}>
+                <div style={{ width: 28, height: 1, backgroundColor: '#C9A84C', opacity: 0.5 }} />
+                <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#C9A84C', opacity: 0.6 }} />
+                <div style={{ width: 28, height: 1, backgroundColor: '#C9A84C', opacity: 0.5 }} />
+              </div>
+              {/* 브랜드 */}
+              <p style={{ fontSize: '13px', color: '#C9A84C', letterSpacing: '0.28em', fontWeight: 600, marginBottom: 8 }}>
+                갓생북 은혜
+              </p>
+              <p style={{ fontSize: '9px', color: '#B8A878', letterSpacing: '0.18em', opacity: 0.8 }}>
+                God-Saeng Book Grace
+              </p>
+              {/* 하단 장식선 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginTop: 28 }}>
+                <div style={{ width: 28, height: 1, backgroundColor: '#C9A84C', opacity: 0.5 }} />
+                <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#C9A84C', opacity: 0.6 }} />
+                <div style={{ width: 28, height: 1, backgroundColor: '#C9A84C', opacity: 0.5 }} />
+              </div>
+            </div>
+            {/* 하단 문구 */}
+            <p style={{
+              position: 'absolute', bottom: 20,
+              fontSize: '8px', color: '#C9B890', letterSpacing: '0.1em', opacity: 0.6,
+            }}>
+              순간의 은혜가 평생의 기억으로
+            </p>
           </div>
         </HTMLFlipBook>
 

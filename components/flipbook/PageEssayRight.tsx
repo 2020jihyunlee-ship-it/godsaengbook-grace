@@ -43,13 +43,12 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
     const qClr = getQuoteColors(category)
     const bodyClr = getBodyColor(category)
 
-    const pad = compact ? '36px 28px 48px' : '48px 56px 56px'
-    const tagSz      = compact ? '10px' : '11px'
-    const titleSz    = compact ? '18px' : '24px'
-    const bodySz     = compact ? '13px' : '15px'
+    const pad = compact ? '32px 26px 40px' : '52px 52px 52px'
+    const tagSz      = compact ? '9px'  : '10px'
+    const titleSz    = compact ? '17px' : '22px'
+    const bodySz     = compact ? '12.5px' : '14.5px'
     const quoteSz    = compact ? '11px' : '13px'
     const quoteRefSz = compact ? '10px' : '11px'
-    const pageNumSz  = '9px'
 
     const paragraphs = bodyText ? bodyText.split(/\n\n+/).filter(Boolean) : []
 
@@ -66,53 +65,56 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           display: 'flex',
           flexDirection: 'column',
           padding: pad,
-          }}
+          position: 'relative',
+        }}
       >
         {/* 섹션 태그 */}
-        <div style={{
+        <p style={{
           fontSize: tagSz,
-          color: '#999',
-          letterSpacing: '0.14em',
-          marginBottom: '12px',
+          color: '#bbb',
+          letterSpacing: '0.16em',
+          marginBottom: compact ? '10px' : '14px',
           fontFamily: "'Inter', sans-serif",
+          flexShrink: 0,
         }}>
           {category ?? '은혜'}
-        </div>
+        </p>
 
         {/* 제목 */}
         <div style={{
           fontFamily: "'Noto Serif KR', serif",
           fontSize: titleSz,
-          fontWeight: 500,
-          color: '#1A1A1A',
-          lineHeight: 1.35,
-          marginBottom: '14px',
+          fontWeight: 600,
+          color: '#1A1208',
+          lineHeight: 1.4,
+          marginBottom: compact ? '10px' : '14px',
           wordBreak: 'keep-all',
+          flexShrink: 0,
         }}>
           {title}
         </div>
 
         {/* 골드 구분선 */}
         <div style={{
-          width: '28px',
+          width: compact ? '24px' : '32px',
           height: '1.5px',
           backgroundColor: ruleClr,
-          marginBottom: '18px',
+          marginBottom: compact ? '20px' : '28px',
           flexShrink: 0,
         }} />
 
         {/* 본문 */}
-        <div style={{ flex: 1, overflow: 'hidden' }}>
+        <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
           {paragraphs.length > 0 ? (
             paragraphs.map((p, i) => (
               <p key={i} style={{
                 fontFamily: "'Noto Serif KR', serif",
                 fontSize: bodySz,
                 color: bodyClr,
-                lineHeight: 2,
+                lineHeight: 2.1,
                 wordBreak: 'keep-all',
                 margin: 0,
-                marginBottom: i < paragraphs.length - 1 ? '12px' : 0,
+                marginBottom: i < paragraphs.length - 1 ? (compact ? '10px' : '14px') : 0,
               }}>
                 {p}
               </p>
@@ -129,32 +131,61 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           )}
         </div>
 
-        {/* 성경 말씀 / 인용구 박스 */}
+        {/* 성경 말씀 / 인용구 — 포인트 카드 */}
         {verse && (
           <div style={{
-            marginTop: '18px',
-            padding: '14px 16px',
-            borderRadius: '4px',
-            backgroundColor: qClr.bg,
+            marginTop: compact ? '22px' : '36px',
             flexShrink: 0,
+            borderRadius: compact ? 8 : 12,
+            backgroundColor: qClr.bg,
+            padding: compact ? '14px 18px 14px' : '20px 24px 18px',
+            position: 'relative',
+            overflow: 'hidden',
           }}>
+            {/* 배경 장식 — 큰 따옴표 */}
+            <div style={{
+              position: 'absolute',
+              top: compact ? -4 : -6,
+              left: compact ? 10 : 14,
+              fontSize: compact ? 48 : 64,
+              color: ruleClr,
+              opacity: 0.12,
+              fontFamily: 'Georgia, serif',
+              lineHeight: 1,
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}>
+              "
+            </div>
+            {/* 상단 포인트 라인 */}
+            <div style={{
+              width: compact ? 20 : 28,
+              height: 2,
+              backgroundColor: ruleClr,
+              marginBottom: compact ? 10 : 14,
+              opacity: 0.8,
+            }} />
             <p style={{
               fontFamily: "'Noto Serif KR', serif",
               fontSize: quoteSz,
               fontStyle: 'italic',
-              lineHeight: 1.8,
+              lineHeight: 2.0,
               color: qClr.text,
               margin: 0,
+              wordBreak: 'keep-all',
+              position: 'relative',
+              zIndex: 1,
             }}>
-              &ldquo;{verse.quote}&rdquo;
+              {verse.quote}
             </p>
             {verse.ref && (
               <p style={{
                 fontSize: quoteRefSz,
-                color: qClr.ref,
-                marginTop: '6px',
+                color: ruleClr,
+                marginTop: compact ? 8 : 12,
                 marginBottom: 0,
-                letterSpacing: '0.04em',
+                letterSpacing: '0.06em',
+                fontWeight: 500,
               }}>
                 — {verse.ref}
               </p>
@@ -163,16 +194,16 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
         )}
 
         {/* 페이지 번호 */}
-        <div style={{
+        <p style={{
           position: 'absolute',
-          bottom: '14px', left: 0, right: 0,
-          fontSize: pageNumSz,
-          color: '#BBB',
-          textAlign: 'center',
+          bottom: compact ? '12px' : '18px',
+          right: compact ? '20px' : '24px',
+          fontSize: '9px',
+          color: '#CCC',
           letterSpacing: '0.06em',
         }}>
           P.{String(pageNum).padStart(2, '0')}
-        </div>
+        </p>
       </div>
     )
   }
