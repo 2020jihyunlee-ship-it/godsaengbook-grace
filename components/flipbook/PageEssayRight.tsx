@@ -43,7 +43,8 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
     const qClr = getQuoteColors(category)
     const bodyClr = getBodyColor(category)
 
-    const pad = compact ? '32px 26px 40px' : '52px 52px 52px'
+    const hPad    = compact ? '26px' : '52px'
+    const vPad    = compact ? '32px' : '44px'
     const tagSz      = compact ? '9px'  : '10px'
     const titleSz    = compact ? '17px' : '22px'
     const bodySz     = compact ? '12.5px' : '14.5px'
@@ -64,7 +65,8 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           backgroundColor: '#FFFFFF',
           display: 'flex',
           flexDirection: 'column',
-          padding: pad,
+          justifyContent: 'center',
+          padding: `${vPad} ${hPad}`,
           position: 'relative',
         }}
       >
@@ -75,7 +77,6 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           letterSpacing: '0.16em',
           marginBottom: compact ? '10px' : '14px',
           fontFamily: "'Inter', sans-serif",
-          flexShrink: 0,
         }}>
           {category ?? '은혜'}
         </p>
@@ -89,7 +90,6 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           lineHeight: 1.4,
           marginBottom: compact ? '10px' : '14px',
           wordBreak: 'keep-all',
-          flexShrink: 0,
         }}>
           {title}
         </div>
@@ -100,11 +100,10 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           height: '1.5px',
           backgroundColor: ruleClr,
           marginBottom: compact ? '20px' : '28px',
-          flexShrink: 0,
         }} />
 
         {/* 본문 */}
-        <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
+        <div style={{ overflow: 'hidden' }}>
           {paragraphs.length > 0 ? (
             paragraphs.map((p, i) => (
               <p key={i} style={{
@@ -120,14 +119,9 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
               </p>
             ))
           ) : (
-            <div style={{
-              height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              opacity: 0.25,
-            }}>
-              <p style={{ fontSize: '11px', color: '#a8a29e', fontStyle: 'italic', fontFamily: "'Gowun Batang', serif" }}>
-                기록이 없습니다
-              </p>
-            </div>
+            <p style={{ fontSize: '11px', color: '#a8a29e', fontStyle: 'italic', fontFamily: "'Gowun Batang', serif", opacity: 0.4 }}>
+              기록이 없습니다
+            </p>
           )}
         </div>
 
@@ -135,7 +129,6 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
         {verse && (
           <div style={{
             marginTop: compact ? '22px' : '36px',
-            flexShrink: 0,
             borderRadius: compact ? 8 : 12,
             backgroundColor: qClr.bg,
             padding: compact ? '14px 18px 14px' : '20px 24px 18px',
