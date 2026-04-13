@@ -226,28 +226,31 @@ function getCategoryTheme(category: string, season: Season): CategoryTheme {
   // 수련회 — 계절별 분기
   if (category === '수련회') {
     if (season === 'summer') return {
-      bg: 'linear-gradient(160deg, #040E08 0%, #071A10 50%, #040E08 100%)',
-      accent: 'rgba(255,208,80,0.85)',
-      accentSolid: 'rgba(255,208,80,0.45)',
+      // 여름 밤: 따뜻한 황금빛 어둠 (캠프파이어 / 반딧불)
+      bg: 'linear-gradient(160deg, #100E02 0%, #2A1E04 45%, #1A1402 100%)',
+      accent: 'rgba(255,212,80,0.95)',
+      accentSolid: 'rgba(255,212,80,0.55)',
       decoration: <Fireflies />,
     }
     if (season === 'spring') return {
-      bg: 'linear-gradient(160deg, #140A18 0%, #241030 50%, #140A18 100%)',
-      accent: 'rgba(255,180,210,0.85)',
-      accentSolid: 'rgba(255,180,210,0.45)',
+      // 봄 황혼: 보랏빛 분홍 (벚꽃 저녁)
+      bg: 'linear-gradient(160deg, #1A0C20 0%, #32163C 45%, #1A0C20 100%)',
+      accent: 'rgba(255,185,215,0.92)',
+      accentSolid: 'rgba(255,185,215,0.5)',
       decoration: <Petals />,
     }
     if (season === 'autumn') return {
-      bg: 'linear-gradient(160deg, #120600 0%, #261000 50%, #120600 100%)',
-      accent: 'rgba(220,130,40,0.9)',
-      accentSolid: 'rgba(220,130,40,0.5)',
+      // 가을 저녁: 진한 버건디/갈색
+      bg: 'linear-gradient(160deg, #200400 0%, #3C0A00 45%, #200400 100%)',
+      accent: 'rgba(230,140,50,0.95)',
+      accentSolid: 'rgba(230,140,50,0.55)',
       decoration: <AutumnLeaves />,
     }
-    // 겨울 or null → 기본 (차가운 별밤)
+    // 겨울 or null → 차가운 별밤 (네이비)
     return {
-      bg: 'linear-gradient(160deg, #06101E 0%, #0C1B3A 50%, #06101E 100%)',
-      accent: 'rgba(180,210,255,0.75)',
-      accentSolid: 'rgba(180,210,255,0.4)',
+      bg: 'linear-gradient(160deg, #06101E 0%, #0C1B3A 45%, #06101E 100%)',
+      accent: 'rgba(180,210,255,0.82)',
+      accentSolid: 'rgba(180,210,255,0.45)',
       decoration: <WinterStars />,
     }
   }
@@ -255,27 +258,30 @@ function getCategoryTheme(category: string, season: Season): CategoryTheme {
   // 캠프 — 계절별 분기
   if (category === '캠프') {
     if (season === 'summer') return {
-      bg: 'linear-gradient(160deg, #041008 0%, #082010 50%, #041008 100%)',
-      accent: 'rgba(130,220,90,0.85)',
-      accentSolid: 'rgba(130,220,90,0.4)',
+      // 여름 숲: 진한 초록 밤
+      bg: 'linear-gradient(160deg, #041204 0%, #0C2A0C 45%, #041204 100%)',
+      accent: 'rgba(140,230,100,0.92)',
+      accentSolid: 'rgba(140,230,100,0.45)',
       decoration: <Fireflies />,
     }
     if (season === 'spring') return {
-      bg: 'linear-gradient(160deg, #071408 0%, #122A14 50%, #071408 100%)',
-      accent: 'rgba(160,230,120,0.85)',
-      accentSolid: 'rgba(160,230,120,0.4)',
+      // 봄 숲: 연두빛 새벽
+      bg: 'linear-gradient(160deg, #061408 0%, #103018 45%, #061408 100%)',
+      accent: 'rgba(170,240,130,0.9)',
+      accentSolid: 'rgba(170,240,130,0.45)',
       decoration: <Petals />,
     }
     if (season === 'autumn') return {
-      bg: 'linear-gradient(160deg, #100800 0%, #221400 50%, #100800 100%)',
-      accent: 'rgba(200,140,40,0.85)',
-      accentSolid: 'rgba(200,140,40,0.4)',
+      // 가을 숲: 깊은 호박색
+      bg: 'linear-gradient(160deg, #160800 0%, #2E1400 45%, #160800 100%)',
+      accent: 'rgba(210,148,50,0.92)',
+      accentSolid: 'rgba(210,148,50,0.45)',
       decoration: <AutumnLeaves />,
     }
     // 겨울 or null
     return {
-      bg: 'linear-gradient(160deg, #071408 0%, #122A14 50%, #071408 100%)',
-      accent: 'rgba(130,196,88,0.8)',
+      bg: 'linear-gradient(160deg, #071408 0%, #122A14 45%, #071408 100%)',
+      accent: 'rgba(130,196,88,0.85)',
       accentSolid: 'rgba(130,196,88,0.4)',
       decoration: <Leaves />,
     }
