@@ -226,10 +226,10 @@ function getCategoryTheme(category: string, season: Season): CategoryTheme {
   // 수련회 — 계절별 분기
   if (category === '수련회') {
     if (season === 'summer') return {
-      // 여름 밤: 따뜻한 황금빛 어둠 (캠프파이어 / 반딧불)
-      bg: 'linear-gradient(160deg, #100E02 0%, #2A1E04 45%, #1A1402 100%)',
-      accent: 'rgba(255,212,80,0.95)',
-      accentSolid: 'rgba(255,212,80,0.55)',
+      // 여름: 깊고 선명한 하늘/바다색
+      bg: 'linear-gradient(160deg, #0A2040 0%, #1A4878 45%, #0A2040 100%)',
+      accent: 'rgba(120,200,255,0.95)',
+      accentSolid: 'rgba(120,200,255,0.5)',
       decoration: <Fireflies />,
     }
     if (season === 'spring') return {
@@ -258,10 +258,10 @@ function getCategoryTheme(category: string, season: Season): CategoryTheme {
   // 캠프 — 계절별 분기
   if (category === '캠프') {
     if (season === 'summer') return {
-      // 여름 숲: 진한 초록 밤
-      bg: 'linear-gradient(160deg, #041204 0%, #0C2A0C 45%, #041204 100%)',
-      accent: 'rgba(140,230,100,0.92)',
-      accentSolid: 'rgba(140,230,100,0.45)',
+      // 여름 캠프: 선명한 숲 초록
+      bg: 'linear-gradient(160deg, #082410 0%, #145A22 45%, #082410 100%)',
+      accent: 'rgba(100,230,120,0.95)',
+      accentSolid: 'rgba(100,230,120,0.5)',
       decoration: <Fireflies />,
     }
     if (season === 'spring') return {
