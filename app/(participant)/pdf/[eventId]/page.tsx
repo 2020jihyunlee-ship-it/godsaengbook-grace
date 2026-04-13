@@ -20,12 +20,21 @@ function getCategoryBg(category: string): string {
 }
 
 function getCategoryAccent(category: string): string {
-  if (category === '수련회') return 'rgba(180,210,255,0.75)'
-  if (category === '선교')   return 'rgba(224,140,60,0.85)'
-  if (category === '캠프')   return 'rgba(130,196,88,0.85)'
-  if (category === '예배')   return 'rgba(210,180,255,0.85)'
-  if (category === '모임')   return 'rgba(212,136,44,0.85)'
-  return 'rgba(160,175,230,0.75)'
+  if (category === '수련회') return 'rgba(180,210,255,0.8)'
+  if (category === '선교')   return 'rgba(224,140,60,0.9)'
+  if (category === '캠프')   return 'rgba(130,196,88,0.9)'
+  if (category === '예배')   return 'rgba(210,180,255,0.9)'
+  if (category === '모임')   return 'rgba(212,136,44,0.9)'
+  return 'rgba(160,175,230,0.8)'
+}
+
+function getAccentSolid(category: string): string {
+  if (category === '수련회') return '#7BA8D4'
+  if (category === '선교')   return '#C07838'
+  if (category === '캠프')   return '#6BAA3A'
+  if (category === '예배')   return '#9B6FD0'
+  if (category === '모임')   return '#C07828'
+  return '#C9A84C'
 }
 
 export default function PdfPage() {
@@ -64,14 +73,10 @@ export default function PdfPage() {
     load()
   }, [eventId, router])
 
-  function handlePrint() {
-    window.print()
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-stone-300 border-t-stone-500 rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#F5EFE4] flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-stone-300 border-t-[#C9A84C] rounded-full animate-spin" />
       </div>
     )
   }
@@ -79,6 +84,7 @@ export default function PdfPage() {
   if (!event) return null
 
   const icon = CATEGORY_ICON[event.category] ?? '📌'
+  const accent = getAccentSolid(event.category)
   const dateStr = event.dates_start
     ? event.dates_start + (event.dates_end && event.dates_end !== event.dates_start ? ` ~ ${event.dates_end}` : '')
     : ''
@@ -86,156 +92,219 @@ export default function PdfPage() {
 
   return (
     <>
-      {/* 인쇄 전용 전역 스타일 */}
       <style>{`
         @media print {
           .no-print { display: none !important; }
-          body { margin: 0; }
-          .page-break { page-break-after: always; break-after: page; }
-          .pdf-page { box-shadow: none !important; margin: 0 !important; border-radius: 0 !important; }
+          body { margin: 0; background: white; }
+          .pdf-section { box-shadow: none !important; break-inside: avoid; }
+          .pdf-cover { break-after: page; }
         }
-        @page {
-          size: A4 portrait;
-          margin: 0;
-        }
+        @page { size: A4 portrait; margin: 12mm 10mm; }
       `}</style>
 
-      {/* 상단 버튼 바 (인쇄 시 숨김) */}
-      <div className="no-print sticky top-0 z-10 bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between">
-        <button onClick={() => router.back()} className="text-sm text-stone-500 px-1">← 뒤로</button>
-        <p className="text-sm font-semibold text-stone-700">{participantName}의 은혜북</p>
+      {/* 상단 바 */}
+      <div className="no-print sticky top-0 z-10 bg-white border-b border-[#E8D5A3] px-4 py-3 flex items-center justify-between">
+        <button onClick={() => router.back()} className="text-sm text-[#8C6E55]">← 뒤로</button>
+        <p className="text-sm font-semibold text-[#3D2B1F]">{participantName}의 은혜북</p>
         <button
-          onClick={handlePrint}
-          className="flex items-center gap-1.5 px-4 py-2 bg-[#C9A84C] text-white text-sm font-semibold rounded-full"
+          onClick={() => window.print()}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 20, backgroundColor: '#C9A84C', border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-          PDF 저장
+          ↓ PDF 저장
         </button>
       </div>
 
-      {/* PDF 본문 */}
-      <div className="bg-stone-100 min-h-screen py-8 px-4">
-        <div className="max-w-[794px] mx-auto space-y-6">
+      {/* 본문 */}
+      <div style={{ backgroundColor: '#F0EBE3', minHeight: '100vh', padding: '24px 16px 48px' }}>
+        <div style={{ maxWidth: 600, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* ── 표지 ── */}
           <div
-            className="pdf-page page-break relative w-full overflow-hidden shadow-md"
+            className="pdf-cover"
             style={{
-              aspectRatio: '210/297',
+              borderRadius: 16,
+              overflow: 'hidden',
+              aspectRatio: '3/4',
+              position: 'relative',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
               background: coverPhoto ? 'none' : getCategoryBg(event.category),
             }}
           >
             {coverPhoto && (
               <>
-                <img src={coverPhoto} alt="표지" className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,5,20,0.85) 45%, rgba(10,5,20,0.2) 100%)' }} />
+                <img src={coverPhoto} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,5,20,0.88) 40%, rgba(10,5,20,0.15) 100%)' }} />
               </>
             )}
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center">
-              <div className="text-5xl mb-5">{icon}</div>
-              <p style={{ fontSize: 9, color: getCategoryAccent(event.category), letterSpacing: '0.2em', marginBottom: 18 }}>
-                GOD-SAENG BOOK
-              </p>
-              <div style={{ width: 1, height: 32, backgroundColor: getCategoryAccent(event.category), opacity: 0.45, margin: '0 auto 20px' }} />
-              <h1 className="text-white font-semibold text-3xl leading-tight mb-3">{event.name}</h1>
-              <p className="text-white/65 text-sm mb-5">{participantName}</p>
-              <div style={{ width: 36, height: 1, backgroundColor: getCategoryAccent(event.category), opacity: 0.45, margin: '0 auto 16px' }} />
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.38)', letterSpacing: '0.06em', lineHeight: 1.9 }}>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 32px', textAlign: 'center' }}>
+              <div style={{ fontSize: 40, marginBottom: 16 }}>{icon}</div>
+              <p style={{ fontSize: 9, color: getCategoryAccent(event.category), letterSpacing: '0.22em', marginBottom: 20 }}>GOD-SAENG BOOK</p>
+              <div style={{ width: 1, height: 28, backgroundColor: getCategoryAccent(event.category), opacity: 0.4, marginBottom: 20 }} />
+              <h1 style={{ color: '#fff', fontSize: 26, fontWeight: 700, lineHeight: 1.35, marginBottom: 10, wordBreak: 'keep-all' }}>{event.name}</h1>
+              <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, marginBottom: 20 }}>{participantName}</p>
+              <div style={{ width: 32, height: 1, backgroundColor: getCategoryAccent(event.category), opacity: 0.4, marginBottom: 16 }} />
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', lineHeight: 1.9, letterSpacing: '0.05em' }}>
                 {dateStr && <p>{dateStr}</p>}
                 <p>{event.category}</p>
               </div>
             </div>
-            <p style={{ position: 'absolute', bottom: 20, left: 0, right: 0, textAlign: 'center', fontSize: 8, color: 'rgba(255,255,255,0.12)', letterSpacing: '0.1em' }}>
-              MEMORY BOOK
-            </p>
+            <p style={{ position: 'absolute', bottom: 16, left: 0, right: 0, textAlign: 'center', fontSize: 8, color: 'rgba(255,255,255,0.1)', letterSpacing: '0.12em' }}>MEMORY BOOK</p>
           </div>
 
-          {/* ── 섹션별 페이지 ── */}
+          {/* ── 섹션별 카드 ── */}
           {sections.map((section, i) => {
             const entry = entries[section.id]
-            const isLast = i === sections.length - 1
+            const hasPhoto = !!entry?.photo_url
+            const hasText = !!entry?.body_text
+            const hasVerse = !!entry?.bible_verse
+            const hasQuote = !!entry?.quote_text
+
             return (
               <div
                 key={section.id}
-                className={`pdf-page bg-white shadow-md overflow-hidden ${!isLast ? 'page-break' : ''}`}
-                style={{ borderRadius: 8 }}
+                className="pdf-section"
+                style={{
+                  backgroundColor: '#fff',
+                  borderRadius: 16,
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                }}
               >
                 {/* 섹션 헤더 */}
-                <div style={{ background: 'linear-gradient(90deg, #F5EFE4, #FDFAF5)', borderBottom: '1px solid #E8D5A3', padding: '20px 28px 16px' }}>
-                  <div className="flex items-center gap-2">
-                    <span style={{ fontSize: 11, color: '#C9A84C', fontWeight: 600, letterSpacing: '0.08em' }}>
+                <div style={{ padding: '18px 22px 14px', borderBottom: `2px solid ${accent}20` }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                    <span style={{ fontSize: 11, color: accent, fontWeight: 700, letterSpacing: '0.1em', flexShrink: 0 }}>
                       {String(section.order).padStart(2, '0')}
                     </span>
-                    <h2 style={{ fontSize: 18, fontWeight: 700, color: '#3D2B1F', margin: 0 }}>{section.title}</h2>
+                    <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1A1208', margin: 0, lineHeight: 1.3, wordBreak: 'keep-all' }}>
+                      {section.title}
+                    </h2>
                   </div>
                   {section.section_date && (
-                    <p style={{ fontSize: 12, color: '#8C6E55', marginTop: 4 }}>{section.section_date}</p>
+                    <p style={{ fontSize: 11, color: '#B0A090', marginTop: 5, marginLeft: 21 }}>{section.section_date}</p>
                   )}
                 </div>
 
-                <div style={{ display: 'flex', minHeight: 360 }}>
-                  {/* 사진 */}
-                  <div style={{ width: '42%', flexShrink: 0, background: '#F5EFE4', position: 'relative', overflow: 'hidden' }}>
-                    {entry?.photo_url ? (
-                      <img
-                        src={entry.photo_url}
-                        alt={section.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: 280 }}
-                      />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%', minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: 32, opacity: 0.3 }}>📷</span>
-                      </div>
-                    )}
+                {/* 사진 — 풀 너비 */}
+                {hasPhoto ? (
+                  <div style={{ position: 'relative', width: '100%', maxHeight: 260, overflow: 'hidden' }}>
+                    <img
+                      src={entry.photo_url!}
+                      alt={section.title}
+                      style={{ width: '100%', height: 240, objectFit: 'cover', display: 'block' }}
+                    />
+                    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, rgba(255,255,255,0.9), transparent)' }} />
                   </div>
+                ) : (
+                  <div style={{ height: 80, backgroundColor: `${accent}12`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: 28, opacity: 0.25 }}>📷</span>
+                  </div>
+                )}
 
-                  {/* 텍스트 */}
-                  <div style={{ flex: 1, padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    {entry?.body_text ? (
-                      <p style={{ fontSize: 14, lineHeight: 1.9, color: '#3D2B1F', whiteSpace: 'pre-wrap', flex: 1 }}>
-                        {entry.body_text}
+                {/* 텍스트 본문 */}
+                <div style={{ padding: '20px 22px' }}>
+                  {hasText ? (
+                    <p style={{
+                      fontSize: 15,
+                      lineHeight: 1.95,
+                      color: '#2A2018',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'keep-all',
+                      margin: 0,
+                    }}>
+                      {entry.body_text}
+                    </p>
+                  ) : (
+                    <p style={{ fontSize: 13, color: '#C9B990', fontStyle: 'italic' }}>기록이 없습니다.</p>
+                  )}
+
+                  {/* 말씀 구절 */}
+                  {hasVerse && (
+                    <div style={{
+                      marginTop: 20,
+                      padding: '14px 18px',
+                      borderRadius: 10,
+                      backgroundColor: `${accent}12`,
+                      borderLeft: `3px solid ${accent}`,
+                    }}>
+                      <p style={{ fontSize: 14, color: '#3A2E20', lineHeight: 1.85, fontStyle: 'italic', margin: 0, wordBreak: 'keep-all' }}>
+                        &ldquo;{entry.bible_verse}&rdquo;
                       </p>
-                    ) : (
-                      <p style={{ fontSize: 13, color: '#C9B990', fontStyle: 'italic', flex: 1 }}>기록이 없습니다.</p>
-                    )}
+                    </div>
+                  )}
 
-                    {entry?.bible_verse && (
-                      <div style={{ borderLeft: '3px solid #C9A84C', paddingLeft: 12, marginTop: 'auto' }}>
-                        <p style={{ fontSize: 13, color: '#8C6E55', lineHeight: 1.7, fontStyle: 'italic' }}>
-                          "{entry.bible_verse}"
-                        </p>
-                      </div>
-                    )}
-
-                    {entry?.quote_text && (
-                      <div style={{ background: '#F5EFE4', borderRadius: 8, padding: '10px 14px' }}>
-                        <p style={{ fontSize: 12, color: '#8C6E55', lineHeight: 1.6 }}>💬 {entry.quote_text}</p>
-                      </div>
-                    )}
-                  </div>
+                  {/* 인상 깊은 말 */}
+                  {hasQuote && (
+                    <div style={{
+                      marginTop: 12,
+                      padding: '12px 16px',
+                      borderRadius: 10,
+                      backgroundColor: '#F5EFE4',
+                    }}>
+                      <p style={{ fontSize: 13, color: '#6B5040', lineHeight: 1.75, margin: 0, wordBreak: 'keep-all' }}>
+                        💬 {entry.quote_text}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                {/* 하단 페이지 번호 */}
-                <div style={{ borderTop: '1px solid #F0E8D8', padding: '8px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 10, color: '#C9B990' }}>갓생북 은혜</span>
-                  <span style={{ fontSize: 10, color: '#C9B990' }}>p.{i + 2}</span>
+                {/* 카드 푸터 */}
+                <div style={{ padding: '10px 22px', borderTop: '1px solid #F0E8D8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 10, color: '#C9B890', letterSpacing: '0.06em' }}>갓생북 은혜</span>
+                  <span style={{ fontSize: 10, color: '#C9B890' }}>p.{i + 2}</span>
                 </div>
               </div>
             )
           })}
 
-          {/* ── 마지막 페이지 ── */}
-          <div
-            className="pdf-page bg-white shadow-md overflow-hidden"
-            style={{ borderRadius: 8, padding: '60px 40px', textAlign: 'center' }}
-          >
-            <div style={{ width: 40, height: 2, background: '#C9A84C', margin: '0 auto 24px' }} />
-            <p style={{ fontSize: 20, fontWeight: 700, color: '#3D2B1F', marginBottom: 8 }}>{event.name}</p>
-            <p style={{ fontSize: 14, color: '#8C6E55', marginBottom: 4 }}>{participantName}</p>
-            {dateStr && <p style={{ fontSize: 12, color: '#C9B990' }}>{dateStr}</p>}
-            <p style={{ fontSize: 11, color: '#C9B990', marginTop: 40 }}>갓생북 은혜 — 소중한 기억을, 기록되는 은혜로</p>
+          {/* ── 마지막 카드 — 브랜딩 ── */}
+          <div style={{
+            borderRadius: 16,
+            overflow: 'hidden',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+          }}>
+            {/* 상단 — 크림 */}
+            <div style={{ backgroundColor: '#fff', padding: '44px 32px 36px', textAlign: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 28 }}>
+                <div style={{ width: 32, height: 1, backgroundColor: accent, opacity: 0.45 }} />
+                <div style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: accent, opacity: 0.65 }} />
+                <div style={{ width: 32, height: 1, backgroundColor: accent, opacity: 0.45 }} />
+              </div>
+              <p style={{ fontSize: 22, fontWeight: 700, color: '#1A1208', marginBottom: 10, wordBreak: 'keep-all', lineHeight: 1.35 }}>{event.name}</p>
+              <p style={{ fontSize: 15, color: accent, marginBottom: 6, fontWeight: 500 }}>{participantName}</p>
+              {dateStr && <p style={{ fontSize: 12, color: '#B0A090' }}>{dateStr}</p>}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 28 }}>
+                <div style={{ width: 32, height: 1, backgroundColor: accent, opacity: 0.45 }} />
+                <div style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: accent, opacity: 0.65 }} />
+                <div style={{ width: 32, height: 1, backgroundColor: accent, opacity: 0.45 }} />
+              </div>
+              <p style={{ fontSize: 12, color: '#C9B890', marginTop: 28, lineHeight: 1.8, wordBreak: 'keep-all' }}>
+                소중한 기억을, 기록되는 은혜로
+              </p>
+            </div>
+            {/* 하단 — 브랜딩 배너 */}
+            <div style={{
+              background: 'linear-gradient(135deg, #2A1A08, #4A2E10)',
+              padding: '20px 28px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+              <div>
+                <p style={{ fontSize: 13, color: '#C9A84C', fontWeight: 700, letterSpacing: '0.06em', marginBottom: 3 }}>
+                  갓생북 은혜
+                </p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em' }}>
+                  교회 공동체를 위한 기록 플립북
+                </p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.03em', lineHeight: 1.7 }}>
+                  godsaengbook-grace.vercel.app
+                </p>
+                <p style={{ fontSize: 9, color: 'rgba(201,168,76,0.6)', marginTop: 2 }}>무료로 만들어보세요 →</p>
+              </div>
+            </div>
           </div>
 
         </div>
