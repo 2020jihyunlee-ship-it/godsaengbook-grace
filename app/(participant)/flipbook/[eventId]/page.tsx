@@ -166,7 +166,19 @@ export default function FlipbookPage() {
           ←
         </button>
         <p className="text-sm font-semibold text-[#3D2B1F]">{participantName}의 은혜북</p>
-        <div style={{ width: 32 }} />
+        {/* 항상 보이는 PDF 저장 버튼 */}
+        <button
+          onClick={() => router.push(`/pdf/${eventId}`)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            padding: '6px 12px', borderRadius: 20,
+            backgroundColor: '#C9A84C', border: 'none',
+            color: '#fff', fontSize: 12, fontWeight: 700,
+            cursor: 'pointer', whiteSpace: 'nowrap',
+          }}
+        >
+          📥 PDF
+        </button>
       </header>
 
       {/* 플립북 — entries가 바뀌면 key가 바뀌어 재마운트됨 */}
@@ -208,23 +220,23 @@ export default function FlipbookPage() {
           onClick={() => router.push(`/record/${eventId}`)}
           className="flex-1 py-2.5 text-sm text-[#8C6E55] rounded-2xl border border-[#E8D5A3] bg-white active:bg-[#F5EFE4]"
         >
-          ✏️ 기록 수정
+          ✏️ 수정
+        </button>
+        <button
+          onClick={() => router.push(`/pdf/${eventId}`)}
+          className="flex-1 py-2.5 text-sm font-bold text-white rounded-2xl"
+          style={{ backgroundColor: '#C9A84C', fontSize: 13 }}
+        >
+          📥 PDF 저장
         </button>
         <button
           onClick={() => {
             const url = `${window.location.origin}/share/${participantId}`
-            navigator.clipboard.writeText(url).then(() => alert('링크가 복사됐어요! 카카오톡으로 공유해보세요 🎉'))
+            navigator.clipboard.writeText(url).then(() => alert('링크가 복사됐어요!\n(30일간 유효해요)'))
           }}
-          className="flex-1 py-2.5 text-sm font-medium text-white rounded-2xl"
-          style={{ backgroundColor: '#C9A84C' }}
-        >
-          🔗 링크 공유
-        </button>
-        <button
-          onClick={() => router.push(`/pdf/${eventId}`)}
           className="flex-1 py-2.5 text-sm text-[#8C6E55] rounded-2xl border border-[#E8D5A3] bg-white active:bg-[#F5EFE4]"
         >
-          📄 PDF 저장
+          🔗 공유
         </button>
         {currentSection && (
           <button
