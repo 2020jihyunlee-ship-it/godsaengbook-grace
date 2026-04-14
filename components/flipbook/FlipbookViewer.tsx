@@ -157,7 +157,7 @@ function MobileCardView({
           aspectRatio: '3 / 4',
           borderRadius: 16,
           overflow: 'hidden',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
+          boxShadow: '20px 20px 60px -10px rgba(28,28,25,0.18), 5px 5px 15px -5px rgba(28,28,25,0.12)',
           position: 'relative',
         }}>
           {renderPage()}

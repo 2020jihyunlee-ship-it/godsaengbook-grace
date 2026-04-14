@@ -338,8 +338,14 @@ const PageCover = React.forwardRef<HTMLDivElement, PageCoverProps>(
         {/* 배경 */}
         {coverPhotoUrl ? (
           <>
-            <img src={coverPhotoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.72) 100%)' }} />
+            {/* 카테고리 색 베이스 — 사진과 blend */}
+            <div className="absolute inset-0" style={{ background: theme.bg }} />
+            <img
+              src={coverPhotoUrl} alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ mixBlendMode: 'multiply', opacity: 0.75 }}
+            />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.65) 100%)' }} />
           </>
         ) : (
           <div className="absolute inset-0" style={{ background: theme.bg }} />
@@ -347,6 +353,30 @@ const PageCover = React.forwardRef<HTMLDivElement, PageCoverProps>(
 
         {/* 카테고리+계절 장식 (사진 없을 때만) */}
         {!coverPhotoUrl && theme.decoration}
+
+        {/* 종이 질감 오버레이 */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          style={{ opacity: 0.045 }}
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <filter id="coverNoise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="3" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#coverNoise)" />
+        </svg>
+
+        {/* 오른쪽 테두리 — 페이지 엣지 */}
+        <div className="absolute inset-y-0 right-0 w-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
+
+        {/* 책등(spine) — 왼쪽 그라디언트 */}
+        <div
+          className="absolute inset-y-0 left-0"
+          style={{
+            width: compact ? '5px' : '7px',
+            background: 'linear-gradient(90deg, rgba(0,0,0,0.35) 0%, rgba(255,255,255,0.04) 60%, rgba(0,0,0,0.12) 100%)',
+          }}
+        />
 
         {/* 콘텐츠 */}
         <div className="relative z-10 w-full h-full flex flex-col items-center justify-center"
