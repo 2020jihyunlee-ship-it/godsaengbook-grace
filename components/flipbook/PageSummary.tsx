@@ -65,13 +65,13 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
             </h2>
           </div>
 
-          {/* 사진 */}
-          {summaryPhotoUrl && (
+          {/* 사진 — 모바일(compact)에서만 표시. 데스크탑은 왼쪽 페이지에 별도 표시 */}
+          {summaryPhotoUrl && compact && (
             <div style={{
               marginBottom: 14,
-              borderRadius: compact ? 8 : 12,
+              borderRadius: 8,
               overflow: 'hidden',
-              height: compact ? 110 : 160,
+              height: 110,
               boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
               position: 'relative',
             }}>
@@ -92,7 +92,7 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
               color: '#3A2E26',
               wordBreak: 'keep-all',
               display: '-webkit-box',
-              WebkitLineClamp: summaryPhotoUrl ? (compact ? 7 : 9) : (compact ? 13 : 15),
+              WebkitLineClamp: (compact && summaryPhotoUrl) ? 7 : (compact ? 13 : 15),
               WebkitBoxOrient: 'vertical' as const,
               overflow: 'hidden',
             }}>

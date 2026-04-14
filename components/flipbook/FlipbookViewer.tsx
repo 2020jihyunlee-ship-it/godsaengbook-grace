@@ -410,52 +410,23 @@ export default function FlipbookViewer({
             ]
           }).flat()}
 
-          {/* ── 마지막-1: 총평 (왼쪽) ── */}
-          <PageSummary
-            summaryText={summaryText ?? null}
-            summaryPhotoUrl={summaryPhotoUrl ?? null}
-            eventName={event.name}
-            authorName={event.author_name ?? null}
+          {/* ── 마지막-1: 총평 사진 (왼쪽) ── */}
+          <PagePhotoLeft
+            photoUrl={summaryPhotoUrl ?? null}
+            caption="마무리 총평"
             pageNum={4 + sections.length * 2}
-            compact={false}
             category={event.category}
           />
 
-          {/* ── 마지막: 뒷표지 (오른쪽, 총평과 짝) ── */}
-          <div className="w-full h-full flex flex-col items-center justify-center select-none"
-            style={{ backgroundColor: '#F5EFE4', position: 'relative', overflow: 'hidden' }}>
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.07 }}
-              viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice">
-              {Array.from({ length: 14 }).map((_, i) => (
-                <line key={i} x1={-20 + i * 16} y1="0" x2={i * 16 - 40} y2="140"
-                  stroke="#C9A84C" strokeWidth="0.5" />
-              ))}
-            </svg>
-            <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '0 40px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginBottom: 28 }}>
-                <div style={{ width: 28, height: 1, backgroundColor: '#C9A84C', opacity: 0.5 }} />
-                <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#C9A84C', opacity: 0.6 }} />
-                <div style={{ width: 28, height: 1, backgroundColor: '#C9A84C', opacity: 0.5 }} />
-              </div>
-              <p style={{ fontSize: '13px', color: '#C9A84C', letterSpacing: '0.28em', fontWeight: 600, marginBottom: 8 }}>
-                갓생북 은혜
-              </p>
-              <p style={{ fontSize: '9px', color: '#B8A878', letterSpacing: '0.18em', opacity: 0.8 }}>
-                God-Saeng Book Grace
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginTop: 28 }}>
-                <div style={{ width: 28, height: 1, backgroundColor: '#C9A84C', opacity: 0.5 }} />
-                <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#C9A84C', opacity: 0.6 }} />
-                <div style={{ width: 28, height: 1, backgroundColor: '#C9A84C', opacity: 0.5 }} />
-              </div>
-            </div>
-            <p style={{
-              position: 'absolute', bottom: 20,
-              fontSize: '8px', color: '#C9B890', letterSpacing: '0.1em', opacity: 0.6,
-            }}>
-              순간의 은혜가 평생의 기억으로
-            </p>
-          </div>
+          {/* ── 마지막: 총평 텍스트 (오른쪽) ── */}
+          <PageSummary
+            summaryText={summaryText ?? null}
+            eventName={event.name}
+            authorName={event.author_name ?? null}
+            pageNum={4 + sections.length * 2 + 1}
+            compact={false}
+            category={event.category}
+          />
         </HTMLFlipBook>
 
       </div>
