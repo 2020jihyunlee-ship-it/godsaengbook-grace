@@ -237,8 +237,10 @@ export default function FlipbookViewer({
       if (forcePortrait) {
         setPageW(Math.min(Math.floor(window.innerWidth * 0.78), 340))
       } else {
-        const available = window.innerWidth - 160
-        setPageW(Math.min(Math.floor(available / 2), 480))
+        const byWidth = Math.min(Math.floor((window.innerWidth - 160) / 2), 480)
+        // 높이 기준: 화면 높이에서 헤더+화살표+패딩 여백 220px 빼고 책 비율(1.414)로 나눔
+        const byHeight = Math.floor((window.innerHeight - 220) / 1.414)
+        setPageW(Math.min(byWidth, byHeight))
       }
     }
     check()
