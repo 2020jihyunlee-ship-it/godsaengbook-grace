@@ -189,17 +189,32 @@ const PageEssayRight = React.forwardRef<HTMLDivElement, PageEssayRightProps>(
           )}
         </div>
 
+        {/* 페이지 컬 힌트 */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          width: 22,
+          height: 22,
+          pointerEvents: 'none',
+          background: 'linear-gradient(225deg, #EDE8E2 42%, rgba(0,0,0,0.08) 50%, transparent 56%)',
+        }} />
+
         {/* 페이지 번호 */}
-        <p style={{
+        <div style={{
           position: 'absolute',
           bottom: compact ? '12px' : '18px',
           right: compact ? '20px' : '24px',
-          fontSize: '9px',
-          color: '#CCC',
-          letterSpacing: '0.06em',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 1,
         }}>
-          P.{String(pageNum).padStart(2, '0')}
-        </p>
+          <span style={{ fontSize: '8px', color: '#CCC', lineHeight: 1 }}>~</span>
+          <span style={{ fontSize: '9px', color: '#CCC', letterSpacing: '0.06em', lineHeight: 1 }}>
+            {String(pageNum).padStart(2, '0')}
+          </span>
+        </div>
       </div>
     )
   }

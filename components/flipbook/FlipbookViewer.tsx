@@ -297,6 +297,18 @@ export default function FlipbookViewer({
     >
       {/* 책 본체 + 중앙 제본 그림자 */}
       <div style={{ position: 'relative', display: 'inline-block' }}>
+        {/* 거터 그림자 오버레이 */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 56,
+          pointerEvents: 'none',
+          zIndex: 10,
+          background: 'linear-gradient(90deg, rgba(0,0,0,0.14) 0%, rgba(0,0,0,0.04) 28%, transparent 50%, rgba(0,0,0,0.04) 72%, rgba(0,0,0,0.14) 100%)',
+        }} />
         <HTMLFlipBook
           ref={bookRef}
           width={W}

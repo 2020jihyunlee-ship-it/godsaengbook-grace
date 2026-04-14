@@ -121,6 +121,17 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
           )}
         </div>
 
+        {/* 페이지 컬 힌트 */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          width: 22,
+          height: 22,
+          pointerEvents: 'none',
+          background: 'linear-gradient(225deg, #EDE8E2 42%, rgba(0,0,0,0.08) 50%, transparent 56%)',
+        }} />
+
         {/* 하단 고정 푸터 */}
         <div style={{
           position: 'absolute',
@@ -146,9 +157,12 @@ const PageSummary = React.forwardRef<HTMLDivElement, PageSummaryProps>(
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 10, height: 1, backgroundColor: accent, opacity: 0.5 }} />
-            <p style={{ fontSize: 9, color: '#c8c0b8', letterSpacing: '0.04em' }}>
-              P.{String(pageNum).padStart(2, '0')}
-            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <span style={{ fontSize: 8, color: '#c8c0b8', lineHeight: 1 }}>~</span>
+              <span style={{ fontSize: 9, color: '#c8c0b8', letterSpacing: '0.04em', lineHeight: 1 }}>
+                {String(pageNum).padStart(2, '0')}
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -112,6 +112,10 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
             position: 'relative',
             alignSelf: 'center',
             width: '88%',
+            transform: 'rotate(-1deg)',
+            padding: 5,
+            backgroundColor: '#FFFFFF',
+            boxShadow: '0 3px 18px rgba(0,0,0,0.13), 0 1px 6px rgba(0,0,0,0.07)',
           }}>
             {count > 0 ? (
               <>
@@ -120,25 +124,25 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
                   <img
                     src={allPhotos[0]}
                     alt={caption}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'grayscale(0.15) sepia(0.08)' }}
                   />
                 ) : count === 2 ? (
                   <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <div style={{ flex: '0 0 62%', overflow: 'hidden' }}>
-                      <img src={allPhotos[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      <img src={allPhotos[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'grayscale(0.15) sepia(0.08)' }} />
                     </div>
                     <div style={{ flex: 1, overflow: 'hidden' }}>
-                      <img src={allPhotos[1]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      <img src={allPhotos[1]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'grayscale(0.15) sepia(0.08)' }} />
                     </div>
                   </div>
                 ) : (
                   <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <div style={{ flex: '0 0 58%', overflow: 'hidden' }}>
-                      <img src={allPhotos[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      <img src={allPhotos[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'grayscale(0.15) sepia(0.08)' }} />
                     </div>
                     <div style={{ flex: 1, display: 'flex', gap: 2 }}>
-                      <img src={allPhotos[1]} alt="" style={{ flex: 1, objectFit: 'cover', display: 'block', minWidth: 0 }} />
-                      <img src={allPhotos[2]} alt="" style={{ flex: 1, objectFit: 'cover', display: 'block', minWidth: 0 }} />
+                      <img src={allPhotos[1]} alt="" style={{ flex: 1, objectFit: 'cover', display: 'block', minWidth: 0, filter: 'grayscale(0.15) sepia(0.08)' }} />
+                      <img src={allPhotos[2]} alt="" style={{ flex: 1, objectFit: 'cover', display: 'block', minWidth: 0, filter: 'grayscale(0.15) sepia(0.08)' }} />
                     </div>
                   </div>
                 )}
@@ -203,14 +207,12 @@ const PagePhotoLeft = React.forwardRef<HTMLDivElement, PagePhotoLeftProps>(
               }}>
                 {caption}
               </span>
-              <span style={{
-                fontSize: 9,
-                color: '#C9B890',
-                letterSpacing: '0.06em',
-                flexShrink: 0,
-              }}>
-                P.{String(pageNum).padStart(2, '0')}
-              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+                <span style={{ fontSize: 8, color: '#C9B890', lineHeight: 1 }}>~</span>
+                <span style={{ fontSize: 9, color: '#C9B890', letterSpacing: '0.06em', lineHeight: 1 }}>
+                  {String(pageNum).padStart(2, '0')}
+                </span>
+              </div>
             </div>
           </div>
 
