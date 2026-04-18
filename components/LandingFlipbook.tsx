@@ -30,19 +30,19 @@ const SPREADS: { left: PageData; right: PageData }[] = [
   },
   {
     left:  { type: 'photo', photo: '/sample-retreat.png',      caption: '수련회 · 첫째 날',         date: '2025. 07. 20', category: '수련회', pageNum: 3 },
-    right: { type: 'essay', category: '수련회', title: '수련회 · 첫째 날',         body: '강의를 들으며 얼마나 하나님을 의지하지 않고 살았는지 깨달았다. 오늘이 다시 시작의 계기가 될 것 같다.', verse: '내가 산을 향하여 눈을 들리라 나의 도움이 어디서 올까', ref: '시편 121:1', pageNum: 4 },
+    right: { type: 'essay', category: '수련회', title: '수련회 · 첫째 날',         body: '강의를 들으며 얼마나 하나님을 의지하지 않고 살았는지 깨달았다. 바쁜 일상 속에서 스스로 모든 걸 해결하려 했던 시간들이 떠올랐다. 저녁 예배 마지막 찬양을 부르며 눈물이 났다. 이유를 정확히 설명할 수는 없지만, 오랫동안 잃어버렸던 무언가를 되찾는 기분이었다.', verse: '내가 산을 향하여 눈을 들리라 나의 도움이 어디서 올까', ref: '시편 121:1', pageNum: 4 },
   },
   {
     left:  { type: 'photo', photo: '/sample-mission.png',      caption: '선교 · 아프리카',          date: '2025. 07. 21', category: '선교', pageNum: 5 },
-    right: { type: 'essay', category: '선교',   title: '선교 · 아프리카',          body: '붉은 흙 위에서 아이들과 예배드렸다. 언어도 문화도 달랐지만 같은 하나님을 향해 손을 들었다.', verse: '가서 모든 민족을 제자로 삼아', ref: '마태복음 28:19', pageNum: 6 },
+    right: { type: 'essay', category: '선교',   title: '선교 · 아프리카',          body: '붉은 흙 위에서 아이들과 예배드렸다. 언어도 문화도 달랐지만 같은 하나님을 향해 손을 들었다. 한 아이가 내 손을 꼭 잡았을 때, 말이 통하지 않아도 마음이 닿을 수 있다는 걸 온몸으로 느꼈다. 선교란 내가 전달하러 가는 것이 아니라, 함께 받는 것이기도 하다는 걸 처음 알았다.', verse: '가서 모든 민족을 제자로 삼아', ref: '마태복음 28:19', pageNum: 6 },
   },
   {
     left:  { type: 'photo', photo: '/sample-bible-school.png', caption: '성경학교 · 언더우드기념관', date: '2025. 07. 21', category: '수련회', pageNum: 7 },
-    right: { type: 'essay', category: '수련회', title: '성경학교 · 언더우드기념관', body: '100년 전 이 땅에 복음을 심은 헌신이 오늘 내 신앙의 뿌리임을 기념관 앞에서 실감했다.', verse: '믿음의 선진들이 증거하는 것은', ref: '히브리서 12:1', pageNum: 8 },
+    right: { type: 'essay', category: '수련회', title: '성경학교 · 언더우드기념관', body: '100년 전 이 땅에 복음을 심은 헌신이 오늘 내 신앙의 뿌리임을 기념관 앞에서 실감했다. 낯선 땅에서 알지 못하는 이들을 위해 전부를 내어놓은 결단이 지금의 나를 있게 했다. 내가 받은 신앙이 그냥 주어진 것이 아님을, 처음으로 무게 있게 느꼈다.', verse: '믿음의 선진들이 증거하는 것은', ref: '히브리서 12:1', pageNum: 8 },
   },
   {
     left:  { type: 'photo', photo: '/sample-cell.png',         caption: '셀 모임 · 목요일',         date: '2025. 07. 22', category: '수련회', pageNum: 9 },
-    right: { type: 'essay', category: '모임',   title: '셀 모임 · 목요일',         body: '서로의 이야기를 들으며 내가 혼자가 아니라는 걸 다시 확인했다. 이 공동체가 감사하다.', verse: '두세 사람이 내 이름으로 모인 곳에 나도 있느니라', ref: '마태복음 18:20', pageNum: 10 },
+    right: { type: 'essay', category: '모임',   title: '셀 모임 · 목요일',         body: '서로의 이야기를 들으며 내가 혼자가 아니라는 걸 다시 확인했다. 누군가의 솔직한 고백이 내 마음 깊은 곳을 건드렸다. 세상에서는 늘 완벽한 척 살아야 할 것 같은데, 이 자리에서만큼은 약함을 내려놓을 수 있어서 좋았다. 이 공동체가 있어 감사하다.', verse: '두세 사람이 내 이름으로 모인 곳에 나도 있느니라', ref: '마태복음 18:20', pageNum: 10 },
   },
 ]
 
