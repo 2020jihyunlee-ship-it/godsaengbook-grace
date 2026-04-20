@@ -31,6 +31,7 @@ function SignupForm() {
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=/dashboard`,
         data: {
           name,
           church_name: churchName,
