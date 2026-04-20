@@ -112,11 +112,17 @@ export default function PdfPage() {
       `}</style>
 
       {/* 상단 바 */}
-      <div className="no-print sticky top-0 z-10 bg-white border-b border-[#E8D5A3] px-4 py-3 flex items-center justify-between">
+      <div className="no-print" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, backgroundColor: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #E8D5A3', padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <button onClick={() => router.back()} className="text-sm text-[#8C6E55]">← 뒤로</button>
         <p className="text-sm font-semibold text-[#3D2B1F]">{participantName}의 은혜북</p>
         <button
-          onClick={() => window.print()}
+          onClick={() => {
+            const isAndroid = /Android/i.test(navigator.userAgent)
+            if (isAndroid) {
+              alert('상단 메뉴(⋮) → "인쇄" → 저장 대상을 "PDF로 저장"으로 선택해주세요.')
+            }
+            window.print()
+          }}
           style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 20, backgroundColor: '#C9A84C', border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
         >
           ↓ PDF 저장
@@ -124,7 +130,7 @@ export default function PdfPage() {
       </div>
 
       {/* 본문 */}
-      <div style={{ backgroundColor: '#F0EBE3', minHeight: '100vh', padding: '24px 16px 48px' }}>
+      <div style={{ backgroundColor: '#F0EBE3', minHeight: '100vh', padding: '72px 16px 100px' }}>
         <div style={{ maxWidth: 600, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
           {/* ── 표지 ── */}
@@ -344,6 +350,22 @@ export default function PdfPage() {
           </div>
 
         </div>
+      </div>
+
+      {/* 하단 고정 저장 버튼 */}
+      <div className="no-print" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, backgroundColor: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)', borderTop: '1px solid #E8D5A3', padding: '12px 16px', paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}>
+        <button
+          onClick={() => {
+            const isAndroid = /Android/i.test(navigator.userAgent)
+            if (isAndroid) {
+              alert('상단 메뉴(⋮) → "인쇄" → 저장 대상을 "PDF로 저장"으로 선택해주세요.')
+            }
+            window.print()
+          }}
+          style={{ width: '100%', maxWidth: 480, display: 'block', margin: '0 auto', padding: '14px', borderRadius: 50, backgroundColor: '#C9A84C', border: 'none', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+        >
+          📥 PDF로 저장하기
+        </button>
       </div>
     </>
   )
