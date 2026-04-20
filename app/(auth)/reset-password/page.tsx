@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
             <p className="text-stone-500 text-sm mb-6">
               <strong>{email}</strong>로 비밀번호 재설정 링크를 보냈어요.
             </p>
-            <Link href="/login" className="text-brand-primary text-sm font-medium hover:underline">
+            <Link href="/login" className="text-[#6B1FAD] text-sm font-medium hover:underline">
               로그인으로 돌아가기 →
             </Link>
           </div>
@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <img src="/logo.svg" alt="갓생북" className="w-12 h-12 mx-auto mb-3" />
-            <h1 className="text-2xl font-bold text-brand-primary">비밀번호 찾기</h1>
+            <h1 className="text-2xl font-bold text-[#6B1FAD]">비밀번호 찾기</h1>
             <p className="text-stone-500 mt-1 text-sm">가입한 이메일로 재설정 링크를 보내드려요</p>
           </div>
 
@@ -69,7 +69,7 @@ export default function ResetPasswordPage() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/40"
+                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/40"
                 placeholder="hello@example.com"
               />
             </div>
@@ -87,7 +87,7 @@ export default function ResetPasswordPage() {
           </form>
 
           <p className="text-center text-sm text-stone-500 mt-4">
-            <Link href="/login" className="text-brand-primary font-medium hover:underline">
+            <Link href="/login" className="text-[#6B1FAD] font-medium hover:underline">
               ← 로그인으로 돌아가기
             </Link>
           </p>

@@ -67,7 +67,7 @@ export default function UpdatePasswordPage() {
       <PageTransition>
         <div className="min-h-screen flex items-center justify-center bg-brand-surface px-4">
           <div className="w-full max-w-sm text-center">
-            <div className="w-6 h-6 border-2 border-stone-300 border-t-brand-primary rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-6 h-6 border-2 border-stone-300 border-t-[#6B1FAD] rounded-full animate-spin mx-auto mb-4" />
             <p className="text-stone-400 text-sm">세션 확인 중...</p>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function UpdatePasswordPage() {
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <img src="/logo.svg" alt="갓생북" className="w-12 h-12 mx-auto mb-3" />
-            <h1 className="text-2xl font-bold text-brand-primary">새 비밀번호 설정</h1>
+            <h1 className="text-2xl font-bold text-[#6B1FAD]">새 비밀번호 설정</h1>
           </div>
 
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 space-y-4">
@@ -93,7 +93,7 @@ export default function UpdatePasswordPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/40"
+                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/40"
                 placeholder="6자 이상"
               />
             </div>
@@ -105,7 +105,7 @@ export default function UpdatePasswordPage() {
                 onChange={e => setConfirm(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/40"
+                className="w-full px-3 py-2 border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/40"
                 placeholder="동일하게 입력"
               />
             </div>
