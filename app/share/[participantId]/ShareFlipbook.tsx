@@ -7,10 +7,13 @@ import type { GraceSection, GraceEntry } from '@/types'
 const FlipbookViewer = dynamic(() => import('@/components/flipbook/FlipbookViewer'), { ssr: false })
 
 interface Props {
-  event: { id: string; name: string; category: string; dates_start: string | null; dates_end: string | null }
+  event: { id: string; name: string; category: string; dates_start: string | null; dates_end: string | null; toc_photo_url?: string | null }
   sections: GraceSection[]
   entries: Record<string, GraceEntry>
   participantName: string
+  tocPhotoUrl?: string | null
+  summaryText?: string | null
+  summaryPhotoUrl?: string | null
 }
 
 function getCategoryAccent(category: string): string {
@@ -22,7 +25,7 @@ function getCategoryAccent(category: string): string {
   return '#C9A84C'
 }
 
-export default function ShareFlipbook({ event, sections, entries, participantName }: Props) {
+export default function ShareFlipbook({ event, sections, entries, participantName, tocPhotoUrl, summaryText, summaryPhotoUrl }: Props) {
   const router = useRouter()
   const accent = getCategoryAccent(event.category)
 
@@ -78,6 +81,9 @@ export default function ShareFlipbook({ event, sections, entries, participantNam
           sections={sections}
           entries={entries}
           participantName={participantName}
+          tocPhotoUrl={tocPhotoUrl ?? null}
+          summaryText={summaryText ?? null}
+          summaryPhotoUrl={summaryPhotoUrl ?? null}
           onTap={() => {}}
           onPageChange={() => {}}
         />

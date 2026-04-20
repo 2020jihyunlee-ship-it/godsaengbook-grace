@@ -21,14 +21,23 @@ export default async function SharePage({ params }: { params: { participantId: s
   if (!participant) notFound()
 
   const [{ data: event }, { data: sections }] = await Promise.all([
-    supabase.from('grace_events').select('id, name, category, dates_start, dates_end').eq('id', participant.event_id).single(),
+    supabase.from('grace_events').select('id, name, category, dates_start, dates_end, toc_photo_url').eq('id', participant.event_id).single(),
     supabase.from('grace_sections').select('*').eq('event_id', participant.event_id).order('order'),
   ])
 
   if (!event || !sections) notFound()
 
   const entriesMap: Record<string, GraceEntry> = {}
-  entries?.forEach((e: GraceEntry) => { if (e.section_id) entriesMap[e.section_id] = e })
+  let summaryText: string | null = null
+  let summaryPhotoUrl: string | null = null
+  entries?.forEach((e: GraceEntry) => {
+    if (e.section_id) {
+      entriesMap[e.section_id] = e
+    } else {
+      summaryText = e.body_text ?? null
+      summaryPhotoUrl = e.photo_url ?? null
+    }
+  })
 
   return (
     <ShareFlipbook
@@ -36,6 +45,9 @@ export default async function SharePage({ params }: { params: { participantId: s
       sections={sections}
       entries={entriesMap}
       participantName={participant.name}
+      tocPhotoUrl={event.toc_photo_url ?? null}
+      summaryText={summaryText}
+      summaryPhotoUrl={summaryPhotoUrl}
     />
   )
 }
