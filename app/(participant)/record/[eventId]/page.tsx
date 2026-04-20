@@ -381,7 +381,7 @@ export default function RecordPage() {
             <div style={{ padding: '24px 28px' }}>
               <p style={{ fontSize: 14, color: '#3D2B1F', lineHeight: 1.8, marginBottom: 16 }}>
                 갓생북 은혜는 <strong>완전 무료</strong> 서비스예요.<br />
-                소중한 기록과 사진은 <strong>마지막 활동일로부터 30일</strong> 후 자동으로 삭제됩니다.
+                소중한 기록과 사진은 <strong>이벤트 종료일로부터 30일</strong> 후 자동으로 삭제됩니다.
               </p>
               <div style={{ background: '#F5EFE4', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
                 <p style={{ fontSize: 13, color: '#8C6E55', lineHeight: 1.75 }}>
@@ -473,10 +473,12 @@ export default function RecordPage() {
         {/* 헤더 */}
         <header className="bg-[#FDFAF5]/95 backdrop-blur border-b border-[#E8D5A3] px-4 py-3 sticky top-0 z-20">
           <div className="max-w-lg mx-auto flex items-center gap-3">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="text-[#8C6E55] hover:text-[#3D2B1F] text-lg leading-none p-1 -ml-1 shrink-0"
-            >←</button>
+            {(event?.event_type === 'personal' || session?.sessionToken?.startsWith('creator_')) && (
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="text-[#8C6E55] hover:text-[#3D2B1F] text-lg leading-none p-1 -ml-1 shrink-0"
+              >←</button>
+            )}
             <div className="min-w-0 flex-1">
               <p className="text-xs text-[#8C6E55] truncate">{event.name}</p>
               <p className="text-sm font-semibold text-[#3D2B1F]">{session.name} 님의 기록</p>
