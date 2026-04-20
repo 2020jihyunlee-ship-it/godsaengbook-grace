@@ -45,6 +45,8 @@ export default function PdfPage() {
   const [event, setEvent] = useState<{ name: string; category: string; dates_start: string | null; dates_end: string | null } | null>(null)
   const [sections, setSections] = useState<GraceSection[]>([])
   const [entries, setEntries] = useState<Record<string, GraceEntry>>({})
+  const [summaryText, setSummaryText] = useState<string | null>(null)
+  const [summaryPhotoUrl, setSummaryPhotoUrl] = useState<string | null>(null)
   const [participantName, setParticipantName] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -65,7 +67,14 @@ export default function PdfPage() {
       if (secs) setSections(secs)
       if (ents) {
         const map: Record<string, GraceEntry> = {}
-        ents.forEach((e: GraceEntry) => { if (e.section_id) map[e.section_id] = e })
+        ents.forEach((e: GraceEntry) => {
+          if (e.section_id) {
+            map[e.section_id] = e
+          } else {
+            setSummaryText(e.body_text ?? null)
+            setSummaryPhotoUrl(e.photo_url ?? null)
+          }
+        })
         setEntries(map)
       }
       setLoading(false)
@@ -256,6 +265,33 @@ export default function PdfPage() {
               </div>
             )
           })}
+
+          {/* ── 총평 카드 ── */}
+          {(summaryText || summaryPhotoUrl) && (
+            <div
+              className="pdf-section"
+              style={{ backgroundColor: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+            >
+              <div style={{ padding: '18px 22px 14px', borderBottom: `2px solid ${accent}20` }}>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1A1208', margin: 0 }}>✦ 마무리 총평</h2>
+              </div>
+              {summaryPhotoUrl && (
+                <div style={{ width: '100%', maxHeight: 260, overflow: 'hidden' }}>
+                  <img src={summaryPhotoUrl} alt="총평 사진" style={{ width: '100%', height: 240, objectFit: 'cover', display: 'block' }} />
+                </div>
+              )}
+              <div style={{ padding: '20px 22px' }}>
+                {summaryText && (
+                  <p style={{ fontSize: 15, lineHeight: 1.95, color: '#2A2018', whiteSpace: 'pre-wrap', wordBreak: 'keep-all', margin: 0 }}>
+                    {summaryText}
+                  </p>
+                )}
+              </div>
+              <div style={{ padding: '10px 22px', borderTop: '1px solid #F0E8D8', display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 10, color: '#C9B890', letterSpacing: '0.06em' }}>갓생북 은혜</span>
+              </div>
+            </div>
+          )}
 
           {/* ── 마지막 카드 — 브랜딩 ── */}
           <div style={{
