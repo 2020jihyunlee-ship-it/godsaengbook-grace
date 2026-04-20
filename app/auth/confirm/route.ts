@@ -8,8 +8,16 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error && data.user) {
+      const u = data.user
+      await supabase.from('grace_users').upsert({
+        id: u.id,
+        email: u.email,
+        name: u.user_metadata?.name ?? null,
+        church_name: u.user_metadata?.church_name ?? null,
+        marketing_consent: u.user_metadata?.marketing_consent ?? false,
+      }, { onConflict: 'id' })
       return NextResponse.redirect(`${origin}${next}`)
     }
   }
