@@ -3,14 +3,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { PageTransition, CtaBtn, MBtn, TypingCursor } from '@/components/ui/motion'
+import { PageTransition, CtaBtn, MBtn } from '@/components/ui/motion'
 
 interface EventInfo {
   name: string
   category: string
   dates_start: string | null
   dates_end: string | null
-  author_name: string | null
   participant_count: number | null
 }
 
@@ -21,7 +20,9 @@ export default function SummaryPage() {
 
   const [event, setEvent] = useState<EventInfo | null>(null)
   const [summary, setSummary] = useState('')
-  const [generating, setGenerating] = useState(false)
+  const [summaryId, setSummaryId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
   const [pdfLoading, setPdfLoading] = useState(false)
   const printRef = useRef<HTMLDivElement>(null)
@@ -29,33 +30,57 @@ export default function SummaryPage() {
   useEffect(() => {
     async function load() {
       const supabase = createClient()
-      const { data: ev } = await supabase
-        .from('events').select('name, category, dates_start, dates_end, author_name, participant_count')
-        .eq('id', id).single()
-      if (ev) setEvent(ev)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('/login'); return }
 
-      const { data: book } = await supabase
-        .from('books').select('summary').eq('event_id', id).single()
-      if (book?.summary) setSummary(book.summary)
+      const { data: ev } = await supabase
+        .from('grace_events')
+        .select('name, category, dates_start, dates_end, participant_count')
+        .eq('id', id)
+        .eq('creator_id', user.id)
+        .single()
+      if (!ev) { router.push('/dashboard'); return }
+      setEvent(ev)
+
+      const { data: content } = await supabase
+        .from('grace_group_contents')
+        .select('id, content_text')
+        .eq('event_id', id)
+        .eq('content_type', 'summary')
+        .maybeSingle()
+      if (content) {
+        setSummaryId(content.id)
+        setSummary(content.content_text ?? '')
+      }
     }
     load()
-  }, [id])
+  }, [id, router])
 
-  async function handleGenerate() {
-    setGenerating(true)
+  async function handleSave() {
+    setSaving(true)
+    setSaved(false)
     setError('')
-    const res = await fetch('/api/ai/generate-summary', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event_id: id }),
-    })
-    const data = await res.json()
-    if (!res.ok || data.error) {
-      setError(data.error ?? 'AI 생성 중 오류가 발생했습니다.')
+    const supabase = createClient()
+
+    if (summaryId) {
+      const { error: err } = await supabase
+        .from('grace_group_contents')
+        .update({ content_text: summary })
+        .eq('id', summaryId)
+      if (err) { setError('저장 실패: ' + err.message); setSaving(false); return }
     } else {
-      setSummary(data.summary)
+      const { data, error: err } = await supabase
+        .from('grace_group_contents')
+        .insert({ event_id: id, content_type: 'summary', content_text: summary })
+        .select('id')
+        .single()
+      if (err || !data) { setError('저장 실패: ' + (err?.message ?? '')); setSaving(false); return }
+      setSummaryId(data.id)
     }
-    setGenerating(false)
+
+    setSaving(false)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
   }
 
   async function handleDownloadPdf() {
@@ -91,24 +116,25 @@ export default function SummaryPage() {
 
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
 
-          {/* 생성 컨트롤 */}
           <div className="bg-white rounded-2xl border border-stone-100 p-5">
             <p className="text-sm text-stone-500 mb-4">
-              참가자들이 작성한 에세이를 분석해 리더의 마무리 총평을 AI가 생성합니다.
-              생성 후 직접 수정하거나 PDF로 저장할 수 있어요.
+              이벤트를 마무리하는 리더의 총평을 작성하세요. 저장 후 PDF로 출력할 수 있습니다.
             </p>
-            <div className="flex gap-2 flex-wrap">
+            <textarea
+              value={summary}
+              onChange={e => { setSummary(e.target.value); setSaved(false) }}
+              rows={14}
+              placeholder="참가자들에게 전하고 싶은 말, 이번 이벤트의 의미, 앞으로의 다짐 등을 자유롭게 작성해 주세요."
+              className="w-full text-sm text-stone-700 leading-relaxed border border-stone-200 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary/40 resize-none placeholder:text-stone-300"
+              style={{ fontFamily: "'Noto Serif KR', Georgia, serif" }}
+            />
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
               <CtaBtn
-                onClick={handleGenerate}
-                disabled={generating}
+                onClick={handleSave}
+                disabled={saving || !summary.trim()}
                 className="px-4 py-2 bg-brand-primary text-white text-sm rounded-lg hover:bg-brand-primary/90 disabled:opacity-40 transition-colors"
               >
-                {generating ? (
-                  <span className="flex items-center gap-2">
-                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    AI 총평 생성 중<TypingCursor />
-                  </span>
-                ) : summary ? '✨ 다시 생성' : '✨ AI 총평 생성'}
+                {saving ? '저장 중...' : saved ? '✓ 저장됨' : '저장'}
               </CtaBtn>
               {summary && (
                 <MBtn
@@ -119,27 +145,10 @@ export default function SummaryPage() {
                   {pdfLoading ? 'PDF 생성 중...' : '📄 PDF 다운로드'}
                 </MBtn>
               )}
+              <span className="text-xs text-stone-400 ml-auto">{summary.length}자</span>
             </div>
             {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
           </div>
-
-          {/* 총평 미리보기 + 편집 */}
-          {summary && (
-            <div className="bg-white rounded-2xl border border-stone-100 p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-semibold text-stone-900">총평 미리보기</h2>
-                <span className="text-xs text-stone-400">{summary.length}자</span>
-              </div>
-              <textarea
-                value={summary}
-                onChange={e => setSummary(e.target.value)}
-                rows={14}
-                className="w-full text-sm text-stone-700 leading-relaxed border border-stone-200 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary/40 resize-none"
-                style={{ fontFamily: "'Noto Serif KR', Georgia, serif" }}
-              />
-              <p className="text-xs text-stone-400 mt-2">직접 수정 후 PDF로 저장하세요.</p>
-            </div>
-          )}
 
           {/* PDF 렌더용 히든 영역 */}
           {summary && event && (
@@ -162,7 +171,9 @@ export default function SummaryPage() {
                     {event.name}
                   </h1>
                   {dateStr && <p style={{ fontSize: '11px', color: '#78716c' }}>{dateStr}</p>}
-                  {event.author_name && <p style={{ fontSize: '11px', color: '#78716c' }}>{event.author_name}</p>}
+                  {event.participant_count && (
+                    <p style={{ fontSize: '11px', color: '#78716c' }}>{event.participant_count}명 참여</p>
+                  )}
                 </div>
 
                 <div>

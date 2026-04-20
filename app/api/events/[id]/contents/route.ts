@@ -13,7 +13,7 @@ export async function POST(
 
   // creator 확인
   const { data: event } = await supabase
-    .from('events').select('id').eq('id', id).eq('creator_id', user.id).single()
+    .from('grace_events').select('id').eq('id', id).eq('creator_id', user.id).single()
   if (!event) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
 
   const formData = await req.formData()
@@ -39,7 +39,7 @@ export async function POST(
   }
 
   const { data, error } = await supabase
-    .from('group_contents')
+    .from('grace_group_contents')
     .insert({ event_id: id, content_type: contentType, content_text: contentText || null, file_url: fileUrl })
     .select()
     .single()
@@ -62,9 +62,9 @@ export async function DELETE(
   if (!contentId) return NextResponse.json({ error: 'content_id 필요' }, { status: 400 })
 
   const { data: event } = await supabase
-    .from('events').select('id').eq('id', id).eq('creator_id', user.id).single()
+    .from('grace_events').select('id').eq('id', id).eq('creator_id', user.id).single()
   if (!event) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
 
-  await supabase.from('group_contents').delete().eq('id', contentId).eq('event_id', id)
+  await supabase.from('grace_group_contents').delete().eq('id', contentId).eq('event_id', id)
   return NextResponse.json({ ok: true })
 }

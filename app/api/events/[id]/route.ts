@@ -19,7 +19,7 @@ export async function PATCH(
   }
 
   const { data, error } = await supabase
-    .from('events')
+    .from('grace_events')
     .update({ status })
     .eq('id', id)
     .eq('creator_id', user.id)
