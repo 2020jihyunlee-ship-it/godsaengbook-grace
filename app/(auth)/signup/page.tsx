@@ -41,11 +41,13 @@ function SignupForm() {
     })
 
     if (error) {
-      setError(
-        error.message === 'User already registered'
-          ? '이미 가입된 이메일입니다.'
-          : '회원가입 중 오류가 발생했습니다.'
-      )
+      if (error.message === 'User already registered') {
+        setError('이미 가입된 이메일입니다.')
+      } else if (error.message?.includes('rate limit') || error.message?.includes('email')) {
+        setError('잠시 후 다시 시도해주세요. (이메일 발송 한도 초과)')
+      } else {
+        setError(`회원가입 오류: ${error.message}`)
+      }
       setLoading(false)
       return
     }
