@@ -381,7 +381,7 @@ export default function RecordPage() {
             <div style={{ padding: '24px 28px' }}>
               <p style={{ fontSize: 14, color: '#3D2B1F', lineHeight: 1.8, marginBottom: 16 }}>
                 갓생북 은혜는 <strong>완전 무료</strong> 서비스예요.<br />
-                소중한 기록과 사진은 <strong>이벤트 종료일로부터 30일</strong> 후 자동으로 삭제됩니다.
+                소중한 기록과 사진은 <strong>이벤트 종료일(없으면 생성일)로부터 30일</strong> 후 자동으로 삭제됩니다.
               </p>
               <div style={{ background: '#F5EFE4', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
                 <p style={{ fontSize: 13, color: '#8C6E55', lineHeight: 1.75 }}>
@@ -426,7 +426,7 @@ export default function RecordPage() {
             <div style={{ padding: '24px 28px' }}>
               <p style={{ fontSize: 14, color: '#3D2B1F', lineHeight: 1.8, marginBottom: 16 }}>
                 수고하셨어요 😊<br />
-                이 기록은 <strong>30일 후 자동 삭제</strong>돼요.<br />
+                이 기록은 <strong>이벤트 종료일(없으면 생성일)로부터 30일 후 자동 삭제</strong>돼요.<br />
                 소중한 은혜의 기억, 지금 바로 PDF로 저장해 두세요.
               </p>
               <div style={{ background: '#F5EFE4', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
