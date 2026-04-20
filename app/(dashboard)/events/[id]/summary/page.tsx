@@ -125,14 +125,14 @@ export default function SummaryPage() {
               onChange={e => { setSummary(e.target.value); setSaved(false) }}
               rows={14}
               placeholder="참가자들에게 전하고 싶은 말, 이번 이벤트의 의미, 앞으로의 다짐 등을 자유롭게 작성해 주세요."
-              className="w-full text-sm text-stone-700 leading-relaxed border border-stone-200 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary/40 resize-none placeholder:text-stone-300"
+              className="w-full text-sm text-stone-700 leading-relaxed border border-stone-200 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#6B1FAD]/40 resize-none placeholder:text-stone-300"
               style={{ fontFamily: "'Noto Serif KR', Georgia, serif" }}
             />
             <div className="flex items-center gap-2 mt-3 flex-wrap">
               <CtaBtn
                 onClick={handleSave}
                 disabled={saving || !summary.trim()}
-                className="px-4 py-2 bg-brand-primary text-white text-sm rounded-lg hover:bg-brand-primary/90 disabled:opacity-40 transition-colors"
+                className="px-4 py-2 bg-[#6B1FAD] text-white text-sm rounded-lg hover:bg-[#6B1FAD]/90 disabled:opacity-40 transition-colors"
               >
                 {saving ? '저장 중...' : saved ? '✓ 저장됨' : '저장'}
               </CtaBtn>

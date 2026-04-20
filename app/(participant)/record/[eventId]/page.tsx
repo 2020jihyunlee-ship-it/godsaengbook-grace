@@ -57,6 +57,7 @@ export default function RecordPage() {
   const [summaryText, setSummaryText] = useState('')
   const [summaryPhotoFile, setSummaryPhotoFile] = useState<File | null>(null)
   const [summaryPhotoPreview, setSummaryPhotoPreview] = useState<string | null>(null)
+  const [summaryPhotoUploading, setSummaryPhotoUploading] = useState(false)
   const [summarySaving, setSummarySaving] = useState(false)
   const [summarySaved, setSummarySaved] = useState(false)
   const [summaryCropSrc, setSummaryCropSrc] = useState<string | null>(null)
@@ -765,7 +766,7 @@ export default function RecordPage() {
 
               <button
                 onClick={handleSummarySave}
-                disabled={summarySaving || (!summaryText.trim() && !summaryPhotoPreview && !summaryPhotoFile)}
+                disabled={summarySaving || summaryPhotoUploading || (!summaryText.trim() && !summaryPhotoPreview && !summaryPhotoFile)}
                 className="w-full py-3.5 text-sm font-semibold rounded-2xl transition-colors disabled:opacity-40"
                 style={summarySaved
                   ? { backgroundColor: '#22c55e', color: '#fff' }
@@ -785,10 +786,12 @@ export default function RecordPage() {
                 setSummaryPhotoPreview(URL.createObjectURL(file))
                 setSummaryCropSrc(null)
                 if (!session) return
+                setSummaryPhotoUploading(true)
                 const path = `grace_entries/${session.participantId}/summary_${Date.now()}.jpg`
                 const url = await uploadPhoto(file, path)
                 if (url) setSummaryPhotoPreview(url)
                 setSummaryPhotoFile(url ? null : file)
+                setSummaryPhotoUploading(false)
               }}
               onCancel={() => setSummaryCropSrc(null)}
             />
