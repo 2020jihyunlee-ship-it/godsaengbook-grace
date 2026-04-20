@@ -282,6 +282,7 @@ export default function FlipbookViewer({
         participantName={participantName}
         summaryText={summaryText}
         summaryPhotoUrl={summaryPhotoUrl}
+        tocPhotoUrl={tocPhotoUrl}
         onPageChange={onPageChange}
       />
     )

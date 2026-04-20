@@ -50,6 +50,18 @@ export default function PdfPage() {
   const [participantName, setParticipantName] = useState('')
   const [loading, setLoading] = useState(true)
 
+  function handleSave() {
+    const ua = navigator.userAgent
+    const isIOS = /iPhone|iPad|iPod/i.test(ua)
+    const isAndroid = /Android/i.test(ua)
+    if (isIOS) {
+      alert('화면 하단 공유 버튼(□↑) → "인쇄" 선택 후\n두 손가락으로 화면을 벌리면 PDF로 저장할 수 있어요.')
+    } else if (isAndroid) {
+      alert('오른쪽 상단 메뉴(⋮) → "인쇄" → 저장 대상을 "PDF로 저장"으로 선택해주세요.')
+    }
+    window.print()
+  }
+
   useEffect(() => {
     async function load() {
       const raw = localStorage.getItem(`grace_participant_${eventId}`)
@@ -116,13 +128,7 @@ export default function PdfPage() {
         <button onClick={() => router.back()} className="text-sm text-[#8C6E55]">← 뒤로</button>
         <p className="text-sm font-semibold text-[#3D2B1F]">{participantName}의 은혜북</p>
         <button
-          onClick={() => {
-            const isAndroid = /Android/i.test(navigator.userAgent)
-            if (isAndroid) {
-              alert('상단 메뉴(⋮) → "인쇄" → 저장 대상을 "PDF로 저장"으로 선택해주세요.')
-            }
-            window.print()
-          }}
+          onClick={handleSave}
           style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 16px', borderRadius: 20, backgroundColor: '#C9A84C', border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
         >
           ↓ PDF 저장
@@ -355,13 +361,7 @@ export default function PdfPage() {
       {/* 하단 고정 저장 버튼 */}
       <div className="no-print" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, backgroundColor: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)', borderTop: '1px solid #E8D5A3', padding: '12px 16px', paddingBottom: 'calc(12px + env(safe-area-inset-bottom))' }}>
         <button
-          onClick={() => {
-            const isAndroid = /Android/i.test(navigator.userAgent)
-            if (isAndroid) {
-              alert('상단 메뉴(⋮) → "인쇄" → 저장 대상을 "PDF로 저장"으로 선택해주세요.')
-            }
-            window.print()
-          }}
+          onClick={handleSave}
           style={{ width: '100%', maxWidth: 480, display: 'block', margin: '0 auto', padding: '14px', borderRadius: 50, backgroundColor: '#C9A84C', border: 'none', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
         >
           📥 PDF로 저장하기
