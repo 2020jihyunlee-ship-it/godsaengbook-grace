@@ -100,7 +100,7 @@ function MobileCardView({
           eventName={event.name}
           authorName={event.author_name ?? null}
           pageNum={3 + sections.length * 2}
-          compact={false}
+          compact={true}
           category={event.category}
         />
       )
